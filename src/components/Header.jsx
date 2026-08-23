@@ -4,6 +4,11 @@ function navLinkClass(isActive) {
     return isActive ? "" : "bg-pallete-light-yellow"
 }
 
+function activeLanguage() {
+    isActive = false
+    return "text-sm opacity-60"
+}
+
 export default function Header() {
     return(
         <header className="bg-pallete-green py-6 px-17 flex flex-row justify-between items-center">
@@ -15,9 +20,13 @@ export default function Header() {
                 <NavLink to='/contact' className="text-pallete-light-yellow">Favoritos</NavLink>
             </nav>
             <div className="h-max flex flex-row justify-evenly items-center gap-8">
-                <div className="h-max flex flex-row justify-evenly items-center gap-2">
-                    <p className="text-sm">PT</p>
-                    <p className="text-sm">EN</p>
+                <div className="h-max flex flex-row justify-evenly items-center gap-0">
+                    <div className="bg-pallete-gray rounded-xl px-4 py-1 z-10">
+                        <p className="text-sm">PT</p>
+                        </div>
+                    <div className="bg-pallete-gray rounded-xl px-4 py-1 relative right-4 z-0 opacity-60">
+                        <p className="text-sm">EN</p>
+                        </div>
                 </div>
                 <div className="h-max flex flex-row justify-evenly items-center gap-2">
                     <p className="text-sm">sol</p>
