@@ -19,6 +19,19 @@ export default function Login() {
                         <button type="submit" className="bg-pallete-orange text-white rounded p-2 w-45 hover:underline mt-2">
                             Entrar
                         </button>
+
+                        <p className="font-bold">Ou</p>
+
+                        <NavLink to="https://google.com/api/auth/login/google">
+                            <div className="bg-pallete-gray rounded-sm px-3 py-1.5 text-black font-bold">
+                                <p>Entrar com o Google</p>
+                            </div>
+                        </NavLink>
+
+                        <br />
+
+                        <p className="font-bold">Ainda não possui uma conta?</p>
+                        <NavLink to="/cadastro" className="text-pallete-orange">Cadastrar-se</NavLink>
                     </form>
                 </div>
                 <div className="bg-white flex items-center justify-center p-6">
