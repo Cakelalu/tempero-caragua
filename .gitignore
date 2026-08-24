@@ -13,6 +13,9 @@
 # Dependencies
 # ==========================================
 node_modules/
+.agents
+.claude
+.windsurf
 
 # ==========================================
 # Environment variables / secrets
@@ -120,3 +123,4 @@ temp/
 # ==========================================
 # Render configuration can be committed if you use render.yaml.
 # Do NOT ignore render.yaml.
+/src/generated/prisma

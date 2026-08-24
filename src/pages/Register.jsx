@@ -10,15 +10,15 @@ export default function Register() {
 
     return (
         <>
-            <section className="grid min-h-screen">
-                <h1>Cadastrar</h1><br />
+            <section className="grid h-screen w-screen bg-pallete-dark-green-2 flex flex-col items-center justify-center">
+                <h1>Crie sua conta!</h1><br />
 
-                <form onSubmit={handleSubmit} className="bg-pallete-dark-green-2 w-full flex flex-col items-center justify-center gap-3">
+                <form onSubmit={handleSubmit} className="w-full flex flex-col items-center justify-center gap-3">
                     {/* nome */}
                     <div className="flex flex-col">
                         <label htmlFor="name">Nome</label>
                         <input type="text" id="name" name="name"
-                        className="bg-blue-400 rounded
+                        className="bg-white rounded
                         shadow-purple-300"/>
                     </div>
                     
@@ -27,7 +27,7 @@ export default function Register() {
                     <div className="flex flex-col">
                         <label htmlFor="email">E-mail</label>
                         <input type="email" id="email" name="email"
-                        className="bg-blue-400 rounded
+                        className="bg-white rounded
                         shadow-purple-300"/>
                     </div>
                 
@@ -35,7 +35,7 @@ export default function Register() {
                     <div className="flex flex-col">
                         <label htmlFor="password">Senha</label>
                         <input type="password" id="password"    name="password"
-                        className="bg-blue-400 rounded
+                        className="bg-white rounded
                         shadow-purple-300"/>
                     </div>
 
@@ -43,13 +43,13 @@ export default function Register() {
                     <div className="flex flex-col">
                         <label htmlFor="confirm">Confirmar senha</label>
                         <input type="password" id="confirm"     name="confirm"
-                        className="bg-blue-400 rounded
+                        className="bg-white rounded
                         shadow-purple-300"/>
                     </div>
                     <br />
 
                     {/* demais campos: e-mail, senha e confirmar senha */}
-                    <button type="submit">Cadastrar</button>
+                    <button type="submit" className="bg-pallete-orange rounded w-45">Cadastrar</button>
                 </form><br />
 
                 <p>

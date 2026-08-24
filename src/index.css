@@ -23,6 +23,7 @@
 
 @layer base {
     body {
+        margin: 0;
         font-family: var(--font-sans);
         background-color: var(--color-pallete-background);
         color: var(--color-primary)

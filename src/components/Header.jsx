@@ -12,7 +12,7 @@ function activeLanguage() {
 export default function Header() {
     return(
         <header className="bg-pallete-green py-6 px-17 flex flex-row justify-between items-center">
-            <div className="h-max font-bold text-2xl">Logo aqui</div>
+            <img src="/logo.svg" alt="Logo" className="w-28 h-23" />
             <nav className="flex flex-row justify-evenly items-center gap-18">
                 <NavLink to='/' className="text-pallete-light-yellow text-center">Especiais de<br />Caraguá</NavLink>
                 <NavLink to='/contact' className="text-pallete-light-yellow">Festivais</NavLink>

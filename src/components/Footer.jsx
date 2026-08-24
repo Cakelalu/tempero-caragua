@@ -5,7 +5,7 @@ export default function Footer() {
         <footer className="flex flex-col items-center">
             <div id="pt1" className="bg-pallete-green min-w-screen flex flex-row gap-20 justify-center py-1">
                 <div className="h-auto">
-                    <h1 className="font-bold text-6xl">Logo aqui</h1>
+                    <img src="/logo.svg" alt="Logo" className="w-28 h-23" />
                 </div>
                 <nav className="flex flex-col justify-end pl-3">
                     <NavLink to="/sobre-nos" className="text-pallete-light-orange font-bold">Sobre nós</NavLink>
