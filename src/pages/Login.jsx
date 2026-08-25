@@ -10,12 +10,12 @@ export default function Login() {
 
                     <form action="" className="flex flex-col gap-2 align-center justify-center w-2/4">
                         <label htmlFor="email" className="font-bold text-white">E-mail</label>
-                        <input type="text" placeholder="E-mail" className="border border-white rounded p-2 font-bold text-white" />
+                        <input type="text" placeholder="" className="border border-white rounded p-2 font-bold text-white" />
 
                         <label htmlFor="password" className="font-bold text-white">Senha</label>
-                        <input type="password" placeholder="Senha" className="border border-white rounded p-2 font-bold text-white" />
+                        <input type="password" placeholder="" className="border border-white rounded p-2 font-bold text-white" />
 
-                        <button type="submit" className="bg-pallete-orange text-white rounded p-2 w-45 hover:underline mt-2 font-bold">
+                        <button type="submit" className="bg-pallete-orange text-white rounded p-2 w-45 hover:underline mt-2 font-bold self-center">
                             Entrar
                         </button>
                     </form>
