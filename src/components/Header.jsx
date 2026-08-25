@@ -12,12 +12,12 @@ function activeLanguage() {
 export default function Header() {
     return(
         <header className="bg-pallete-green py-1 px-17 flex flex-row justify-between items-center">
-            <img src="/logo.svg" alt="Logo" className="w-28 h-23" />
+            <NavLink to='/'><img src="/logo.svg" alt="Logo" className="w-28 h-23" /></NavLink>
             <nav className="flex flex-row justify-evenly items-center gap-18">
-                <NavLink to='/' className="text-pallete-light-yellow text-center">Especiais de<br />Caraguá</NavLink>
-                <NavLink to='/contact' className="text-pallete-light-yellow">Festivais</NavLink>
-                <NavLink to='/contact' className="text-pallete-light-yellow">Postagens</NavLink>
-                <NavLink to='/contact' className="text-pallete-light-yellow">Favoritos</NavLink>
+                <NavLink to='/especiais-de-caragua' className="text-pallete-light-yellow text-center">Especiais de<br />Caraguá</NavLink>
+                <NavLink to='/festivais' className="text-pallete-light-yellow">Festivais</NavLink>
+                <NavLink to='/posts' className="text-pallete-light-yellow">Postagens</NavLink>
+                <NavLink to='/favoritos' className="text-pallete-light-yellow">Favoritos</NavLink>
             </nav>
             <div className="h-max flex flex-row justify-evenly items-center gap-8">
                 <div className="h-max flex flex-row justify-evenly items-center gap-0">
