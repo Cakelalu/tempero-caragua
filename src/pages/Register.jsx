@@ -20,43 +20,50 @@ export default function Register() {
 
     return (
         <>
-            <section className="grid h-screen w-screen bg-pallete-dark-green-2  flex-col items-center justify-center">
-                <h1>Crie sua conta!</h1>
+            <section className="flex h-screen w-screen bg-pallete-dark-green-2 gap-5 flex-col items-center justify-center">
+                <img src="./logo.svg" alt="Tempero Caraguá" />
+                <h1 className='text-2xl'>Crie sua conta!</h1>
 
                 <form className="flex max-w-md flex-col gap-4">
                     <div>
                         <div className="mb-2 block">
-                            <Label htmlFor="email2">Seu e-mail</Label>
+                            <Label htmlFor="email2" className='text-white'>
+                                Seu e-mail
+                            </Label>
                         </div>
                         <TextInput id="email" type="email" placeholder="" required shadow theme={customInputTheme}/>
                     </div>
                     <div>
                         <div className="mb-2 block">
-                            <Label htmlFor="password2">Sua senha</Label>
+                            <Label htmlFor="password2" className='text-white'>
+                                Sua senha
+                            </Label>
                         </div>
                         <TextInput id="password" type="password" required shadow theme={customInputTheme}/>
                     </div>
                     <div>
                         <div className="mb-2 block">
-                            <Label htmlFor="repeat-password">Repita sua senha</Label>
+                            <Label htmlFor="repeat-password" className='text-white'>
+                                Repita sua senha
+                            </Label>
                         </div>
                         <TextInput id="repeat-password" type="password" required shadow theme={customInputTheme}/>
                     </div>
                     <div className="flex items-center gap-2">
                         <Checkbox id="agree" />
-                        <Label htmlFor="agree" className="flex">
+                        <Label htmlFor="agree" className="flex text-white">
                             Eu concordo com os&nbsp;
-                            <NavLink href="#" className="text-cyan-600 hover:underline dark:text-cyan-500">
+                            <NavLink href="#" className="text-white hover:underline dark:text-cyan-500">
                                 termos e condições
                             </NavLink>
                         </Label>
                     </div>
-                    <Button type="submit">Registrar nova conta</Button>
+                    <Button type="submit" className='bg-pallete-orange hover:bg-pallete-dark-orange transition-colors duration-150'>Registrar nova conta</Button>
                 </form>
 
-                <p>
+                <p className="text-center">
                     Já possui uma conta?<br />
-                    <NavLink to="/login">Faça o login</NavLink>
+                    <NavLink to="/login" className='text-pallete-light-orange hover:underline'>Faça o login</NavLink>
                 </p>
             </section>
         </>

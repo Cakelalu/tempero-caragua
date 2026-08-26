@@ -33,7 +33,14 @@ export default function Header() {
                     <p className="text-sm">lua</p>
                 </div>
             </div>
-            <div className="h-max font-bold text-xl">Perfil</div>
+            <div className="h-max font-bold text-xl">
+                <p className="mt-10">Perfil</p>
+                {/* <div className="bg-pallete-background p-2 rounded-sm relative top-5 -left-7.5 z-10 text-pallete-dark-green">
+                    <NavLink to='/u/:1'>Minha conta</NavLink><br />
+                    <NavLink to='/editar-perfil'>Editar perfil</NavLink><br />
+                    <button>Sair</button>
+                </div> */}
+            </div>
         </header>
     )
 }

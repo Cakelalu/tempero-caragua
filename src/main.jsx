@@ -27,8 +27,8 @@ createRoot(document.getElementById('root')).render(
           <Route index element={<Home />} />
           <Route path="/contato" element={<Contact />} />
           <Route path="/u/:id" element={<Account />} />
-          <Route path="/create" element={<CreatePost />} />
-          <Route path="/edit-profile" element={<EditProfile />} />
+          <Route path="/criar" element={<CreatePost />} />
+          <Route path="/editar-perfil" element={<EditProfile />} />
           <Route path="/favoritos" element={<Favorites />} />
           <Route path="/festivais" element={<Festivals />} />
           <Route path="/posts" element={<Posts />} />

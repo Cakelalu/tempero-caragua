@@ -15,7 +15,7 @@ export default function Login() {
                         <label htmlFor="password" className="font-bold text-white">Senha</label>
                         <input type="password" placeholder="" className="border border-white rounded p-2 font-bold text-white" />
 
-                        <button type="submit" className="bg-pallete-orange text-white rounded p-2 w-45 hover:underline mt-2 font-bold self-center">
+                        <button type="submit" className="bg-pallete-orange text-white rounded p-2 w-45 hover:underline mt-2 font-bold self-center hover:bg-pallete-dark-orange transition-colors duration-150">
                             Entrar
                         </button>
                     </form>
