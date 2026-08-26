@@ -17,13 +17,10 @@ import NotFound from "./pages/NotFound"
 import Post from './pages/Post.jsx'
 import Posts from './pages/Posts.jsx'
 import Register from "./pages/Register"
-import { ThemeProvider } from 'flowbite-react'
-import flowbiteTheme from './theme/flowbiteTheme.jsx'
-import './index.css'
+
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <ThemeProvider theme={flowbiteTheme}>
         <BrowserRouter>
       <Routes>
         <Route element={<SiteLayout />}>
@@ -47,6 +44,5 @@ createRoot(document.getElementById('root')).render(
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
-    </ThemeProvider>
   </StrictMode>,
 )

@@ -1,5 +1,6 @@
 import { NavLink, useNavigate } from "react-router"
 import { Button, Checkbox, Label, TextInput } from "flowbite-react";
+import { colors } from "flowbite-react/plugin/tailwindcss/colors";
 
 export default function Register() {
     const navigate = useNavigate()
@@ -7,6 +8,14 @@ export default function Register() {
     function handleSubmit(event) {
         event.preventDefault()
         navigate('/login')
+    }
+
+    const customInputTheme = {
+        field: {
+            input: {
+                colors: 'bg-pallete-dark-green-2'
+            }
+        }
     }
 
     return (
@@ -19,19 +28,19 @@ export default function Register() {
                         <div className="mb-2 block">
                             <Label htmlFor="email2">Seu e-mail</Label>
                         </div>
-                        <TextInput id="email" type="email" placeholder="" required shadow />
+                        <TextInput id="email" type="email" placeholder="" required shadow theme={customInputTheme}/>
                     </div>
                     <div>
                         <div className="mb-2 block">
                             <Label htmlFor="password2">Sua senha</Label>
                         </div>
-                        <TextInput id="password" type="password" required shadow />
+                        <TextInput id="password" type="password" required shadow theme={customInputTheme}/>
                     </div>
                     <div>
                         <div className="mb-2 block">
                             <Label htmlFor="repeat-password">Repita sua senha</Label>
                         </div>
-                        <TextInput id="repeat-password" type="password" required shadow />
+                        <TextInput id="repeat-password" type="password" required shadow theme={customInputTheme}/>
                     </div>
                     <div className="flex items-center gap-2">
                         <Checkbox id="agree" />
