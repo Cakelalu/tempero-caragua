@@ -1,4 +1,5 @@
 import { NavLink, useNavigate } from "react-router"
+import { Button, Checkbox, Label, TextInput } from "flowbite-react";
 
 export default function Register() {
     const navigate = useNavigate()
@@ -10,50 +11,42 @@ export default function Register() {
 
     return (
         <>
-            <section className="grid h-screen w-screen bg-pallete-dark-green-2 flex flex-col items-center justify-center">
-                <h1>Crie sua conta!</h1><br />
+            <section className="grid h-screen w-screen bg-pallete-dark-green-2  flex-col items-center justify-center">
+                <h1>Crie sua conta!</h1>
 
-                <form onSubmit={handleSubmit} className="w-full flex flex-col items-center justify-center gap-3">
-                    {/* nome */}
-                    <div className="flex flex-col">
-                        <label htmlFor="name">Nome</label>
-                        <input type="text" id="name" name="name"
-                        className="bg-white rounded
-                        shadow-purple-300"/>
+                <form className="flex max-w-md flex-col gap-4">
+                    <div>
+                        <div className="mb-2 block">
+                            <Label htmlFor="email2">Seu e-mail</Label>
+                        </div>
+                        <TextInput id="email" type="email" placeholder="" required shadow />
                     </div>
-                    
-                
-                    {/* email */}
-                    <div className="flex flex-col">
-                        <label htmlFor="email">E-mail</label>
-                        <input type="email" id="email" name="email"
-                        className="bg-white rounded
-                        shadow-purple-300"/>
+                    <div>
+                        <div className="mb-2 block">
+                            <Label htmlFor="password2">Sua senha</Label>
+                        </div>
+                        <TextInput id="password" type="password" required shadow />
                     </div>
-                
-                    {/* senha */}
-                    <div className="flex flex-col">
-                        <label htmlFor="password">Senha</label>
-                        <input type="password" id="password"    name="password"
-                        className="bg-white rounded
-                        shadow-purple-300"/>
+                    <div>
+                        <div className="mb-2 block">
+                            <Label htmlFor="repeat-password">Repita sua senha</Label>
+                        </div>
+                        <TextInput id="repeat-password" type="password" required shadow />
                     </div>
-
-                    {/* confirmar senha */}
-                    <div className="flex flex-col">
-                        <label htmlFor="confirm">Confirmar senha</label>
-                        <input type="password" id="confirm"     name="confirm"
-                        className="bg-white rounded
-                        shadow-purple-300"/>
+                    <div className="flex items-center gap-2">
+                        <Checkbox id="agree" />
+                        <Label htmlFor="agree" className="flex">
+                            Eu concordo com os&nbsp;
+                            <NavLink href="#" className="text-cyan-600 hover:underline dark:text-cyan-500">
+                                termos e condições
+                            </NavLink>
+                        </Label>
                     </div>
-                    <br />
-
-                    {/* demais campos: e-mail, senha e confirmar senha */}
-                    <button type="submit" className="bg-pallete-orange rounded w-45">Cadastrar</button>
-                </form><br />
+                    <Button type="submit">Registrar nova conta</Button>
+                </form>
 
                 <p>
-                    Já possui uma conta?<br/>
+                    Já possui uma conta?<br />
                     <NavLink to="/login">Faça o login</NavLink>
                 </p>
             </section>

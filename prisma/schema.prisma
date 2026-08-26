@@ -18,6 +18,16 @@ enum Role {
   ADMIN
 }
 
+enum Language {
+  PT
+  EN
+}
+
+enum Color {
+  Light
+  Dark
+}
+
 model User {
   id        Int       @id @default(autoincrement())
   name      String
@@ -26,6 +36,8 @@ model User {
   role      Role      @default(USER)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  currentLanguage Language @default(PT)
+  currentColor Color  @default(Light)
   posts     Post[]
 
   @@map("users") // Mapeia a tabela para "users" no banco de dados
@@ -34,10 +46,31 @@ model User {
 model Post {
   id      Int     @id @default(autoincrement())
   title   String
+  slug String
   subtitle String?
   content String
+  tags String[]
   userId  Int @map("user_id") // Mapeia a coluna para "user_id" no banco de dados
   user    User    @relation(fields: [userId], references: [id])
 
   @@map("posts") // Mapeia a tabela para "posts" no banco de dados
 }
+
+model User_Follow_User {
+  idFollowed  Int
+  idFollowing Int
+  follow      Boolean
+}
+
+model User_Like_Post {
+  idUser  Int
+  idPost  Int
+  like    Boolean
+}
+
+model User_Favorite_Post {
+  idUser    Int
+  idPost    Int
+  favorite  Boolean
+}
+
