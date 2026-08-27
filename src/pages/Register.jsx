@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from "react-router"
+import { NavLink, useNavigate } from "react-router-dom"
 import { Button, Checkbox, Label, TextInput } from "flowbite-react";
 import { colors } from "flowbite-react/plugin/tailwindcss/colors";
 
