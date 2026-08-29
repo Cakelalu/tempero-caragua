@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import Menu from "./DropdownMenu";
+import { DarkThemeToggle } from "flowbite-react";
 
 function navLinkClass(isActive) {
     return isActive ? "" : "bg-pallete-light-yellow"
@@ -11,6 +12,8 @@ function activeLanguage() {
 }
 
 export default function Header() {
+
+
     return(
         <header className="bg-pallete-green py-1 px-17 flex flex-row justify-between items-center">
             <NavLink to='/'><img src="/logo.svg" alt="Logo" className="w-28 h-23" /></NavLink>
@@ -29,9 +32,8 @@ export default function Header() {
                         <p className="text-sm">EN</p>
                         </div>
                 </div>
-                <div className="h-max flex flex-row justify-evenly items-center gap-2">
-                    <p className="text-sm">sol</p>
-                    <p className="text-sm">lua</p>
+                <div className="h-max justify-evenly items-center gap-2 text-pallete-light-yellow flex flex-row">
+                    <DarkThemeToggle className="text-white hover:bg-transparent dark:hover:bg-transparent border-0 focus:border-0 focus:ring-0 focus:outline-none ring-0 shadow-none" />
                 </div>
             </div>
             <div className="h-max font-bold text-xl">

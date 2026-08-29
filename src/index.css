@@ -3,6 +3,15 @@
 @import 'flowbite-react/plugin/tailwindcss';
 @source '../.flowbite-react/class-list.json';
 
+/* 1. Importa as configurações do plugin do Flowbite */
+@plugin "flowbite/plugin";
+
+/* 2. Diz ao Tailwind v4 onde ler as classes do Flowbite React para compilar */
+@source "../node_modules/flowbite-react/dist/**/*.js";
+
+/* 3. Ativa explicitamente a variante de classe para o Modo Escuro no v4 */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
     --font-sans: "Chakra Petch", sans-serif;
     --font-mono: "JetBrains Mono", monospace;
