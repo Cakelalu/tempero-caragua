@@ -1,17 +1,21 @@
 import { Outlet } from 'react-router-dom'
 import Header from '../components/Header.jsx'
 import Footer from '../components/Footer.jsx'
+import { ThemeModeScript } from 'flowbite-react'
 
 export default function SiteLayout() {
     return (
-        <div className="flex flex-col min-h-screen overflow-x-hidden w-full">
-            <Header />
-            <div className='self-center'>
-                <Outlet />
+        <>
+            <ThemeModeScript />
+            <div className="flex flex-col min-h-screen overflow-x-hidden w-full">
+                <Header />
+                <div className='self-center'>
+                    <Outlet />
+                </div>
+                <div className='relative bottom-0 mt-auto'>
+                    <Footer />
+                </div>
             </div>
-            <div className='relative bottom-0 mt-auto'>
-                <Footer />
-            </div>
-        </div>
+        </>
     )
 }

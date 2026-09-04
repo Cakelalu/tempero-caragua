@@ -20,7 +20,6 @@ import Posts from './pages/Posts.jsx'
 import Register from "./pages/Register"
 import { ThemeProvider } from "flowbite-react";
 
-
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ThemeProvider>

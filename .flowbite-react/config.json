@@ -4,7 +4,7 @@
   "dark": true,
   "path": "src/components",
   "prefix": "",
-  "rsc": true,
-  "tsx": true,
+  "rsc": false,
+  "tsx": false,
   "version": 4
 }
