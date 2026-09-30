@@ -1,0 +1,7 @@
+generator clients {
+    provider = "prisma-client-js"
+}
+
+datasource teca_db {
+    provider = "mysql"
+}
