@@ -1,5 +1,5 @@
 import React from "react";
-import avatarPadrao from "../../public/Temperos.svg"; // ajuste o caminho conforme a estrutura do seu projeto
+ // ajuste o caminho conforme a estrutura do seu projeto
 
 /**
  * Card de postagem para o blog de receitas caiçaras.
@@ -44,7 +44,7 @@ export default function CardPost({
             {/* Avatar sobreposto entre o banner e o corpo do card */}
             <div className="flex justify-center -mt-7">
                 <img
-                    src={avatarImage || avatarPadrao}
+                    src={avatarImage || '/temperos.svg'}
                     alt={`Foto de ${author}`}
                     className="w-14 h-14 rounded-full object-cover border-[3px] border-white bg-gray-200"
                 />

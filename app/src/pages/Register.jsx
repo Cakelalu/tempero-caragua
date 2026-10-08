@@ -21,7 +21,7 @@ export default function Register() {
     return (
         <>
             <section className="flex h-screen w-screen bg-pallete-dark-green-2 gap-5 flex-col items-center justify-center">
-                <img src="./logo.svg" alt="Tempero Caraguá" />
+                <img src="/logo.svg" alt="Tempero Caraguá" />
                 <h1 className='text-2xl'>Crie sua conta!</h1>
 
                 <form className="flex max-w-md flex-col gap-4">

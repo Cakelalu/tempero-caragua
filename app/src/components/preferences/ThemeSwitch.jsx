@@ -14,7 +14,7 @@ export default function ThemeSwitch() {
             className="
         relative
         h-6 w-17.5
-        rounded-full
+        rounded-2xl
         bg-[#77775f]
         p-0.5
         transition-colors
@@ -23,28 +23,28 @@ export default function ThemeSwitch() {
         >
             {/* Sol */}
             <HiSun
-                className="
+                className={`
           absolute
           left-1.75
           top-1.25
           z-10
           h-3
           w-3
-          text-[#eeece0]
-        "
+          ${isDark ? "text-[#eeece0]" : "text-[#77775f]"}
+        `}
             />
 
             {/* Lua */}
             <HiMoon
-                className="
-          absolute
+                className={`
+            absolute
           right-1.75
           top-1.25
           z-10
           h-3
           w-3
-          text-[#eeece0]
-        "
+          ${isDark ? "text-[#77775f]" : "text-[#eeece0]"}
+        `}
             />
 
             {/* Bolinha */}
