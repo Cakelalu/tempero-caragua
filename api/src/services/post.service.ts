@@ -52,7 +52,7 @@ export const createPostSlug = async (title: string) => {
 }
 
 type CreatePostProps = {
-    authorId: number,
+    authorId: string,
     slug: string,
     title: string,
     tags: string,

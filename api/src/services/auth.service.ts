@@ -1,5 +1,5 @@
-import { User } from '@prisma/client'
-import { createJWT, verifyJWT } from '../libs/jwt'
+import { User } from '../generated/prisma/client'
+import { createJWT, verifyJWT } from '../libs/jwt.ts'
 import { TokenPayload } from '../types/token-payload'
 import { getUserById } from './user.service'
 import { Request } from 'express'

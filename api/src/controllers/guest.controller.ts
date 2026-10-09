@@ -56,9 +56,10 @@ export const signUp: RequestHandler = async (req, res) => {
     })
 }
 
-export const validate: RequestHandler = async (
-    req: ExtendedRequest,
-    res: Response
-) => {
-    res.json({ user: req.user })
-}
+// Em desenvolvimento.
+// export const validate: RequestHandler = async (
+//     req: ExtendedRequest,
+//     res: Response
+// ) => {
+//     res.json({ user: req.user })
+// }
