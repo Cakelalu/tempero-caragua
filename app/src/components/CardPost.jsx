@@ -1,6 +1,3 @@
-import React from "react";
- // ajuste o caminho conforme a estrutura do seu projeto
-
 /**
  * Card de postagem para o blog de receitas caiçaras.
  *
@@ -22,10 +19,27 @@ export default function CardPost({
     author = "<nome do autor>",
     href = "#",
 }) {
+    const formattedDate = (() => {
+        if (!date) return "Data não informada";
+
+        if (/^\d{4}-\d{2}-\d{2}/.test(date)) {
+            const parsedDate = new Date(date);
+            if (!Number.isNaN(parsedDate.getTime())) {
+                return new Intl.DateTimeFormat("pt-BR", {
+                    dateStyle: "short",
+                    timeStyle: "short",
+                }).format(parsedDate).replace(",", " às");
+            }
+        }
+
+        const [datePart, timePart] = date.split(" ");
+        return timePart ? `${datePart} às ${timePart}` : datePart;
+    })();
+
     return (
         <a
             href={href}
-            className="block w-55 rounded-2xl bg-white shadow-md overflow-hidden
+            className="block h-full w-full overflow-hidden rounded-2xl bg-white shadow-md
                  transition-transform duration-150 ease-out
                  hover:-translate-y-0.5 hover:shadow-lg"
         >
@@ -52,7 +66,7 @@ export default function CardPost({
 
             {/* Corpo do card */}
             <div className="px-3.5 pb-4 pt-1 text-center">
-                <p className="mt-1 mb-2 text-xs text-gray-400">{date.split(' ').at(0) + ' às ' + date.split(' ').at(1)}</p>
+                <p className="mt-1 mb-2 text-xs text-gray-400">{formattedDate}</p>
                 <h3 className="mb-1.5 text-[12pt] font-bold text-black underline leading-tight">
                     {title}
                 </h3>

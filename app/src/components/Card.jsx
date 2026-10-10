@@ -1,4 +1,3 @@
-import React from "react";
 import avatarPadrao from "./Temperos.svg"; // ajuste o caminho conforme a estrutura do seu projeto
 
 /**
@@ -16,7 +15,7 @@ import avatarPadrao from "./Temperos.svg"; // ajuste o caminho conforme a estrut
  */
 function Card({
     bannerImage,
-    avatar,
+    avatarImage,
     date = "DD/MM/AAAA às HH:MM",
     title = "<Título da postagem em negrito com a fonte de cor preta e tamanho 12>",
     author = "<nome do autor>",

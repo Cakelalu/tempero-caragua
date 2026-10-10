@@ -9,7 +9,7 @@ export default function SiteLayout() {
             <ThemeModeScript />
             <div className="flex flex-col min-h-screen overflow-x-hidden w-full">
                 <Header />
-                <div className='self-center'>
+                <div className='w-full self-center'>
                     <Outlet />
                 </div>
                 <div className='relative bottom-0 mt-auto'>
