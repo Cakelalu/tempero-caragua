@@ -1,141 +1,47 @@
-import type { Request, Response } from 'express'
-import { prisma } from '../lib/prisma'
+import { RequestHandler, Response } from "express"
+import { ExtendedRequest } from '../types/extended-request'
+import z from 'zod'
+import { getUserById } from '../services/user.service'
+import { handleCover, createPostSlug, createPost } from "../services/post.service"
+import { coverToUrl } from "../utils/cover-to-url"
 
-// Listar todos os posts
-export const getAllPosts = async (req: Request, res: Response) => {
-    try {
-        const posts = await prisma.post.findMany({
-            orderBy: {
-                createdAt: 'desc'
-            },
-            include: {
-                author: {
-                    select: {
-                        name: true
-                    }
-                }
-            }
-        })
+export const getPost: RequestHandler = async (req, res) => {
+    if (!req.user) return
 
-        return res.json({
-            posts: posts.map(post => ({
-                id: post.id,
-                slug: post.slug,
-                title: post.title,
-                tags: post.tags,
-                body: post.body,
-                cover: post.cover,
-                createdAt: post.createdAt,
-                authorName: post.author.name
-            }))
-        })
-    } catch (error) {
-        console.error('Erro ao buscar posts:', error)
-        return res.status(500).json({
-            error: 'Erro interno ao buscar posts'
-        })
+    const { slug } = req.params
+    if (!slug) {
+        return res.status(400).json({ error: 'A slug is required' })
     }
+
+    const post = await prisma.post.findUnique({ where: { slug } })
+    if (!post) {
+        return res.status(404).json({ error: 'Post not found' })
+    }
+
+    res.status(200).json({ post })
 }
 
-// Buscar um post pelo slug
-export const getPost = async (req: Request, res: Response) => {
-    try {
-        const { slug } = req.params
+export const getPostWithTags: RequestHandler = async (req, res) => {
+    if (!req.user) return
 
-        const post = await prisma.post.findUnique({
-            where: { slug },
-            include: {
-                author: {
-                    select: {
-                        name: true
-                    }
-                }
-            }
-        })
-
-        if (!post) {
-            return res.status(404).json({
-                error: 'Post não encontrado'
-            })
-        }
-
-        return res.json({
-            post: {
-                id: post.id,
-                slug: post.slug,
-                title: post.title,
-                tags: post.tags,
-                body: post.body,
-                cover: post.cover,
-                createdAt: post.createdAt,
-                authorName: post.author.name
-            }
-        })
-    } catch (error) {
-        console.error('Erro ao buscar post:', error)
-        return res.status(500).json({
-            error: 'Erro interno ao buscar post'
-        })
+    const { tags } = req.query
+    if (!tags || typeof tags !== 'string') {
+        return res.status(400).json({ error: 'Tags are required' })
     }
+    const tagsArray = tags.split(',').map(tag => tag.trim())
+    const posts = await prisma.post.findMany({
+        where: {
+            tags: {
+                hasSome: tagsArray
+            }
+        }
+    })
+    res.status(200).json({ posts })
 }
 
-// Buscar posts relacionados por tags
-export const getRelatedPosts = async (req: Request, res: Response) => {
-    try {
-        const { slug } = req.params
+export const getAllPosts: RequestHandler = async (req, res) => {
+    if (!req.user) return
 
-        const currentPost = await prisma.post.findUnique({
-            where: { slug },
-            select: {
-                id: true,
-                tags: true
-            }
-        })
-
-        if (!currentPost) {
-            return res.status(404).json({
-                error: 'Post não encontrado'
-            })
-        }
-
-        const relatedPosts = await prisma.post.findMany({
-            where: {
-                id: {
-                    not: currentPost.id
-                },
-                tags: {
-                    contains: currentPost.tags,
-                    mode: 'insensitive'
-                }
-            },
-            take: 4,
-            orderBy: {
-                createdAt: 'desc'
-            },
-            include: {
-                author: {
-                    select: {
-                        name: true
-                    }
-                }
-            }
-        })
-
-        return res.json({
-            posts: relatedPosts.map(post => ({
-                id: post.id,
-                slug: post.slug,
-                title: post.title,
-                tags: post.tags,
-                cover: post.cover,
-                createdAt: post.createdAt,
-                authorName: post.author.name
-            }))
-        })
-    } catch (error) {
-        console.error('Erro ao buscar posts relacionados:', error)
-        return res.status(500).json({
-            error: 'Erro interno ao buscar posts relacionados'
-        })
-    }
+    const posts = await prisma.post.findMany()
+    res.status(200).json({ posts })
 }

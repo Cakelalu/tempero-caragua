@@ -57,6 +57,8 @@ type CreatePostProps = {
     title: string,
     tags: string,
     body: string,
+    images?: string[],
+    legends?: string[],
     cover: string
 }
 

@@ -8,5 +8,5 @@ mainRoutes.get('/api/teste', (req, res) => {
 })
 
 mainRoutes.get('/posts', mainController.getAllPosts)
-mainRoutes.get('/posts/:slug', mainController.getPost)
-mainRoutes.get('/posts/:slug/related', mainController.getRelatedPosts)
+mainRoutes.get('/post/:slug', mainController.getPost)
+mainRoutes.get('/posts/:tags', mainController.getPostWithTags)

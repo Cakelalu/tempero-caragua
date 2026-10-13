@@ -60,5 +60,34 @@ export const validate: RequestHandler = async (
     req: ExtendedRequest,
     res: Response
 ) => {
-    res.json({ user: req.user })
+    if (!req.user) {
+        return res.status(401).json({ error: 'Usuário não autenticado' })
+    }
+    const token = createToken(req.user)
+    res.status(200).json({
+        message: 'Token válido',
+        user: {
+            id: req.user.id,
+            name: req.user.name,
+            email: req.user.email
+        },
+        token
+    })
+}
+
+export const verifyToken: RequestHandler = async (
+    req: ExtendedRequest,
+    res: Response
+) => {
+    if (!req.user) {
+        return res.status(401).json({ error: 'Usuário não autenticado' })
+    }
+    res.status(200).json({
+        message: 'Token válido',
+        user: {
+            id: req.user.id,
+            name: req.user.name,
+            email: req.user.email
+        }
+    })
 }
