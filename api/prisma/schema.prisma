@@ -33,6 +33,8 @@ model User {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   posts          Post[]
+  favorites      Favorited[]
+  likes          Liked[]
 }
 
 model Post {
@@ -40,7 +42,6 @@ model Post {
   slug            String   @unique
   titulo          String
   conteudo        String
-  tags            String?
   imagens         String?
   legendas        String?
   autorId         String   @default(uuid())
@@ -48,4 +49,37 @@ model Post {
   dataPostagem    DateTime @default(now())
   dataAtualizacao DateTime @default(now())
   dataDelecao     DateTime?
+  favorited       Favorited[]
+  tags            Tagged[]
+  liked           Liked[]
+}
+
+model Favorited {
+  id              String   @id @default(uuid())
+  userId          String   @default(uuid())
+  user            User     @relation(fields: [userId], references: [id])
+  postSlug        String
+  post            Post     @relation(fields: [postSlug], references: [slug])
+}
+
+model Liked {
+  id              String   @id @default(uuid())
+  userId          String   @default(uuid())
+  user            User     @relation(fields: [userId], references: [id])
+  postSlug        String
+  post            Post     @relation(fields: [postSlug], references: [slug])
+}
+
+model Tag {
+  id              String   @id @default(uuid())
+  nome            String   @unique
+  usos            Tagged[]
+}
+
+model Tagged {
+  id              String   @id @default(uuid())
+  tagNome         String
+  tag             Tag      @relation(fields: [tagNome], references: [nome])
+  postSlug        String
+  post            Post     @relation(fields: [postSlug], references: [slug])
 }

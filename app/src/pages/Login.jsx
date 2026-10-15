@@ -1,7 +1,42 @@
-import { NavLink } from "react-router-dom"
+import { NavLink, useNavigate } from "react-router-dom"
 import loginImg from "../assets/loginImg.svg"
+import { useState } from 'react'
 
 export default function Login() {
+
+    const [email, setEmail] = useState('');
+    const [senha, setSenha] = useState('');
+    const navigate = useNavigate();
+
+    const handleLogin = async (e) => {
+        e.preventDefault()
+
+        const API_URL = import.meta.env.VITE_PUBLIC_API_URL || 'http://localhost:4000'
+        
+        try {
+            const resposta = await fetch(`${API_URL}/auth/signin`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: email,
+                    password: senha
+                })
+            })
+
+            const dados = await resposta.json()
+
+            if (!resposta.ok) {
+                throw new Error(dados.message || 'E-mail ou senha incorretos.')
+            }
+            localStorage.setItem('token_login', dados.token)
+            navigate('/')
+
+        } catch (erro) {
+            console.error('Erro no login:', erro);
+            alert(erro.message || 'Não foi possível conectar ao servidor.');
+        }
+    }
+
     return (
         <>
             <section className="grid grid-cols-[70%_30%] h-screen w-screen overflow-hidden">
@@ -19,6 +54,7 @@ export default function Login() {
                     <form
                         action=""
                         className="flex flex-col gap-2 align-center justify-center w-2/4"
+                        onSubmit={handleLogin}
                     >
                         <label
                             htmlFor="email"
@@ -30,7 +66,10 @@ export default function Login() {
                         <input
                             type="text"
                             placeholder=""
-                            className="border border-white rounded p-2 font-bold text-white"
+                            value={email}
+                            className="border border-white rounded p-2 font-bold text-black"
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
                         />
 
                         <label
@@ -43,7 +82,10 @@ export default function Login() {
                         <input
                             type="password"
                             placeholder=""
-                            className="border border-white rounded p-2 font-bold text-white"
+                            value={senha}
+                            className="border border-white rounded p-2 font-bold text-black"
+                            onChange={(e) => setSenha(e.target.value)}
+                            required
                         />
 
                         <button

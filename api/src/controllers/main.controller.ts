@@ -31,10 +31,10 @@ export const getPostWithTags: RequestHandler = async (req, res) => {
         return res.status(400).json({ error: 'Tags are required' })
     }
     const tagsArray = tags.split(',').map(tag => tag.trim())
-    const posts = await prisma.post.findMany({
+    const posts = await prisma.tagged.findMany({
         where: {
-            tags: {
-                hasSome: tagsArray
+            tagNome: {
+                in: tagsArray
             }
         }
     })

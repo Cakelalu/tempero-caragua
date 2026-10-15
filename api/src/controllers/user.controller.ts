@@ -1,10 +1,11 @@
+import { forEach } from './../../node_modules/effect/src/Array';
 import { RequestHandler, Response } from "express"
-import { z } from "zod"
+import { includes, z } from "zod"
 import { createUser, verifyUser, getUserById } from "../services/user.service.ts"
 import { createToken } from "../services/auth.service.ts"
 import { ExtendedRequest } from "../types/extended-request.ts"
 import { verifyToken } from "./auth.controller.ts"
-import { createPost, createPostSlug, handleCover } from "../services/post.service.ts"
+import { createPost, createPostSlug, handleCover, createTagged } from "../services/post.service.ts"
 import { prisma } from '../libs/prisma.ts'
 
 export const addPost: RequestHandler = async (req: ExtendedRequest, res: Response) => {
@@ -40,13 +41,22 @@ export const addPost: RequestHandler = async (req: ExtendedRequest, res: Respons
         autorId: req.user.id,
         slug,
         titulo: data.data.titulo,
-        tags: data.data.tags,
         conteudo: data.data.conteudo,
         imagens: data.data.imagens,
         legendas: data.data.legendas,
         // cover: coverName
     })
 
+    const tags = data.data.tags
+
+    if (tags != null) {
+        const tagsInUse = tags.split(',').map(tag => tag.trim())
+        console.log(tagsInUse)
+        tagsInUse.forEach(async (tag: string) => {await createTagged({
+            postSlug: slug,
+            tagNome: tag
+        })})
+    }
     // const author = await getUserById(newPost.autorId)
 
     res.status(201).json({
@@ -55,7 +65,6 @@ export const addPost: RequestHandler = async (req: ExtendedRequest, res: Respons
             titulo: newPost.titulo,
             dataPostagem: newPost.dataPostagem,
             // cover: coverToUrl(newPost.cover),
-            tags: newPost.tags,
             imagens: newPost.imagens,
             legendas: newPost.legendas,
             // autorName: author?.nome || 'Unknown'
@@ -68,7 +77,6 @@ export const editPost: RequestHandler = async (req, res) => {
 
     const schema = z.object({
         titulo: z.string(),
-        tags: z.string(),
         conteudo: z.string()
     })
     const data = schema.safeParse(req.body)
@@ -106,17 +114,13 @@ export const getFavoritePosts: RequestHandler = async (req, res) => {
     if (!req.user) {
         return res.status(401).json({ error: 'Unauthorized' })
     }
-    const user = await verifyToken(req.user.token)
+    const user = req.user
     if (!user) {
         return res.status(404).json({ error: 'User not found' })
     }
-    const favoritePosts = await prisma.post.findMany({
+    const favoritePosts = await prisma.favorited.findMany({
         where: {
-            favoritedBy: {
-                some: {
-                    userId: user.id
-                }
-            }
+            userId: user.id
         }
     })
     res.status(200).json({ favoritePosts })
@@ -127,16 +131,14 @@ export const addFavoritePost: RequestHandler = async (req, res) => {
         return res.status(401).json({ error: 'Unauthorized' })
     }
     const { postSlug } = req.body
-    const user = await verifyToken(req.user.token)
+    const user = req.user
     if (!user) {
         return res.status(404).json({ error: 'User not found' })
     }
     const updatedFavorites = await prisma.favorited.create({
         data: {
             userId: user.id,
-            favoritedPosts: {
-                connect: { postSlug: postSlug }
-            }
+            postSlug: postSlug
         }
     })
     res.status(200).json({ favorited: updatedFavorites })

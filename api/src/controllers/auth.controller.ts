@@ -22,7 +22,7 @@ export const signIn: RequestHandler = async (req, res) => {
         message: 'Login bem-sucedido',
         user: {
             id: user.id,
-            name: user.name,
+            name: user.nome,
             email: user.email
         },
         token
@@ -70,25 +70,25 @@ export const validate: RequestHandler = async (
         message: 'Token válido',
         user: {
             id: req.user.id,
-            name: req.user.name,
+            nome: req.user.nome,
             email: req.user.email
         },
         token
     })
 }
 
-export const verifyToken: RequestHandler = async (
+export const verifyToken: RequestHandler = (
     req: ExtendedRequest,
     res: Response
 ) => {
     if (!req.user) {
         return res.status(401).json({ error: 'Usuário não autenticado' })
     }
-    res.status(200).json({
+    return res.status(200).json({
         message: 'Token válido',
         user: {
             id: req.user.id,
-            name: req.user.name,
+            nome: req.user.nome,
             email: req.user.email
         }
     })

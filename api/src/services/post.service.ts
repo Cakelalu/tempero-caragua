@@ -55,13 +55,21 @@ type CreatePostProps = {
     autorId: string,
     slug: string,
     titulo: string,
-    tags?: string,
     conteudo: string,
     imagens?: string[],
     legendas?: string[],
     // cover: string
 }
 
+type CreateTaggedProps = {
+    tagNome: string,
+    postSlug: string
+}
+
 export const createPost = async (data: CreatePostProps) => {
     return await prisma.post.create({ data })
+}
+
+export const createTagged = async (data: CreateTaggedProps) => {
+    return await prisma.tagged.create({ data })
 }

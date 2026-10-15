@@ -6,8 +6,9 @@ import { auth } from '../middlewares/auth.ts'
 
 export const userRoutes = Router()
 
-userRoutes.get('/favoritos', userController.getFavoritePosts)
-userRoutes.get('/perfil', userController.getAccountProfile)
+userRoutes.get('/favoritos', auth, userController.getFavoritePosts)
+userRoutes.post('/favoritos', auth, userController.addFavoritePost)
+userRoutes.get('/perfil', auth, userController.getAccountProfile)
 userRoutes.delete('/post/:slug', auth, userController.deletePost)
 userRoutes.post('/posts', auth, userController.addPost)
-userRoutes.post('/post/:slug', userController.editPost)
+userRoutes.post('/post/:slug', auth, userController.editPost)
