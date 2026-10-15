@@ -1,9 +1,11 @@
-import { RequestHandler, Response } from "express"
-import { ExtendedRequest } from '../types/extended-request'
+import type { RequestHandler, Response } from "express"
 import z from 'zod'
-import { getUserById } from '../services/user.service'
-import { handleCover, createPostSlug, createPost } from "../services/post.service"
-import { coverToUrl } from "../utils/cover-to-url"
+import { getUserById } from '../services/user.service.ts'
+import { handleCover, createPostSlug, createPost } from "../services/post.service.ts"
+import { coverToUrl } from "../utils/cover-to-url.ts"
+import type { ExtendedRequest } from '../types/extended-request.ts';
+import { PrismaClient } from "@prisma/client"
+const prisma = new PrismaClient()
 
 export const getPost: RequestHandler = async (req, res) => {
     if (!req.user) return
@@ -40,8 +42,6 @@ export const getPostWithTags: RequestHandler = async (req, res) => {
 }
 
 export const getAllPosts: RequestHandler = async (req, res) => {
-    if (!req.user) return
-
     const posts = await prisma.post.findMany()
     res.status(200).json({ posts })
 }

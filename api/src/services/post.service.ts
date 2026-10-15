@@ -1,15 +1,15 @@
 import { v4 } from 'uuid'
 import fs from 'fs/promises'
 import slug from 'slug'
-import { prisma } from '../libs/prisma'
+import { prisma } from '../libs/prisma.ts'
 
 export const getPostBySlug = async (slug: string) => {
     return await prisma.post.findUnique({
-        where: {slug},
+        where: { slug },
         include: {
-            author: {
+            autor: {
                 select: {
-                    name: true
+                    nome: true
                 }
             }
         }
@@ -52,14 +52,14 @@ export const createPostSlug = async (title: string) => {
 }
 
 type CreatePostProps = {
-    authorId: string,
+    autorId: string,
     slug: string,
-    title: string,
-    tags: string,
-    body: string,
-    images?: string[],
-    legends?: string[],
-    cover: string
+    titulo: string,
+    tags?: string,
+    conteudo: string,
+    imagens?: string[],
+    legendas?: string[],
+    // cover: string
 }
 
 export const createPost = async (data: CreatePostProps) => {

@@ -1,8 +1,8 @@
 import { RequestHandler, Response } from "express"
 import { z } from "zod"
-import { createUser, verifyUser } from "../services/user.service"
-import { createToken } from "../services/auth.service"
-import { ExtendedRequest } from "../types/extended-request"
+import { createUser, verifyUser } from "../services/user.service.ts"
+import { createToken } from "../services/auth.service.ts"
+import { ExtendedRequest } from "../types/extended-request.ts"
 
 export const signIn: RequestHandler = async (req, res) => {
     const schema = z.object({
@@ -32,6 +32,7 @@ export const signIn: RequestHandler = async (req, res) => {
 export const signUp: RequestHandler = async (req, res) => {
     const schema = z.object({
         name: z.string(),
+        username: z.string(),
         email: z.string().email(),
         password: z.string()
     })
@@ -49,7 +50,8 @@ export const signUp: RequestHandler = async (req, res) => {
         message: 'Usuário criado com sucesso',
         user: {
             id: newUser.id,
-            name: newUser.name,
+            name: newUser.nome,
+            username: newUser.nomeUsuario,
             email: newUser.email
         },
         token

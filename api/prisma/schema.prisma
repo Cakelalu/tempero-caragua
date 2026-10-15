@@ -5,12 +5,11 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -20,17 +19,33 @@ enum Role {
 }
 
 model User {
-  id String @id @default(uuid())
-  nome String
-  nomeUsuario String
-  dataNascimento DateTime
-  email String   @unique
-  numeroTel String
-  imagemPerfil String
-  imagemBanner String
-  biografia String
-  senha String
-  tipo Role @default(USER) // Define 'USER' como valor padrão
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String   @id @default(uuid())
+  nome           String
+  nomeUsuario    String
+  dataNascimento DateTime?
+  email          String   @unique
+  numeroTel      String?
+  imagemPerfil   String?
+  imagemBanner   String?
+  biografia      String?
+  senha          String
+  tipo           Role     @default(USER) // Define 'USER' como valor padrão
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  posts          Post[]
+}
+
+model Post {
+  id              String   @id @default(uuid())
+  slug            String   @unique
+  titulo          String
+  conteudo        String
+  tags            String?
+  imagens         String?
+  legendas        String?
+  autorId         String   @default(uuid())
+  autor           User     @relation(fields: [autorId], references: [id])
+  dataPostagem    DateTime @default(now())
+  dataAtualizacao DateTime @default(now())
+  dataDelecao     DateTime?
 }

@@ -1,8 +1,8 @@
-import { User } from '../generated/prisma/client'
+import { User } from '@prisma/client'
 import { createJWT, verifyJWT } from '../libs/jwt.ts'
-import { TokenPayload } from '../types/token-payload'
-import { getUserById } from './user.service'
-import { Request } from 'express'
+import type { TokenPayload } from '../types/token-payload.ts'
+import { getUserById } from './user.service.ts'
+import type { Request } from 'express'
 
 export const createToken = (user: User) => {
     return createJWT({ id: user.id })

@@ -1,14 +1,17 @@
-import { prisma } from '../libs/prisma'
 import bcrypt from 'bcryptjs'
+import { prisma } from '../libs/prisma.ts'
 
 type CreateUserProps = {
     name: string,
+    username: string,
     email: string,
     password: string
 }
 
-export const createUser = async ({ name, email, password }: CreateUserProps) => {
+export const createUser = async ({ name, username, email, password }: CreateUserProps) => {
     email = email.toLowerCase()
+    const nome = name
+    const nomeUsuario = username
 
     const user = await prisma.user.findFirst({
         where: { email }
@@ -20,9 +23,10 @@ export const createUser = async ({ name, email, password }: CreateUserProps) => 
 
     return await prisma.user.create({
         data: {
-            name,
-            email,
-            password: hashedPassword
+            nome: nome,
+            nomeUsuario: nomeUsuario,
+            email: email,
+            senha: hashedPassword
         }
     })
 }
@@ -39,20 +43,20 @@ export const verifyUser = async ({ email, password }: VerifyUserProps) => {
         where: { email }
     })
     if (!user) return false
-    const isMatch = await bcrypt.compareSync(password, user.password)
+    const isMatch = await bcrypt.compareSync(password, user.senha)
     if (!isMatch) return false
 
     return user
 }
 
-export const getUserById = async (id: number) => {
+export const getUserById = async (id: string) => {
     return await prisma.user.findUnique({
         where: { id },
         select: {
             id: true,
-            name: true,
+            nome: true,
             email: true,
-            status: true,
+            tipo: true,
         }
     })
 }
