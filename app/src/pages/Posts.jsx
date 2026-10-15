@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import FeaturedPosts from "../components/FeaturedPosts";
 
-const API_BASE_URL = (import.meta.env.VITE_API_URL || "http://localhost:4000").replace(/\/$/, "");
+const API_BASE_URL = (import.meta.env.VITE_PUBLIC_API_URL || "http://localhost:4500").replace(/\/$/, "");
 
 export default function Posts() {
     const [posts, setPosts] = useState([]);
@@ -13,7 +13,8 @@ export default function Posts() {
 
         async function loadPosts() {
             try {
-                const response = await fetch(`${API_BASE_URL}/api/posts`, {
+                const response = await fetch(`${API_BASE_URL}/posts`, {
+                    method: 'GET',
                     signal: controller.signal,
                 });
 
@@ -37,6 +38,7 @@ export default function Posts() {
                 }
             }
         }
+        console.log("Posts:", posts);
 
         loadPosts();
         return () => controller.abort();

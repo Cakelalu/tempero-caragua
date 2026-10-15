@@ -6,10 +6,3 @@ import { handleCover, createPostSlug, createPost } from "../services/post.servic
 import { coverToUrl } from "../utils/cover-to-url.ts"
 
 const prisma = require('../utils/prisma-client').prisma
-
-// const user = z.object({
-//     id: z.string(),
-//     name: z.string(),
-//     email: z.string().email()
-// })
-

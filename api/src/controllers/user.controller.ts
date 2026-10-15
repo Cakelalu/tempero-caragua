@@ -49,7 +49,7 @@ export const addPost: RequestHandler = async (req: ExtendedRequest, res: Respons
 
     const tags = data.data.tags
 
-    if (tags != null) {
+    if (tags != null && tags != [] && tags != '') {
         const tagsInUse = tags.split(',').map(tag => tag.trim())
         console.log(tagsInUse)
         tagsInUse.forEach(async (tag: string) => {await createTagged({
@@ -77,17 +77,51 @@ export const editPost: RequestHandler = async (req, res) => {
 
     const schema = z.object({
         titulo: z.string(),
+        tags: z.string().optional(),
+        imagens: z.array(z.string()).optional(),
+        legendas: z.array(z.string()).optional(),
         conteudo: z.string()
     })
-    const data = schema.safeParse(req.body)
-    if (!data.success) {
-        return res.status(400).json({ error: data.error.flatten().fieldErrors })
+
+    const tags = data.data.tags
+    if (tags != null && tags != [] && tags != '') {
+        const tagsInUse = tags.split(',').map(tag => tag.trim())
+        console.log(tagsInUse)
+        tagsInUse.forEach(async (tag: string) => {await createTagged({
+            postSlug: slug,
+            tagNome: tag
+        })})
     }
+
+    const { slug } = req.params
+    const post = await prisma.post.findUnique({ where: { slug } })
+    // console.log('Post encontrado:', post)
+
+    post.titulo = req.body.titulo
+    post.conteudo = req.body.conteudo
+    post.imagens = req.body.imagens
+    post.legendas = req.body.legendas
+
+    const tagged = await prisma.tagged.findMany({ where: { postSlug: slug } })
+    // console.log('Tagged encontrados:', tagged)
+
+    await prisma.tagged.deleteMany({ where: { postSlug: slug } })
+    tagsInUse.forEach(async (tag: string) => {await createTagged({
+        postSlug: slug,
+        tagNome: tag
+    })})
+
+    await prisma.post.update({
+        where: { slug },
+        data: post
+    })
+
+    res.status(200).json({ message: 'Atualização de postagem bem-sucedida' })
 }
 
 export const deletePost: RequestHandler = async (req, res) => {
-    console.log('Params:', req.params)
-    console.log('Slug:', req.params.slug)
+    // console.log('Params:', req.params)
+    // console.log('Slug:', req.params.slug)
     if (!req.user) return
 
     const { slug } = req.params
@@ -95,28 +129,45 @@ export const deletePost: RequestHandler = async (req, res) => {
         where: { slug }
     })
 
-    console.log('Post encontrado:', postTeste)
+    // console.log('Post encontrado:', postTeste)
     if (!slug) {
-        return res.status(400).json({ error: 'A slug is required' })
+        return res.status(400).json({ error: 'Um slug é requerido' })
     }
     const post = await prisma.post.findUnique({ where: { slug } })
     if (!post) {
-        return res.status(404).json({ error: 'Post not found' })
+        return res.status(404).json({ error: 'Postagem não encontrada' })
     }
     if (post.autorId !== req.user.id) {
-        return res.status(403).json({ error: 'You are not authorized to delete this post' })
+        return res.status(403).json({ error: 'Você não está autorizado a deletar essa postagem' })
     }
     await prisma.post.delete({ where: { slug } })
-    res.status(200).json({ message: 'Post deleted successfully' })
+
+    const postLikes = await prisma.liked.findMany({
+        where: {
+            postSlug: slug
+        }
+    })
+    // console.log('Curtidas encontradas:', postLikes.length)
+    await prisma.liked.delete(postLikes)
+
+    const postTags = await prisma.tagged.findMany({
+        where: {
+            postSlug: slug
+        }
+    })
+    // console.log('Tags encontradas:', postTags.length)
+    await prisma.tagged.delete(postTags)
+
+    res.status(200).json({ message: 'Deleção de postagem bem-sucedida' })
 }
 
 export const getFavoritePosts: RequestHandler = async (req, res) => {
     if (!req.user) {
-        return res.status(401).json({ error: 'Unauthorized' })
+        return res.status(401).json({ error: 'Não autorizado' })
     }
     const user = req.user
     if (!user) {
-        return res.status(404).json({ error: 'User not found' })
+        return res.status(404).json({ error: 'Usuário não encontrado' })
     }
     const favoritePosts = await prisma.favorited.findMany({
         where: {
@@ -128,12 +179,15 @@ export const getFavoritePosts: RequestHandler = async (req, res) => {
 
 export const addFavoritePost: RequestHandler = async (req, res) => {
     if (!req.user) {
-        return res.status(401).json({ error: 'Unauthorized' })
+        return res.status(401).json({ error: 'Não autorizado' })
     }
-    const { postSlug } = req.body
+    if (!req.params) {
+        return res.status(400).json({ error: 'Requisição inválida' })
+    }
+    const { postSlug } = req.params
     const user = req.user
     if (!user) {
-        return res.status(404).json({ error: 'User not found' })
+        return res.status(404).json({ error: 'Usuário não encontrado' })
     }
     const updatedFavorites = await prisma.favorited.create({
         data: {
@@ -146,12 +200,12 @@ export const addFavoritePost: RequestHandler = async (req, res) => {
 
 export const likePost: RequestHandler = async (req, res) => {
     if (!req.user) {
-        return res.status(401).json({ error: 'Unauthorized' })
+        return res.status(401).json({ error: 'Não autorizado' })
     }
     const { postSlug } = req.body
     const user = await verifyToken(req.user.token)
     if (!user) {
-        return res.status(404).json({ error: 'User not found' })
+        return res.status(404).json({ error: 'Usuário não encontrado' })
     }
     const updatedLikes = await prisma.liked.create({
         data: {
@@ -166,19 +220,17 @@ export const likePost: RequestHandler = async (req, res) => {
 
 export const followUser: RequestHandler = async (req, res) => {
     if (!req.user) {
-        return res.status(401).json({ error: 'Unauthorized' })
+        return res.status(401).json({ error: 'Não encontrado' })
     }
     const { userFlwdId } = req.body
     const user = await verifyToken(req.user.token)
     if (!user) {
-        return res.status(404).json({ error: 'User not found' })
+        return res.status(404).json({ error: 'Usuário não encontrado' })
     }
     const updatedFollowings = await prisma.followed.create({
         data: {
-            userId: user.id,
-            followedUser: {
-                connect: { userFollowedId: userFlwdId }
-            }
+            seguidorId: user.id,
+            perfilId: perfilId
         }
     })
     res.status(200).json({ followed: updatedFollowings })
@@ -186,11 +238,11 @@ export const followUser: RequestHandler = async (req, res) => {
 
 export const getAccountProfile: RequestHandler = async (req, res) => {
     if (!req.user) {
-        return res.status(401).json({ error: 'Unauthorized' })
+        return res.status(401).json({ error: 'Não autorizado' })
     }
     const user = await verifyToken(req.user.token)
     if (!user) {
-        return res.status(404).json({ error: 'User not found' })
+        return res.status(404).json({ error: 'Usuário não encontrado' })
     }
     res.status(200).json({ user })
 }

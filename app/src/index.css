@@ -22,7 +22,6 @@
     --color-pallete-dark-orange: #8C4D2E;
     --color-pallete-green: #686230;
     --color-pallete-pink: #DFAC8D;
-    --color-pallete-light-yellow: #efdeab;
     --color-pallete-light-green: #A2A183;
     --color-pallete-dark-green: #494525;
     --color-pallete-gray: #D6DCD8;
@@ -30,6 +29,17 @@
     --color-pallete-blue-green: #557570;
     --color-pallete-background: #f1f1f1;
     --color-pallete-dark-green-2: #272514;
+    --color-pallete-muted-yellow: #a2a183
+
+    /* Cores textos */
+    --background-image-yellow-gradient: linear-gradient(to right, #efdeab, #686230);
+    --color-pallete-light-yellow: #efdeab;
+    --background-image-brown-gradient: linear-gradient(to right, #686230, #efdeab);
+
+
+    /* Cores modo dark */
+    --color-pallete-dark-gray: #191a18;
+
 }
 
 @layer base {
@@ -42,5 +52,15 @@
 
     h1, h2, h3, h4, h5, h6 {
         font-family: var(--font-mono);
+
+        background-image: var(--background-image-brown-gradient);
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+        -webkit-text-fill-color: transparent;
     }
 }
+
+    .dark p{
+        color: var(--color-primary);
+    }

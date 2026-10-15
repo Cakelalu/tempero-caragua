@@ -12,12 +12,12 @@ export const getPost: RequestHandler = async (req, res) => {
 
     const { slug } = req.params
     if (!slug) {
-        return res.status(400).json({ error: 'A slug is required' })
+        return res.status(400).json({ error: 'Um slug é requerido' })
     }
 
     const post = await prisma.post.findUnique({ where: { slug } })
     if (!post) {
-        return res.status(404).json({ error: 'Post not found' })
+        return res.status(404).json({ error: 'Postagem não encontrada' })
     }
 
     res.status(200).json({ post })
@@ -28,7 +28,7 @@ export const getPostWithTags: RequestHandler = async (req, res) => {
 
     const { tags } = req.query
     if (!tags || typeof tags !== 'string') {
-        return res.status(400).json({ error: 'Tags are required' })
+        return res.status(400).json({ error: 'Tags são requeridas' })
     }
     const tagsArray = tags.split(',').map(tag => tag.trim())
     const posts = await prisma.tagged.findMany({
@@ -41,7 +41,27 @@ export const getPostWithTags: RequestHandler = async (req, res) => {
     res.status(200).json({ posts })
 }
 
-export const getAllPosts: RequestHandler = async (req, res) => {
-    const posts = await prisma.post.findMany()
-    res.status(200).json({ posts })
+export const getPosts: RequestHandler = async (req, res) => {
+    try {
+        const { query } = req.query;
+        if (query) {
+            const tags = query.split(',').map(tag => tag.trim());
+            const taggedPosts = await prisma.tagged.findMany({
+                where: {
+                    tagNome: {
+                        in: tags
+                    }
+                },
+                include: {
+                    post: true
+                }
+            });
+            const posts = taggedPosts.map(tagged => tagged.post);
+            return res.status(200).json(posts);
+        }
+        const allPosts = await prisma.post.findMany();
+        return res.status(200).json(allPosts);
+    } catch (error) {
+        return res.status(500).json({ error: 'Erro ao buscar postagens' });
+    }
 }
