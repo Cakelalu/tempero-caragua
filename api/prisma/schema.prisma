@@ -1,0 +1,103 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model favorited {
+  id       String @id
+  userId   String
+  postSlug String
+  post     post   @relation(fields: [postSlug], references: [slug], map: "Favorited_postSlug_fkey")
+  user     user   @relation(fields: [userId], references: [id], map: "Favorited_userId_fkey")
+
+  @@unique([userId, postSlug], map: "Favorited_userId_postSlug_key")
+  @@index([postSlug], map: "Favorited_postSlug_fkey")
+}
+
+model followed {
+  id                             String @id
+  perfilId                       String
+  seguidorId                     String
+  user_followed_perfilIdTouser   user   @relation("followed_perfilIdTouser", fields: [perfilId], references: [id], map: "Followed_perfilId_fkey")
+  user_followed_seguidorIdTouser user   @relation("followed_seguidorIdTouser", fields: [seguidorId], references: [id], map: "Followed_seguidorId_fkey")
+
+  @@unique([perfilId, seguidorId], map: "Followed_perfilId_seguidorId_key")
+  @@index([seguidorId], map: "Followed_seguidorId_fkey")
+}
+
+model liked {
+  id       String @id
+  userId   String
+  postSlug String
+  post     post   @relation(fields: [postSlug], references: [slug], map: "Liked_postSlug_fkey")
+  user     user   @relation(fields: [userId], references: [id], map: "Liked_userId_fkey")
+
+  @@unique([userId, postSlug], map: "Liked_userId_postSlug_key")
+  @@index([postSlug], map: "Liked_postSlug_fkey")
+}
+
+model post {
+  id              String      @id
+  slug            String      @unique(map: "Post_slug_key")
+  titulo          String
+  conteudo        String
+  imagens         String?
+  legendas        String?
+  autorId         String
+  dataPostagem    DateTime    @default(now())
+  dataAtualizacao DateTime    @default(now())
+  dataDelecao     DateTime?
+  favorited       favorited[]
+  liked           liked[]
+  user            user        @relation(fields: [autorId], references: [id], map: "Post_autorId_fkey")
+  tagged          tagged[]
+
+  @@index([autorId], map: "Post_autorId_fkey")
+}
+
+model tag {
+  id     String   @id
+  nome   String   @unique(map: "Tag_nome_key")
+  tagged tagged[]
+}
+
+model tagged {
+  id       String @id
+  tagNome  String
+  postSlug String
+  post     post   @relation(fields: [postSlug], references: [slug], map: "Tagged_postSlug_fkey")
+  tag      tag    @relation(fields: [tagNome], references: [nome], map: "Tagged_tagNome_fkey")
+
+  @@unique([tagNome, postSlug], map: "Tagged_tagNome_postSlug_key")
+  @@index([postSlug], map: "Tagged_postSlug_fkey")
+}
+
+model user {
+  id                                 String      @id
+  nome                               String
+  nomeUsuario                        String
+  dataNascimento                     DateTime?
+  email                              String      @unique(map: "User_email_key")
+  numeroTel                          String?
+  imagemPerfil                       String?
+  imagemBanner                       String?
+  biografia                          String?
+  senha                              String
+  tipo                               user_tipo   @default(USER)
+  createdAt                          DateTime    @default(now())
+  updatedAt                          DateTime
+  favorited                          favorited[]
+  followed_followed_perfilIdTouser   followed[]  @relation("followed_perfilIdTouser")
+  followed_followed_seguidorIdTouser followed[]  @relation("followed_seguidorIdTouser")
+  liked                              liked[]
+  post                               post[]
+}
+
+enum user_tipo {
+  USER
+  MODERATOR
+}

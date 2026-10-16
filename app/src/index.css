@@ -1,0 +1,59 @@
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+@import 'tailwindcss';
+@import 'flowbite-react/plugin/tailwindcss';
+@source '../.flowbite-react/class-list.json';
+
+/* 1. Importa as configurações do plugin do Flowbite */
+@plugin "flowbite/plugin";
+
+/* 2. Diz ao Tailwind v4 onde ler as classes do Flowbite React para compilar */
+@source "../node_modules/flowbite-react/dist/**/*.js";
+
+/* 3. Ativa explicitamente a variante de classe para o Modo Escuro no v4 */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    --font-sans: "Chakra Petch", sans-serif;
+    --font-mono: "JetBrains Mono", monospace;
+
+    --color-primary: #ffffff;
+    --color-pallete-light-orange: #efdeab;
+    --color-pallete-orange: #C08332;
+    --color-pallete-dark-orange: #8C4D2E;
+    --color-pallete-green: #686230;
+    --color-pallete-pink: #DFAC8D;
+    --color-pallete-light-yellow: #efdeab;
+    --color-pallete-light-green: #A2A183;
+    --color-pallete-dark-green: #494525;
+    --color-pallete-gray: #D6DCD8;
+    --color-secondary: #000000;
+    --color-pallete-blue-green: #557570;
+    --color-pallete-background: #f1f1f1;
+    --color-pallete-dark-green-2: #272514;
+    --color-pallete-muted-yellow: #a2a183
+
+    /* Cores textos */
+    --background-image-yellow-gradient: linear-gradient(to right, #efdeab, #686230);
+    --color-pallete-light-yellow: #efdeab;
+    --background-image-brown-gradient: linear-gradient(to right, #686230, #efdeab);
+
+
+    /* Cores modo dark */
+    --color-pallete-dark-gray: #191a18;
+
+}
+
+@layer base {
+    h1, h2, h3, h4, h5, h6 {
+        font-family: var(--font-mono);
+
+        background-image: var(--background-image-brown-gradient);
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+        -webkit-text-fill-color: transparent;
+    }
+}
+    .dark p{
+        color: var(--color-primary);
+    }
