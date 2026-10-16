@@ -1,8 +1,18 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import { CgProfile } from "react-icons/cg";
 
 export default function Menu() {
+    const navigate = useNavigate();
+
+    function handleLogout() {
+        localStorage.removeItem("token_login");
+        localStorage.removeItem("user");
+        setIsOpen(false);
+        window.dispatchEvent(new Event("auth-change"));
+        navigate("/");
+    }
+
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const menuRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
@@ -28,7 +38,13 @@ export default function Menu() {
                 <div className="absolute right-0 top-full z-50 mt-2 min-w-44 rounded-sm bg-pallete-background p-2 text-pallete-dark-green shadow-md">
                     <NavLink className="block px-3 py-2 hover:bg-pallete-light-green" to='/u//1'>Minha conta</NavLink>
                     <NavLink className="block px-3 py-2 hover:bg-pallete-light-green" to='/editar-perfil'>Editar perfil</NavLink>
-                    <button className="block w-full px-3 py-2 text-left hover:bg-pallete-light-green">Sair</button>
+                    <button
+                        type="button"
+                        onClick={handleLogout}
+                        className="block w-full px-3 py-2 text-left hover:bg-pallete-light-green"
+                    >
+                        Sair
+                    </button>
                 </div>
             )}
 

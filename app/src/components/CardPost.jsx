@@ -39,7 +39,7 @@ export default function CardPost({
     return (
         <a
             href={href}
-            className="block h-full w-full overflow-hidden rounded-2xl bg-white shadow-md
+            className="theme-surface block h-full w-full overflow-hidden rounded-2xl shadow-md
                  transition-transform duration-150 ease-out
                  hover:-translate-y-0.5 hover:shadow-lg"
         >
@@ -60,17 +60,17 @@ export default function CardPost({
                 <img
                     src={avatarImage || '/temperos.svg'}
                     alt={`Foto de ${author}`}
-                    className="w-14 h-14 rounded-full object-cover border-[3px] border-white bg-gray-200"
+                    className="theme-border w-14 h-14 rounded-full object-cover border-[3px] bg-gray-200"
                 />
             </div>
 
             {/* Corpo do card */}
             <div className="px-3.5 pb-4 pt-1 text-center">
-                <p className="mt-1 mb-2 text-xs text-gray-400">{formattedDate}</p>
-                <h3 className="mb-1.5 text-[12pt] font-bold text-black underline leading-tight">
+                <p className="theme-text-muted mt-1 mb-2 text-xs">{formattedDate}</p>
+                <h3 className="theme-heading mb-1.5 text-[12pt] font-bold underline leading-tight">
                     {title}
                 </h3>
-                <p className="text-[0.8rem] text-gray-500">por {author}</p>
+                <p className="theme-text-muted text-[0.8rem]">por {author}</p>
             </div>
         </a>
     );

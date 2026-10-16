@@ -29,7 +29,7 @@
     --color-pallete-blue-green: #557570;
     --color-pallete-background: #f1f1f1;
     --color-pallete-dark-green-2: #272514;
-    --color-pallete-muted-yellow: #a2a183
+    --color-pallete-muted-yellow: #a2a183;
 
     /* Cores textos */
     --background-image-yellow-gradient: linear-gradient(to right, #efdeab, #686230);
@@ -42,18 +42,40 @@
 
 }
 
+:root {
+    color-scheme: light;
+    --app-background: #f1f1f1;
+    --app-text: #272514;
+    --app-text-muted: #686230;
+    --app-surface: #ffffff;
+    --app-border: #d6dcd8;
+    --app-heading-gradient: linear-gradient(to right, #686230, #efdeab);
+    --app-error: #b42318;
+}
+
+.dark {
+    color-scheme: dark;
+    --app-background: #191a18;
+    --app-text: #eeece0;
+    --app-text-muted: #a2a183;
+    --app-surface: #272514;
+    --app-border: #494525;
+    --app-heading-gradient: linear-gradient(to right, #efdeab, #a2a183);
+    --app-error: #fca5a5;
+}
+
 @layer base {
     body {
         margin: 0;
         font-family: var(--font-sans);
-        background-color: var(--color-pallete-background);
-        color: var(--color-primary)
+        background-color: var(--app-background);
+        color: var(--app-text);
     }
 
     h1, h2, h3, h4, h5, h6 {
         font-family: var(--font-mono);
 
-        background-image: var(--background-image-brown-gradient);
+        background-image: var(--app-heading-gradient);
         background-clip: text;
         -webkit-background-clip: text;
         color: transparent;
@@ -61,6 +83,30 @@
     }
 }
 
-    .dark p{
-        color: var(--color-primary);
-    }
+.theme-heading {
+    background-image: var(--app-heading-gradient);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+}
+
+.theme-text {
+    color: var(--app-text);
+}
+
+.theme-text-muted {
+    color: var(--app-text-muted);
+}
+
+.theme-surface {
+    background-color: var(--app-surface);
+}
+
+.theme-border {
+    border-color: var(--app-border);
+}
+
+.theme-error {
+    color: var(--app-error);
+}

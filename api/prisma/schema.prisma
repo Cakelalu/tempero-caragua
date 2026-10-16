@@ -35,7 +35,8 @@ model User {
   posts          Post[]
   favorites      Favorited[]
   likes          Liked[]
-  followAct      Followed[]
+  seguindo       Followed[] @relation("Seguindo")
+  seguidores     Followed[] @relation("Seguidores")
 }
 
 model Post {
@@ -61,6 +62,8 @@ model Favorited {
   user            User     @relation(fields: [userId], references: [id])
   postSlug        String
   post            Post     @relation(fields: [postSlug], references: [slug])
+
+  @@unique([userId, postSlug])
 }
 
 model Liked {
@@ -69,6 +72,8 @@ model Liked {
   user            User     @relation(fields: [userId], references: [id])
   postSlug        String
   post            Post     @relation(fields: [postSlug], references: [slug])
+
+  @@unique([userId, postSlug])
 }
 
 model Tag {
@@ -83,12 +88,16 @@ model Tagged {
   tag             Tag      @relation(fields: [tagNome], references: [nome])
   postSlug        String
   post            Post     @relation(fields: [postSlug], references: [slug])
+
+  @@unique([tagNome, postSlug])
 }
 
 model Followed {
   id              String   @id @default(uuid())
   perfilId        String
-  perfil          User     @relation(fields: [perfilId], references: [id])
+  perfil          User     @relation("Seguindo", fields: [perfilId], references: [id])
   seguidorId      String
-  seguidor        User     @relation(fields: [seguidorId], references: [id])
+  seguidor        User     @relation("Seguidores", fields: [seguidorId], references: [id])
+
+  @@unique([perfilId, seguidorId])
 }

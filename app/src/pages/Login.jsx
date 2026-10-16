@@ -11,8 +11,8 @@ export default function Login() {
     const handleLogin = async (e) => {
         e.preventDefault()
 
-        const API_URL = import.meta.env.VITE_PUBLIC_API_URL || 'http://localhost:4000'
-        
+        const API_URL = import.meta.env.VITE_PUBLIC_API_URL || 'http://localhost:4500'
+
         try {
             const resposta = await fetch(`${API_URL}/auth/signin`, {
                 method: 'POST',
@@ -26,10 +26,17 @@ export default function Login() {
             const dados = await resposta.json()
 
             if (!resposta.ok) {
-                throw new Error(dados.message || 'E-mail ou senha incorretos.')
+                throw new Error(
+                    dados.message || dados.error || "E-mail ou senha incorretos."
+                );
             }
-            localStorage.setItem('token_login', dados.token)
-            navigate('/')
+
+            localStorage.setItem("token_login", dados.token);
+            localStorage.setItem("user", JSON.stringify(dados.user));
+
+            window.dispatchEvent(new Event("auth-change"));
+
+            navigate("/");
 
         } catch (erro) {
             console.error('Erro no login:', erro);

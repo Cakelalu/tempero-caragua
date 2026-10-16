@@ -23,11 +23,11 @@ export default function Posts() {
                 }
 
                 const data = await response.json();
-                if (!Array.isArray(data.posts)) {
+                if (!Array.isArray(posts)) {
                     throw new Error("A resposta da API não contém uma lista de postagens.");
                 }
 
-                setPosts(data.posts);
+                setPosts(posts);
             } catch (loadError) {
                 if (loadError.name !== "AbortError") {
                     setError(loadError.message || "Erro ao carregar as postagens.");
@@ -47,11 +47,11 @@ export default function Posts() {
     return (
         <main className="w-full">
             {error ? (
-                <p className="px-4 py-8 text-center text-red-700" role="alert">
+                <p className="theme-error px-4 py-8 text-center" role="alert">
                     {error}
                 </p>
             ) : isLoading ? (
-                <p className="px-4 py-8 text-center text-pallete-dark-green-2" role="status">
+                <p className="theme-text px-4 py-8 text-center" role="status">
                     Carregando postagens...
                 </p>
             ) : (
