@@ -13,7 +13,7 @@ export default function ThemeSwitch() {
             aria-label="Alternar tema"
             className="
                 relative
-                h-6 w-17.5
+                h-6 w-12
                 rounded-2xl
                 bg-[#77775f]
                 transition-colors
@@ -59,7 +59,7 @@ export default function ThemeSwitch() {
                     transition-transform
                     duration-300
                     ease-in-out
-                    ${isDark ? "translate-x-11.5" : "translate-x-0"}
+                    ${isDark ? "translate-x-6" : "translate-x-0"}
                 `}
             />
         </button>

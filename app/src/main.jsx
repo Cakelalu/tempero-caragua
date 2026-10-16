@@ -18,7 +18,9 @@ import NotFound from "./pages/NotFound"
 import Post from './pages/Post.jsx'
 import Posts from './pages/Posts.jsx'
 import Register from "./pages/Register"
-import { ThemeProvider } from "flowbite-react";
+import { ThemeProvider, initThemeMode } from "flowbite-react";
+
+initThemeMode();
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

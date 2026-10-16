@@ -7,7 +7,7 @@ export default function SiteLayout() {
     return (
         <>
             <ThemeModeScript />
-            <div className="flex flex-col min-h-screen overflow-x-hidden w-full">
+            <div className="flex flex-col min-h-screen overflow-x-hidden w-full bg-primary dark:bg-pallete-dark-gray">
                 <Header />
                 <div className='w-full self-center'>
                     <Outlet />

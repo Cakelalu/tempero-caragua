@@ -6,11 +6,10 @@ export default function Menu() {
     const navigate = useNavigate();
 
     function handleLogout() {
-        localStorage.removeItem("token_login");
-        localStorage.removeItem("user");
-        setIsOpen(false);
-        window.dispatchEvent(new Event("auth-change"));
-        navigate("/");
+        localStorage.removeItem("token");
+        localStorage.clear();
+        
+        navigate("/login");
     }
 
     const [isOpen, setIsOpen] = useState<boolean>(false);

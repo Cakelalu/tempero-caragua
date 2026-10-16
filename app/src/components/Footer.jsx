@@ -1,19 +1,23 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 export default function Footer() {
+    const navigate = useNavigate()
+    function navLinkClass({ isActive }) {
+        return isActive ? "text-pallete-dark-orange font-bold" : "text-pallete-light-orange hover:scale-[1.15] transition-all"
+    }
     return(
         <footer className="flex flex-col items-center">
-            <div id="pt1" className="bg-pallete-green min-w-screen flex flex-row gap-20 justify-center py-1">
-                <div className="h-auto">
-                    <img src="/logo.svg" alt="Logo" className="w-28 h-23" />
+            <div id="pt1" className="bg-pallete-green min-w-screen flex flex-row gap-10 justify-center py-1">
+                <div id="logo" className="h-auto flex justify-center items-center cursor-pointer" onClick={() => {navigate('/')}}>
+                    <img src="/logo.svg" alt="Logo" className="h-[70%] w-auto"/>
                 </div>
-                <nav className="flex flex-col justify-end pl-3">
-                    <NavLink to="/sobre-nos" className="text-pallete-light-orange font-bold">Sobre nós</NavLink>
-                    <NavLink to="/sobre-nos">Desenvolvedores</NavLink>
-                    <NavLink to="/sobre-nos">Contato</NavLink>
-                    <NavLink to="/sobre-nos">Objetivo</NavLink>
-                    <NavLink to="/sobre-nos">Colaboradores</NavLink>
-                    <NavLink to="/sobre-nos">Avaliações</NavLink>
+                <nav className="flex flex-col justify-end py-3">
+                    <NavLink to="/sobre-nos" className={navLinkClass}>Sobre nós</NavLink>
+                    <NavLink to="/sobre-nos#desenvolvedores" className={navLinkClass}>Desenvolvedores</NavLink>
+                    <NavLink to="/sobre-nos#contato" className={navLinkClass}>Contato</NavLink>
+                    <NavLink to="/sobre-nos#objetivos" className={navLinkClass}>Objetivo</NavLink>
+                    <NavLink to="/sobre-nos#colaboradores" className={navLinkClass}>Colaboradores</NavLink>
+                    <NavLink to="/sobre-nos#avaliacoes" className={navLinkClass}>Avaliações</NavLink>
                 </nav>
             </div>
 

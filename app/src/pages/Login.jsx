@@ -107,14 +107,6 @@ export default function Login() {
                         Ou
                     </p>
 
-                    <NavLink to="https://google.com/api/auth/login/google">
-                        <div className="bg-pallete-gray rounded-sm px-3 py-1.5 text-black font-bold hover:underline w-45">
-                            <p>
-                                Entrar com o Google
-                            </p>
-                        </div>
-                    </NavLink>
-
                     <p className="font-bold mt-3">
                         Ainda não possui uma conta?
                     </p>

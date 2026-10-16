@@ -1,7 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom"
 import { useState } from 'react'
 import { Button, Checkbox, Label, TextInput } from "flowbite-react";
-import { colors } from "flowbite-react/plugin/tailwindcss/colors";
 
 export default function Register() {
 
@@ -53,21 +52,14 @@ export default function Register() {
         }
     }
 
-    const customInputTheme = {
-        field: {
-            input: {
-                colors: 'bg-pallete-dark-green-2'
-            }
-        }
-    }
-
     return (
-        <>
-            <section className="flex h-screen w-screen bg-pallete-dark-green-2 gap-5 flex-col items-center justify-center">
+        
+        <div className="w-screen min-h-screen bg-pallete-dark-green-2 flex flex-col items-center justify-center p-6 box-border m-0">
+            <section className="flex w-full max-w-md gap-5 flex-col items-center justify-center">
                 <img src="/logo.svg" alt="Tempero Caraguá" />
-                <h1 className='text-2xl'>Crie sua conta!</h1>
+                <h1 className='text-2xl text-white font-bold'>Crie sua conta!</h1>
 
-                <form className="flex max-w-md flex-col gap-4" onSubmit={handleRegister}>
+                <form className="flex w-full flex-col gap-4" onSubmit={handleRegister}>
                     <div>
                         <div className="mb-2 block">
                             <Label htmlFor="nome" className='text-white'>
@@ -86,7 +78,7 @@ export default function Register() {
                     </div>
                     <div>
                         <div className="mb-2 block">
-                            <Label htmlFor="email2" className='text-white'>
+                            <Label htmlFor="email" className='text-white'>
                                 Seu e-mail
                             </Label>
                         </div>
@@ -94,7 +86,7 @@ export default function Register() {
                     </div>
                     <div>
                         <div className="mb-2 block">
-                            <Label htmlFor="password2" className='text-white'>
+                            <Label htmlFor="password" className='text-white'>
                                 Sua senha
                             </Label>
                         </div>
@@ -109,22 +101,22 @@ export default function Register() {
                         <TextInput id="repeat-password" type="password" required value={confirmarSenha} onChange={(e) => setConfirmarSenha(e.target.value)} shadow />
                     </div>
                     <div className="flex items-center gap-2">
-                        <Checkbox id="agree" />
+                        <Checkbox id="agree" required />
                         <Label htmlFor="agree" className="flex text-white">
                             Eu concordo com os&nbsp;
-                            <NavLink href="#" className="text-white hover:underline dark:text-cyan-500">
+                            <NavLink to="/termos" className="text-white hover:underline dark:text-cyan-500">
                                 termos e condições
                             </NavLink>
                         </Label>
                     </div>
-                    <Button type="submit" className='bg-pallete-orange hover:bg-pallete-dark-orange transition-colors duration-150'>Registrar nova conta</Button>
+                    <Button type="submit" className='bg-pallete-orange hover:bg-pallete-dark-orange transition-colors duration-150 text-white'>Registrar nova conta</Button>
                 </form>
 
-                <p className="text-center">
+                <p className="text-center text-white">
                     Já possui uma conta?<br />
                     <NavLink to="/login" className='text-pallete-light-orange hover:underline'>Faça o login</NavLink>
                 </p>
             </section>
-        </>
+        </div>
     )
 }

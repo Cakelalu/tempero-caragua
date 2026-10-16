@@ -1,9 +1,14 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import Menu from "./DropdownMenu";
 import Preferences from "./preferences/Preferences";
 import { useState, useEffect } from "react";
 
 export default function Header() {
+
+    function navLinkClass({ isActive }) {
+        return isActive ? "text-pallete-orange text-center" : "text-pallete-light-yellow text-center hover:scale-[1.15] transition-all"
+    }
+
     const [menuOpen, setMenuOpen] = useState(false);
 
     const [user, setUser] = useState(() => {
@@ -53,16 +58,16 @@ export default function Header() {
             </div>
 
             <nav className={`${menuOpen ? "flex" : "hidden"} flex-col lg:flex lg:flex-row justify-evenly items-center gap-4 lg:gap-18 w-full lg:w-auto mt-4 lg:mt-0`}>
-                <NavLink to="/especiais-de-caragua" className="text-pallete-light-yellow text-center">
+                <NavLink to="/especiais-de-caragua" className={navLinkClass}>
                     Especiais de<br />Caraguá
                 </NavLink>
-                <NavLink to="/festivais" className="text-pallete-light-yellow">
+                <NavLink to="/festivais" className={navLinkClass}>
                     Festivais
                 </NavLink>
-                <NavLink to="/posts" className="text-pallete-light-yellow">
+                <NavLink to="/posts" className={navLinkClass}>
                     Postagens
                 </NavLink>
-                <NavLink to="/favoritos" className="text-pallete-light-yellow">
+                <NavLink to="/favoritos" className={navLinkClass}>
                     Favoritos
                 </NavLink>
             </nav>

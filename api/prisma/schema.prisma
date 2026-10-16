@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,91 +7,97 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  USER
-  MODERATOR
+model favorited {
+  id       String @id
+  userId   String
+  postSlug String
+  post     post   @relation(fields: [postSlug], references: [slug], map: "Favorited_postSlug_fkey")
+  user     user   @relation(fields: [userId], references: [id], map: "Favorited_userId_fkey")
+
+  @@unique([userId, postSlug], map: "Favorited_userId_postSlug_key")
+  @@index([postSlug], map: "Favorited_postSlug_fkey")
 }
 
-model User {
-  id             String   @id @default(uuid())
-  nome           String
-  nomeUsuario    String
-  dataNascimento DateTime?
-  email          String   @unique
-  numeroTel      String?
-  imagemPerfil   String?
-  imagemBanner   String?
-  biografia      String?
-  senha          String
-  tipo           Role     @default(USER) // Define 'USER' como valor padrão
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  posts          Post[]
-  favorites      Favorited[]
-  likes          Liked[]
-  seguindo       Followed[] @relation("Seguindo")
-  seguidores     Followed[] @relation("Seguidores")
+model followed {
+  id                             String @id
+  perfilId                       String
+  seguidorId                     String
+  user_followed_perfilIdTouser   user   @relation("followed_perfilIdTouser", fields: [perfilId], references: [id], map: "Followed_perfilId_fkey")
+  user_followed_seguidorIdTouser user   @relation("followed_seguidorIdTouser", fields: [seguidorId], references: [id], map: "Followed_seguidorId_fkey")
+
+  @@unique([perfilId, seguidorId], map: "Followed_perfilId_seguidorId_key")
+  @@index([seguidorId], map: "Followed_seguidorId_fkey")
 }
 
-model Post {
-  id              String   @id @default(uuid())
-  slug            String   @unique
+model liked {
+  id       String @id
+  userId   String
+  postSlug String
+  post     post   @relation(fields: [postSlug], references: [slug], map: "Liked_postSlug_fkey")
+  user     user   @relation(fields: [userId], references: [id], map: "Liked_userId_fkey")
+
+  @@unique([userId, postSlug], map: "Liked_userId_postSlug_key")
+  @@index([postSlug], map: "Liked_postSlug_fkey")
+}
+
+model post {
+  id              String      @id
+  slug            String      @unique(map: "Post_slug_key")
   titulo          String
   conteudo        String
   imagens         String?
   legendas        String?
-  autorId         String   @default(uuid())
-  autor           User     @relation(fields: [autorId], references: [id])
-  dataPostagem    DateTime @default(now())
-  dataAtualizacao DateTime @default(now())
+  autorId         String
+  dataPostagem    DateTime    @default(now())
+  dataAtualizacao DateTime    @default(now())
   dataDelecao     DateTime?
-  favorited       Favorited[]
-  tags            Tagged[]
-  liked           Liked[]
+  favorited       favorited[]
+  liked           liked[]
+  user            user        @relation(fields: [autorId], references: [id], map: "Post_autorId_fkey")
+  tagged          tagged[]
+
+  @@index([autorId], map: "Post_autorId_fkey")
 }
 
-model Favorited {
-  id              String   @id @default(uuid())
-  userId          String   @default(uuid())
-  user            User     @relation(fields: [userId], references: [id])
-  postSlug        String
-  post            Post     @relation(fields: [postSlug], references: [slug])
-
-  @@unique([userId, postSlug])
+model tag {
+  id     String   @id
+  nome   String   @unique(map: "Tag_nome_key")
+  tagged tagged[]
 }
 
-model Liked {
-  id              String   @id @default(uuid())
-  userId          String   @default(uuid())
-  user            User     @relation(fields: [userId], references: [id])
-  postSlug        String
-  post            Post     @relation(fields: [postSlug], references: [slug])
+model tagged {
+  id       String @id
+  tagNome  String
+  postSlug String
+  post     post   @relation(fields: [postSlug], references: [slug], map: "Tagged_postSlug_fkey")
+  tag      tag    @relation(fields: [tagNome], references: [nome], map: "Tagged_tagNome_fkey")
 
-  @@unique([userId, postSlug])
+  @@unique([tagNome, postSlug], map: "Tagged_tagNome_postSlug_key")
+  @@index([postSlug], map: "Tagged_postSlug_fkey")
 }
 
-model Tag {
-  id              String   @id @default(uuid())
-  nome            String   @unique
-  usos            Tagged[]
+model user {
+  id                                 String      @id
+  nome                               String
+  nomeUsuario                        String
+  dataNascimento                     DateTime?
+  email                              String      @unique(map: "User_email_key")
+  numeroTel                          String?
+  imagemPerfil                       String?
+  imagemBanner                       String?
+  biografia                          String?
+  senha                              String
+  tipo                               user_tipo   @default(USER)
+  createdAt                          DateTime    @default(now())
+  updatedAt                          DateTime
+  favorited                          favorited[]
+  followed_followed_perfilIdTouser   followed[]  @relation("followed_perfilIdTouser")
+  followed_followed_seguidorIdTouser followed[]  @relation("followed_seguidorIdTouser")
+  liked                              liked[]
+  post                               post[]
 }
 
-model Tagged {
-  id              String   @id @default(uuid())
-  tagNome         String
-  tag             Tag      @relation(fields: [tagNome], references: [nome])
-  postSlug        String
-  post            Post     @relation(fields: [postSlug], references: [slug])
-
-  @@unique([tagNome, postSlug])
-}
-
-model Followed {
-  id              String   @id @default(uuid())
-  perfilId        String
-  perfil          User     @relation("Seguindo", fields: [perfilId], references: [id])
-  seguidorId      String
-  seguidor        User     @relation("Seguidores", fields: [seguidorId], references: [id])
-
-  @@unique([perfilId, seguidorId])
+enum user_tipo {
+  USER
+  MODERATOR
 }
