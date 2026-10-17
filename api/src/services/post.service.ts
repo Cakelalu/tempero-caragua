@@ -1,7 +1,7 @@
 import { v4 } from 'uuid'
 import fs from 'fs/promises'
 import slug from 'slug'
-import { prisma } from '../libs/prisma.ts'
+import { prisma } from '../libs/prisma'
 
 export const getPostBySlug = async (slug: string) => {
     return await prisma.post.findUnique({

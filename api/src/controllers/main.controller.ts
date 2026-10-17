@@ -1,9 +1,9 @@
 import type { RequestHandler, Response } from "express"
 import z from 'zod'
-import { getUserById } from '../services/user.service.ts'
-import { handleCover, createPostSlug, createPost } from "../services/post.service.ts"
-import { coverToUrl } from "../utils/cover-to-url.ts"
-import type { ExtendedRequest } from '../types/extended-request.ts';
+import { getUserById } from '../services/user.service'
+import { handleCover, createPostSlug, createPost } from "../services/post.service"
+import { coverToUrl } from "../utils/cover-to-url"
+import type { ExtendedRequest } from '../types/extended-request';
 import { PrismaClient } from "@prisma/client"
 const prisma = new PrismaClient()
 

@@ -1,12 +1,12 @@
 import { forEach } from './../../node_modules/effect/src/Array';
 import { RequestHandler, Response } from "express"
 import { includes, z } from "zod"
-import { createUser, verifyUser, getUserById } from "../services/user.service.ts"
-import { createToken } from "../services/auth.service.ts"
-import { ExtendedRequest } from "../types/extended-request.ts"
-import { verifyToken } from "./auth.controller.ts"
-import { createPost, createPostSlug, handleCover, createTagged } from "../services/post.service.ts"
-import { prisma } from '../libs/prisma.ts'
+import { createUser, verifyUser, getUserById } from "../services/user.service"
+import { createToken } from "../services/auth.service"
+import { ExtendedRequest } from "../types/extended-request"
+import { verifyToken } from "./auth.controller"
+import { createPost, createPostSlug, handleCover, createTagged } from "../services/post.service"
+import { prisma } from '../libs/prisma'
 
 export const addPost: RequestHandler = async (req: ExtendedRequest, res: Response) => {
     if (!req.user) return res.status(401).json({

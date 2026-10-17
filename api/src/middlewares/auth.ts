@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express'
-import { verifyJWT } from '../libs/jwt.ts'
-import { getUserById } from '../services/user.service.ts'
+import { verifyJWT } from '../libs/jwt'
+import { getUserById } from '../services/user.service'
 
 export const auth: RequestHandler = async (req, res, next) => {
     const authHeader = req.headers.authorization

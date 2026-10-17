@@ -1,8 +1,8 @@
 import { RequestHandler, Response } from "express"
 import { z } from "zod"
-import { createUser, verifyUser } from "../services/user.service.ts"
-import { createToken } from "../services/auth.service.ts"
-import { ExtendedRequest } from "../types/extended-request.ts"
+import { createUser, verifyUser } from "../services/user.service"
+import { createToken } from "../services/auth.service"
+import { ExtendedRequest } from "../types/extended-request"
 
 export const signIn: RequestHandler = async (req, res) => {
     const schema = z.object({

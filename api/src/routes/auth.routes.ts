@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import * as authController from '../controllers/auth.controller.ts'
+import * as authController from '../controllers/auth.controller'
 // import { privateRoute } from '../middlewares/private-route.ts'
 
 export const authRoutes = Router()

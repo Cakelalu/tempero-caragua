@@ -1,8 +1,8 @@
 import { Router } from 'express'
-import * as userController from '../controllers/user.controller.ts'
-import * as mainController from '../controllers/main.controller.ts'
-import { addPost, editPost } from '../controllers/user.controller.ts';
-import { auth } from '../middlewares/auth.ts'
+import * as userController from '../controllers/user.controller'
+import * as mainController from '../controllers/main.controller'
+import { addPost, editPost } from '../controllers/user.controller';
+import { auth } from '../middlewares/auth'
 
 export const userRoutes = Router()
 
