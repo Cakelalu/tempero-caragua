@@ -6,7 +6,7 @@
     "scripts": {
         "dev": "nodemon --exec tsx src/server.ts",
         "build": "tsc",
-        "start": "nodemon src/server.ts",
+        "start": "node dist/server.js",
         "postinstall": "prisma skills sync || exit 0"
     },
     "dependencies": {

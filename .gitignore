@@ -25,6 +25,7 @@ node_modules/
 .env.development.local
 .env.test.local
 .env.production.local
+.env.production
 
 # Keep example env files
 !.env.example
