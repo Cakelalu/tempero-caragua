@@ -55,10 +55,41 @@ export default function Login() {
         }
     };
 
-    // Login com o Google
-    const responseGoogle = (response) => {
-        console.log(response)
-    }
+    const KEY_GOOGLE = import.meta.env.VITE_PUBLIC_KEY_GOOGLE;
+    const handleGoogleLogin = async (credentialResponse) => {
+        try {
+            const API_URL =
+                import.meta.env.VITE_PUBLIC_API_URL ||
+                "http://localhost:4500";
+
+            const resposta = await fetch(`${API_URL}/auth/google`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    credential: credentialResponse.credential,
+                }),
+            });
+
+            const dados = await resposta.json();
+            if (!resposta.ok) {
+                throw new Error(
+                    dados.error ||
+                    dados.message ||
+                    "Não foi possível entrar com o Google."
+                );
+            }
+
+            localStorage.setItem("token_login", dados.token);
+            localStorage.setItem("user", JSON.stringify(dados.user));
+            window.dispatchEvent(new Event("auth-change"));
+            navigate("/");
+        } catch (erro) {
+            console.error("Erro no login com Google:", erro);
+            alert(erro.message || "Não foi possível conectar ao servidor.");
+        }
+    };
 
     return (
         <main className="grid min-h-screen w-full grid-cols-1 overflow-hidden bg-pallete-dark-green-2 lg:h-screen lg:grid-cols-[61.3%_38.7%]">
@@ -145,12 +176,10 @@ export default function Login() {
                 </p>
 
                 {/* Login com o google */}
-                <GoogleOAuthProvider clientId='485672026278-i1ful5koolkis00ru8k7bheh0kshhc4b.apps.googleusercontent.com'>
+                <GoogleOAuthProvider clientId={KEY_GOOGLE}>
                     <GoogleLogin
                         buttonText='Continuar com o Google'
-                        onSuccess={credentialResponse => {
-                            console.log('Login efetuado com sucesso:', credentialResponse);
-                        }}
+                        onSuccess={handleGoogleLogin}
                         onError={() => {
                             console.log('Erro no Login');
                         }}

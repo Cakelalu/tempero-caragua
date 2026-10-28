@@ -77,7 +77,7 @@ model tagged {
 }
 
 model user {
-  id                                 String      @id
+  id                                 String      @id @default(uuid())
   nome                               String
   nomeUsuario                        String
   dataNascimento                     DateTime?
@@ -89,7 +89,7 @@ model user {
   senha                              String
   tipo                               user_tipo   @default(USER)
   createdAt                          DateTime    @default(now())
-  updatedAt                          DateTime
+  updatedAt                          DateTime    @updatedAt
   favorited                          favorited[]
   followed_followed_perfilIdTouser   followed[]  @relation("followed_perfilIdTouser")
   followed_followed_seguidorIdTouser followed[]  @relation("followed_seguidorIdTouser")

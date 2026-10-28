@@ -8,7 +8,8 @@ export default function Menu() {
     function handleLogout() {
         localStorage.removeItem("token");
         localStorage.clear();
-        
+        window.dispatchEvent(new Event("auth-change"));
+
         navigate("/login");
     }
 

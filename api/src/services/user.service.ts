@@ -49,6 +49,12 @@ export const verifyUser = async ({ email, password }: VerifyUserProps) => {
     return user
 }
 
+export const findUserByEmail = async (email: string) => {
+    return await prisma.user.findUnique({
+        where: { email: email.toLowerCase() }
+    })
+}
+
 export const getUserById = async (id: string) => {
     return await prisma.user.findUnique({
         where: { id },

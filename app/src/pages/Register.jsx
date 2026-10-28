@@ -45,6 +45,10 @@ export default function Register() {
                 )
             }
 
+            localStorage.setItem("token_login", dados.token);
+            localStorage.setItem("user", JSON.stringify(dados.user));
+            window.dispatchEvent(new Event("auth-change"));
+
             navigate('/')
 
         } catch (error) {
