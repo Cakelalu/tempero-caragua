@@ -36,7 +36,7 @@ export default function Menu() {
 
             {isOpen && (
                 <div className="absolute right-0 top-full z-50 mt-2 min-w-44 rounded-sm bg-pallete-background p-2 text-pallete-dark-green shadow-md">
-                    <NavLink className="block px-3 py-2 hover:bg-pallete-light-green" to='/u//1'>Minha conta</NavLink>
+                    <NavLink className="block px-3 py-2 hover:bg-pallete-light-green" to='/perfil'>Minha conta</NavLink>
                     <NavLink className="block px-3 py-2 hover:bg-pallete-light-green" to='/editar-perfil'>Editar perfil</NavLink>
                     <button
                         type="button"

@@ -2,22 +2,23 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import AuthLayout from './layouts/AuthLayout.jsx'
-import SiteLayout from './layouts/SiteLayout.jsx'
-import ErrorLayout from './layouts/ErrorLayout.jsx'
-import Account from './pages/Account.jsx'
+import AuthLayout from './layouts/AuthLayout'
+import SiteLayout from './layouts/SiteLayout'
+import ErrorLayout from './layouts/ErrorLayout'
+import Account from './pages/Account'
 import Contact from "./pages/Contact"
-import CreatePost from './pages/CreatePost.jsx'
-import EditProfile from './pages/EditProfile.jsx'
-import Especiais from './pages/Especiais.jsx'
-import Favorites from './pages/Favorites.jsx'
-import Festivals from './pages/Festivals.jsx'
+import CreatePost from './pages/CreatePost'
+import EditProfile from './pages/EditProfile'
+import Especiais from './pages/Especiais'
+import Favorites from './pages/Favorites'
+import Festivals from './pages/Festivals'
 import Home from "./pages/Home"
 import Login from "./pages/Login"
 import NotFound from "./pages/NotFound"
-import Post from './pages/Post.jsx'
-import Posts from './pages/Posts.jsx'
+import Post from './pages/Post'
+import Posts from './pages/Posts'
 import Register from "./pages/Register"
+import Profile from './pages/Profile'
 import { ThemeProvider, initThemeMode } from "flowbite-react";
 
 initThemeMode();
@@ -31,6 +32,7 @@ createRoot(document.getElementById('root')).render(
             <Route index element={<Home />} />
             <Route path="/contato" element={<Contact />} />
             <Route path="/u/:id" element={<Account />} />
+            <Route path="/perfil" element={<Profile />} />
             <Route path="/criar" element={<CreatePost />} />
             <Route path="/editar-perfil" element={<EditProfile />} />
             <Route path="/favoritos" element={<Favorites />} />
