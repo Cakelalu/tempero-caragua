@@ -1,20 +1,19 @@
 // ping.js
-const mysql = require('mysql2/promise');
+import mysql from 'mysql2/promise';
 
 async function manterBancoVivo() {
   let connection;
   try {
-    // Usamos uma variável de ambiente para não expor a senha no GitHub
-    if (!import.meta.env.AIVEN_URL) {
-      throw new Error("A variável AIVEN_URL não foi definida.");
+    if (!process.env.AIVEN_URL) {
+      throw new Error("A variável AIVEN_URL não foi definida no ambiente.");
     }
 
-    connection = await mysql.createConnection(import.meta.env.AIVEN_URL);
+    connection = await mysql.createConnection(process.env.AIVEN_URL);
     await connection.query('SELECT 1');
     console.log('Ping enviado com sucesso! Banco ativo no Aiven.');
   } catch (error) {
     console.error('Erro ao conectar no Aiven:', error.message);
-    process.exit(1); // Força o erro no GitHub Actions se falhar
+    process.exit(1); 
   } finally {
     if (connection) {
       await connection.end();
