@@ -2,7 +2,7 @@ name: Manter Banco Aiven Ativo
 
 on:
   schedule:
-    # Roda a cada 15 minutos (O GitHub Actions recomenda intervalos de pelo menos 5-15 min)
+    # Roda a cada 8 minutos (O GitHub Actions recomenda intervalos de pelo menos 5-15 min)
     - cron: '*/8 * * * *'
   workflow_dispatch: # Permite que você execute manualmente pelo painel do GitHub para testar
 
@@ -17,7 +17,8 @@ jobs:
     - name: Configurar o Node.js
       uses: actions/setup-node@v4
       with:
-        node-cache: 'npm' # Opcional: acelera o processo se tiver package-lock.json
+        node-version: '24' # Atualizado para o Node 24 recomendado pelo GitHub
+        cache: 'npm' # Opcional: acelera o processo se tiver package-lock.json
 
     - name: Instalar Dependências
       run: npm install mysql2
