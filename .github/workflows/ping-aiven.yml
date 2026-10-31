@@ -1,0 +1,27 @@
+name: Ping Aiven Definitivo
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  ping-banco:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Instalar Mysql2
+        run: npm install mysql2
+
+      - name: Executar Ping
+        env:
+          AIVEN_URL: ${{ secrets.AIVEN_URL }}
+        run: node ping.js
