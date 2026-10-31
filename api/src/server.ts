@@ -21,6 +21,7 @@ server.use(cors({
 // server.use(bodyParser.json())
 // server.use(bodyParser.urlencoded({ extended: true }))
 server.use(express.json())
+
 server.use('/auth', authRoutes)
 server.use('/admin', adminRoutes)
 server.use('/user', userRoutes)

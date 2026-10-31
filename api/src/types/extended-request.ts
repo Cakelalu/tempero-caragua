@@ -1,9 +1,9 @@
-import { User } from '@prisma/client'
+import type { user } from '@prisma/client'
 import express from 'express'
 
-type UserWithoutPassword = Omit<User, 'senha'>
+type UserWithoutPassword = Omit<user, 'senha'>
 
 export type ExtendedRequest = express.Request & {
     user?: UserWithoutPassword
-    file: Express.Multer.File
+    file?: Express.Multer.File
 }

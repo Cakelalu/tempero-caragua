@@ -78,14 +78,14 @@ model tagged {
 
 model user {
   id                                 String      @id @default(uuid())
-  nome                               String
+  nome                               String      @db.VarChar(300)
   nomeUsuario                        String
   dataNascimento                     DateTime?
   email                              String      @unique(map: "User_email_key")
   numeroTel                          String?
-  imagemPerfil                       String?
+  imagemPerfil                       String?     @db.Text
   imagemBanner                       String?
-  biografia                          String?
+  biografia                          String?     @db.Text
   senha                              String
   tipo                               user_tipo   @default(USER)
   createdAt                          DateTime    @default(now())

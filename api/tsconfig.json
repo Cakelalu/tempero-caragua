@@ -1,10 +1,11 @@
 { 
   "compilerOptions": { 
     "target": "ES2022", 
-    "module": "node16", 
-    "moduleResolution": "node16", 
+    "module": "ESNext",                  // <-- Permite usar a sintaxe moderna de imports
+    "moduleResolution": "bundler",      // <-- Libera imports SEM a extensão .js/ .ts
+    "allowImportingTsExtensions": true, // <-- Permite que o TS aceite as resoluções
+    "noEmit": true,                     // <-- Como você roda direto via tsx/ts-node, evita gerar arquivos duplicados
     "rootDir": "./src", 
-    "outDir": "./dist", 
     "strict": true, 
     "esModuleInterop": true, 
     "skipLibCheck": true 
