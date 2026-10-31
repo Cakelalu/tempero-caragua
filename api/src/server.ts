@@ -7,25 +7,6 @@ import { authRoutes } from './routes/auth.routes'
 import { adminRoutes } from './routes/admin.routes'
 import { userRoutes } from './routes/user.routes'
 import { guestRoutes } from './routes/guest.routes'
-import mysql from 'mysql2/promise';
-
-async function manterBancoVivo() {
-  try {
-    const connection = await mysql.createConnection("SUA_URI_DE_CONEXAO_DO_AIVEN");
-    
-    // Executa uma consulta levíssima apenas para registrar atividade
-    await connection.query('SELECT 1;'); 
-    
-    console.log('Ping enviado com sucesso! Banco ativo.');
-    await connection.end();
-  } catch (error) {
-    console.error('Erro ao conectar no Aiven:', error);
-  }
-}
-
-// Executa o ping a cada 10 minutos (600000 milissegundos)
-setInterval(manterBancoVivo, 600000);
-
 
 const server = express()
 
