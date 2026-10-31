@@ -1,4 +1,4 @@
-name: Manter Banco Aiven Ativo
+name: Executar Ping Banco Aiven V2
 
 on:
   schedule:
