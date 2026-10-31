@@ -5,7 +5,6 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import AuthLayout from './layouts/AuthLayout'
 import SiteLayout from './layouts/SiteLayout'
 import ErrorLayout from './layouts/ErrorLayout'
-import Account from './pages/Account'
 import Contact from "./pages/Contact"
 import CreatePost from './pages/CreatePost'
 import EditProfile from './pages/EditProfile'
@@ -31,7 +30,6 @@ createRoot(document.getElementById('root')).render(
           <Route element={<SiteLayout />}>
             <Route index element={<Home />} />
             <Route path="/contato" element={<Contact />} />
-            <Route path="/u/:id" element={<Account />} />
             <Route path="/perfil" element={<Profile />} />
             <Route path="/criar" element={<CreatePost />} />
             <Route path="/editar-perfil" element={<EditProfile />} />
