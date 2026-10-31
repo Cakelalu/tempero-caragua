@@ -1,8 +1,11 @@
 import { RequestHandler, Response } from "express"
 import { z } from "zod"
-import { createUser, verifyUser } from "../services/user.service"
+import { OAuth2Client } from "google-auth-library"
+import { createUser, findUserByEmail, verifyUser } from "../services/user.service"
 import { createToken } from "../services/auth.service"
 import { ExtendedRequest } from "../types/extended-request"
+
+const googleOAuthClient = new OAuth2Client()
 
 export const signIn: RequestHandler = async (req, res) => {
     const schema = z.object({
@@ -19,6 +22,52 @@ export const signIn: RequestHandler = async (req, res) => {
     }
     const token = createToken(user)
     res.json({
+        message: 'Login bem-sucedido',
+        user: {
+            id: user.id,
+            name: user.nome,
+            email: user.email
+        },
+        token
+    })
+}
+
+export const googleSignIn: RequestHandler = async (req, res) => {
+    const schema = z.object({
+        credential: z.string().min(1)
+    })
+    const data = schema.safeParse(req.body)
+    if (!data.success) {
+        return res.status(400).json({ error: data.error.flatten().fieldErrors })
+    }
+
+    const clientId = process.env.GOOGLE_CLIENT_ID
+    if (!clientId) {
+        return res.status(500).json({ error: 'Login com Google não está configurado no servidor' })
+    }
+
+    let payload
+    try {
+        const ticket = await googleOAuthClient.verifyIdToken({
+            idToken: data.data.credential,
+            audience: clientId
+        })
+        payload = ticket.getPayload()
+    } catch {
+        return res.status(401).json({ error: 'Credencial do Google inválida' })
+    }
+
+    if (!payload?.email || payload.email_verified !== true) {
+        return res.status(401).json({ error: 'Não foi possível verificar o e-mail do Google' })
+    }
+
+    const user = await findUserByEmail(payload.email)
+    if (!user) {
+        return res.status(403).json({ error: 'Este e-mail não possui cadastro. Crie uma conta antes de entrar com o Google.' })
+    }
+
+    const token = createToken(user)
+    return res.status(200).json({
         message: 'Login bem-sucedido',
         user: {
             id: user.id,

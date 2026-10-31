@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
 import bodyParser from 'body-parser'
@@ -13,7 +14,8 @@ server.use(cors({
     origin: [
         "http://localhost:5173",
         "http://localhost:4500",
-        "https://tempero-caragua-app.onrender.com"
+        "https://tempero-caragua-app.onrender.com",
+        "https://dev-teca-app.onrender.com"
     ]
 }))
 // server.use(bodyParser.json())
