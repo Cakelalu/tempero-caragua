@@ -1,12 +1,12 @@
 import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
-import bodyParser from 'body-parser'
 import { mainRoutes } from './routes/main.routes'
 import { authRoutes } from './routes/auth.routes'
 import { adminRoutes } from './routes/admin.routes'
 import { userRoutes } from './routes/user.routes'
 import { guestRoutes } from './routes/guest.routes'
+import { imageRoutes } from './routes/image.routes'
 
 const server = express()
 
@@ -21,6 +21,8 @@ server.use(cors({
 // server.use(bodyParser.json())
 // server.use(bodyParser.urlencoded({ extended: true }))
 server.use(express.json())
+
+server.use('/imagens', imageRoutes)
 
 server.use('/auth', authRoutes)
 server.use('/admin', adminRoutes)

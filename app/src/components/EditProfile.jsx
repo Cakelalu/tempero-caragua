@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { CgProfile } from "react-icons/cg";
 import { useNavigate } from "react-router-dom";
 import { upload } from "@imagekit/react";;
+import { toProxyUrl } from "../utils/imageProxy";
 
 const API_URL = (
     import.meta.env.VITE_PUBLIC_API_URL || "http://localhost:4500"
@@ -523,7 +524,7 @@ export default function EditProfile() {
                             <div className="flex h-44 w-44 items-center justify-center overflow-hidden rounded-full bg-pallete-light-green">
                                 {avatar ? (
                                     <img
-                                        src={avatar}
+                                        src={toProxyUrl(avatar)}
                                         alt="Foto do perfil"
                                         className="h-full w-full object-cover"
                                     />

@@ -1,4 +1,5 @@
 import avatarPadrao from "./Temperos.svg"; // ajuste o caminho conforme a estrutura do seu projeto
+import { toProxyUrl } from "../utils/imageProxy";
 
 /**
  * Card de postagem para o blog de receitas caiçaras.
@@ -32,7 +33,7 @@ function Card({
             <div
                 className="h-27.5 flex items-center justify-center bg-cover bg-center bg-pallete-green"
                 style={
-                    bannerImage ? { backgroundImage: `url(${bannerImage})` } : undefined
+                    bannerImage ? { backgroundImage: `url(${toProxyUrl(bannerImage)})` } : undefined
                 }
             >
                 {!bannerImage && (
@@ -43,7 +44,7 @@ function Card({
             {/* Avatar sobreposto entre o banner e o corpo do card */}
             <div className="flex justify-center -mt-7">
                 <img
-                    src={avatarImage || avatarPadrao}
+                    src={toProxyUrl(avatarImage) || avatarPadrao}
                     alt={`Foto de ${author}`}
                     className="theme-border w-14 h-14 rounded-full object-cover border-[3px] bg-gray-200"
                 />

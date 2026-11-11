@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { toProxyUrl } from '../utils/imageProxy';
 
 export default function Profile() {
   // 1. Estados para gerenciar os dados vindos do seu backend
@@ -74,7 +75,10 @@ export default function Profile() {
 
   // Dispara a busca assim que o componente é montado na tela
   useEffect(() => {
-    carregarPerfilCompleto();
+    async function load() {
+      await carregarPerfilCompleto();
+    }
+    load();
   }, []);
 
   // Trata o campo 'imagens' stringificado vindo do Prisma
@@ -82,7 +86,7 @@ export default function Profile() {
     if (!imagensString) return 'https://placeholder.com';
     try {
       const parsed = JSON.parse(imagensString);
-      return Array.isArray(parsed) && parsed.length > 0 ? parsed[0] : 'https://placeholder.com';
+      return Array.isArray(parsed) && parsed.length > 0 ? toProxyUrl(parsed[0]) : 'https://placeholder.com';
     } catch {
       return 'https://placeholder.com';
     }
@@ -112,7 +116,7 @@ export default function Profile() {
       {/* Banner / Foto de Capa */}
       <div className="relative h-44 w-full bg-gray-200 md:h-60">
         {profile.imagemBanner ? (
-          <img src={profile.imagemBanner} alt="Banner" className="h-full w-full object-cover" />
+          <img src={toProxyUrl(profile.imagemBanner)} alt="Banner" className="h-full w-full object-cover" />
         ) : (
           <div className="h-full w-full bg-gradient-to-r from-orange-400 to-amber-500" />
         )}
@@ -120,7 +124,7 @@ export default function Profile() {
         {/* Foto de Perfil Redonda Sobreposta */}
         <div className="absolute -bottom-14 left-4 md:left-8">
           <img 
-            src={profile.imagemPerfil || 'https://placeholder.com'} 
+            src={toProxyUrl(profile.imagemPerfil) || 'https://placeholder.com'} 
             alt={profile.nome} 
             className="h-28 w-28 rounded-full border-4 border-white bg-white object-cover shadow-sm md:h-32 md:w-32"
           />
