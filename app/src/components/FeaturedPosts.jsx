@@ -14,7 +14,7 @@ export default function FeaturedPosts({ posts = [] }) {
     const featuredPosts = posts.slice(0, 6);
 
     return (
-        <section className="w-full max-w-6xl px-4 py-8" aria-labelledby="featured-posts-title">
+        <section className="w-full px-4 py-8" aria-labelledby="featured-posts-title">
             <h1
                 id="featured-posts-title"
                 className="theme-heading mb-6 text-center text-3xl font-bold"
