@@ -481,7 +481,7 @@ export default function EditProfile() {
                             <div>
                                 <div className="mb-1 flex items-center justify-between gap-3">
                                     <label className={labelClassName} htmlFor="profile-nickname">
-                                        Apelido
+                                        Nome de usuário
                                     </label>
                                     <span className="text-sm font-bold text-[#b8b8b8]">
                                         {apelido.length}/30
@@ -573,6 +573,7 @@ export default function EditProfile() {
                                 <label className={labelClassName} htmlFor="profile-phone">
                                     Telefone <span className="font-normal">(opcional)</span>
                                 </label>
+                                <br />
                                 <input
                                     className={`${inputClassName} mt-1 max-w-xs`}
                                     id="profile-phone"
@@ -610,6 +611,7 @@ export default function EditProfile() {
                                 <label className={labelClassName} htmlFor="current-password">
                                     Senha atual
                                 </label>
+                                <br />
                                 <input
                                     className={`${inputClassName} mt-1 max-w-sm`}
                                     id="current-password"
