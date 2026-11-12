@@ -60,7 +60,7 @@ model post {
 }
 
 model tag {
-  id     String   @id
+  id     String   @id         @default(uuid())
   nome   String   @unique(map: "Tag_nome_key")
   tagged tagged[]
 }

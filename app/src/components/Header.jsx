@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import Menu from "./DropdownMenu";
 import Preferences from "./preferences/Preferences";
 import { useState, useEffect } from "react";

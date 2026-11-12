@@ -290,7 +290,8 @@ export const addPost: RequestHandler = async (req: ExtendedRequest, res: Respons
         titulo: z.string(),
         tags: z.string().optional(),
         conteudo: z.string(),
-        imagens: z.array(z.string()).optional(),
+        autorId: z.string(),
+        imagens: z.array(z.string().url()).optional(),
         legendas: z.array(z.string()).optional(),
     })
     const data = schema.safeParse(req.body)

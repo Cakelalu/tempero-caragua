@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { FiUser } from 'react-icons/fi';
 import { toProxyUrl } from '../utils/imageProxy';
 import CreatePost from '../components/CreatePost';
 
@@ -85,12 +86,12 @@ export default function Profile() {
 
   // Trata o campo 'imagens' stringificado vindo do Prisma
   const obterLinkDaImagem = (imagensString) => {
-    if (!imagensString) return 'https://placeholder.com';
+    if (!imagensString) return null;
     try {
       const parsed = JSON.parse(imagensString);
-      return Array.isArray(parsed) && parsed.length > 0 ? toProxyUrl(parsed[0]) : 'https://placeholder.com';
+      return Array.isArray(parsed) && parsed.length > 0 ? toProxyUrl(parsed[0]) : null;
     } catch {
-      return 'https://placeholder.com';
+      return null;
     }
   };
 
@@ -124,13 +125,35 @@ export default function Profile() {
         )}
 
         {/* Foto de Perfil Redonda Sobreposta */}
-        <div className="absolute -bottom-14 left-4 md:left-8">
-          <img 
-            src={toProxyUrl(profile.imagemPerfil) || 'https://placeholder.com'} 
-            alt={profile.nome} 
-            className="h-28 w-28 rounded-full border-4 border-white bg-white object-cover shadow-sm md:h-32 md:w-32"
-          />
-        </div>
+        <div className="absolute -bottom-14 left-4 md:left-15">
+          {profile.imagemPerfil ? (
+            <img 
+              src={toProxyUrl(profile.imagemPerfil)} 
+              alt={profile.nome} 
+              className="h-28 w-28 rounded-full border-4 border-white bg-white object-cover shadow-sm md:h-32 md:w-32"
+            />
+          ) : (
+            <div className="h-28 w-28 rounded-full border-4 border-white bg-gray-200 shadow-sm md:h-32 md:w-32 flex items-center justify-center">
+              <FiUser size={20} className="text-gray-400" />
+            </div>
+          )}
+         </div>
+
+         {/* Barra de Contadores no canto direito, mesma altura da foto */}
+         <div className="absolute -bottom-14 right-4 md:right-8 flex items-center gap-6 rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
+           <div className="text-center">
+             <span className="block text-lg font-bold text-gray-800">{profile.stats.postsCount}</span>
+             <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Posts</span>
+           </div>
+           <div className="text-center border-x border-gray-100 px-6">
+             <span className="block text-lg font-bold text-gray-800">{profile.stats.followersCount}</span>
+             <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Seguidores</span>
+           </div>
+           <div className="text-center">
+             <span className="block text-lg font-bold text-gray-800">{profile.stats.followingCount}</span>
+             <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Seguindo</span>
+           </div>
+         </div>
       </div>
 
       {/* Grid Centralizado de Informações */}
@@ -147,21 +170,7 @@ export default function Profile() {
             )}
           </div>
 
-          {/* Seção Lateral de Contadores */}
-          <div className="flex items-center gap-6 rounded-xl border border-gray-100 bg-white p-4 shadow-sm self-center md:self-start">
-            <div className="text-center">
-              <span className="block text-lg font-bold text-gray-800">{profile.stats.postsCount}</span>
-              <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Posts</span>
-            </div>
-            <div className="text-center border-x border-gray-100 px-6">
-              <span className="block text-lg font-bold text-gray-800">{profile.stats.followersCount}</span>
-              <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Seguidores</span>
-            </div>
-            <div className="text-center">
-              <span className="block text-lg font-bold text-gray-800">{profile.stats.followingCount}</span>
-              <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Seguindo</span>
-            </div>
-          </div>
+
         </div>
 
         {/* Bloco Inferior com as Imagens/Postagens */}
@@ -197,13 +206,17 @@ export default function Profile() {
                 <div>
                   {posts.map((post) => (
                     <div key={post.id} className="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-shadow duration-200">
-                      <div className="h-44 w-full bg-gray-50">
-                        <img 
-                          src={obterLinkDaImagem(post.imagens)} 
-                          alt={post.titulo} 
-                          className="h-full w-full object-cover"
-                          loading="lazy"
-                        />
+                      <div className="h-44 w-full bg-gray-50 flex items-center justify-center">
+                        {obterLinkDaImagem(post.imagens) ? (
+                          <img 
+                            src={obterLinkDaImagem(post.imagens)} 
+                            alt={post.titulo} 
+                            className="h-full w-full object-cover"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div className="text-gray-400 text-xs">Sem imagem</div>
+                        )}
                       </div>
                       <div className="p-3">
                         {/* Título de tamanho 12, preto e negrito como definido */}
