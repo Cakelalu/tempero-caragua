@@ -127,6 +127,8 @@ export default function CreatePost({ authorId, onClose, onPostCreated, userName,
         (_, i) => !uploadedImageUrls[i]
       );
 
+      let imagensParaEnviar = uploadedImageUrls;
+
       if (imagesToUpload.length > 0) {
         setUploadProgress(0);
         const authResponse = await fetch(`${API_URL}/user/imagekit/auth`, {
@@ -184,6 +186,7 @@ export default function CreatePost({ authorId, onClose, onPostCreated, userName,
         setUploadedImageUrls(mergedUrls);
         setImagePreviews(mergedUrls); // substitui object URLs pelas URLs definitivas
         setUploadProgress(100);
+        imagensParaEnviar = mergedUrls;
       }
 
       const postResponse = await fetch(`${API_URL}/user/posts`, {
@@ -197,7 +200,7 @@ export default function CreatePost({ authorId, onClose, onPostCreated, userName,
           titulo: title.trim(),
           conteudo: content.trim(),
           tags: tags.trim(),
-          imagens: uploadedImageUrls, // array de strings de URL (pode estar vazio)
+          imagens: imagensParaEnviar, // array de strings de URL (pode estar vazio)
           legendas: imageCaption.trim() ? [imageCaption.trim()] : [],
         }),
       });
