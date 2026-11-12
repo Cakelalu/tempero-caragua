@@ -5,8 +5,9 @@ import bcrypt from "bcryptjs"
 import ImageKit from "@imagekit/nodejs"
 import { ExtendedRequest } from "../types/extended-request"
 import { verifyToken } from "./auth.controller"
-import { createPost, createPostSlug } from "../services/post.service"
+import { createPostSlug } from "../services/post.service"
 import { prisma } from '../libs/prisma';
+import { v4 } from 'uuid';
 
 export const getImageKitAuth: RequestHandler = async (
     req: ExtendedRequest,
@@ -283,6 +284,7 @@ export const addPost: RequestHandler = async (req: ExtendedRequest, res: Respons
     if (!req.user) return res.status(401).json({
         error: 'Usuário não autenticado'
     })
+    const authorId = req.user.id;
 
     const schema = z.object({
         titulo: z.string(),
@@ -290,7 +292,6 @@ export const addPost: RequestHandler = async (req: ExtendedRequest, res: Respons
         conteudo: z.string(),
         imagens: z.array(z.string()).optional(),
         legendas: z.array(z.string()).optional(),
-        autorId: z.string()
     })
     const data = schema.safeParse(req.body)
     if (!data.success) {
@@ -299,37 +300,43 @@ export const addPost: RequestHandler = async (req: ExtendedRequest, res: Respons
 
     const slug = await createPostSlug(data.data.titulo)
 
-    const newPost = await createPost({
-        autorId: req.user.id,
-        slug,
-        titulo: data.data.titulo,
-        conteudo: data.data.conteudo,
-        imagens: data.data.imagens ? JSON.stringify(data.data.imagens) : null,
-        legendas: data.data.legendas ? JSON.stringify(data.data.legendas) : null,
-    })
-
-    const tags = data.data.tags
-
-    if (tags && tags.trim() !== '') {
-        const tagsInUse = tags
+    const tagsInUse = [...new Set(
+        (data.data.tags ?? '')
             .split(',')
             .map(tag => tag.trim())
-            .filter(tag => tag.length > 0)
+            .filter(Boolean)
+    )]
 
-        console.log(tagsInUse)
-
-        // 1. Transforma o array de strings no formato que o Prisma espera
-        const tagsParaInserir = tagsInUse.map((tag: string) => ({
-            postSlug: slug,
-            tagNome: tag,
-        }))
-
-        // 2. Faz um ÚNICO insert no banco do Aiven com todas as tags de uma vez só
-        await prisma.tag.createMany({
-            data: tagsParaInserir,
-            skipDuplicates: true // Ignora erros caso o usuário envie tags duplicadas no mesmo post
-        })
+    if (tagsInUse.length > 20) {
+        return res.status(400).json({ error: 'Limite de tags excedido' })
     }
+
+    const newPost = await prisma.$transaction(async (transaction) => {
+        const post = await transaction.post.create({
+            data: {
+                id: v4(),
+                autorId: authorId,
+                slug,
+                titulo: data.data.titulo,
+                conteudo: data.data.conteudo,
+                imagens: data.data.imagens ? JSON.stringify(data.data.imagens) : null,
+                legendas: data.data.legendas ? JSON.stringify(data.data.legendas) : null,
+            }
+        })
+
+        for (const tag of tagsInUse) {
+            await transaction.tag.upsert({
+                where: { nome: tag },
+                update: {},
+                create: { id: v4(), nome: tag }
+            })
+            await transaction.tagged.create({
+                data: { id: v4(), postSlug: slug, tagNome: tag }
+            })
+        }
+
+        return post
+    })
 
     res.status(201).json({
         post: {

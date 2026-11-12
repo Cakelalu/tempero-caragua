@@ -7,7 +7,7 @@ export const getPostBySlug = async (slug: string) => {
     return await prisma.post.findUnique({
         where: { slug },
         include: {
-            autor: {
+            user: {
                 select: {
                     nome: true
                 }

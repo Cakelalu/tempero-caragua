@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { toProxyUrl } from '../utils/imageProxy';
+import CreatePost from '../components/CreatePost';
 
 export default function Profile() {
+  const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
+
   // 1. Estados para gerenciar os dados vindos do seu backend
   const [profile, setProfile] = useState(null);
   const [posts, setPosts] = useState([]);
@@ -168,29 +170,14 @@ export default function Profile() {
           
           {posts.length === 0 ? (
             <div className = "grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-              <Link to={'/criar'} className='cols-1'>
-                <div className="bg-white text-center align-middle rounded-xl h-full border border-gray-100 shadow-sm">
-                  <p className='text-9xl'><span className='text-pallete-dark-green-2'>+</span></p>
-                  {/* {posts.map((post) => (
-                    <div key={post.id} className="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-shadow duration-200">
-                      <div className="h-44 w-full bg-gray-50">
-                        <img 
-                          src={obterLinkDaImagem(post.imagens)} 
-                          alt={post.titulo} 
-                          className="h-full w-full object-cover"
-                          loading="lazy"
-                        />
-                      </div>
-                      <div className="p-3">
-                        <h3 className="font-bold text-black text-[12px] line-clamp-2 leading-snug">{post.titulo}</h3>
-                        <span className="text-[10px] text-gray-400 mt-1 block">
-                          {new Date(post.dataPostagem).toLocaleDateString('pt-BR')}
-                        </span>
-                      </div>
-                    </div>
-                  ))} */}
-                </div>
-              </Link>
+              <button
+                aria-label="Criar publicação"
+                className="cols-1 flex min-h-44 items-center justify-center rounded-xl border border-gray-100 bg-white text-7xl text-pallete-dark-green-2 shadow-sm transition hover:border-pallete-muted-yellow hover:shadow-md"
+                onClick={() => setIsCreatePostOpen(true)}
+                type="button"
+              >
+                +
+              </button>
               <div className="text-center text-sm text-gray-400 py-16 bg-white rounded-xl border border-gray-100 shadow-sm cols-1 sm:cols-1 md:cols-2">
                 Nenhuma publicação encontrada neste perfil.
               </div>
@@ -199,11 +186,14 @@ export default function Profile() {
             <>
               {/* Grid Responsivo das Publicações */}
               <div className = "grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-                <Link to={'/criar'} className='cols-1'>
-                  <div className="bg-white text-center align-middle rounded-xl h-full border border-gray-100 shadow-sm">
-                    <p className='text-9xl'><span className='text-pallete-dark-green-2'>+</span></p>
-                  </div>
-                </Link>
+                <button
+                  aria-label="Criar publicação"
+                  className="cols-1 flex min-h-44 items-center justify-center rounded-xl border border-gray-100 bg-white text-7xl text-pallete-dark-green-2 shadow-sm transition hover:border-pallete-muted-yellow hover:shadow-md"
+                  onClick={() => setIsCreatePostOpen(true)}
+                  type="button"
+                >
+                  +
+                </button>
                 <div>
                   {posts.map((post) => (
                     <div key={post.id} className="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-shadow duration-200">
@@ -243,6 +233,15 @@ export default function Profile() {
           )}
         </div>
       </div>
+      {isCreatePostOpen && (
+        <CreatePost
+          authorId={profile.id}
+          onClose={() => setIsCreatePostOpen(false)}
+          onPostCreated={carregarPerfilCompleto}
+          profileImage={toProxyUrl(profile.imagemPerfil) || 'https://placeholder.com'}
+          userName={profile.nomeUsuario ? `@${profile.nomeUsuario}` : profile.nome}
+        />
+      )}
     </div>
   );
 }
