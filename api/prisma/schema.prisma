@@ -45,8 +45,8 @@ model post {
   slug            String      @unique(map: "Post_slug_key")
   titulo          String
   conteudo        String
-  imagens         String?
-  legendas        String?
+  imagens         String?   @db.Text
+  legendas        String?   @db.Text
   autorId         String
   dataPostagem    DateTime    @default(now())
   dataAtualizacao DateTime    @default(now())
