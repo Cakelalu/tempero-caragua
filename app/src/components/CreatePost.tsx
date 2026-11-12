@@ -127,27 +127,36 @@ export default function CreatePost({ authorId, onClose, onPostCreated, userName,
         (_, i) => !uploadedImageUrls[i]
       );
 
+      let imagensParaEnviar = uploadedImageUrls;
+
       if (imagesToUpload.length > 0) {
         setUploadProgress(0);
-        const authResponse = await fetch(`${API_URL}/user/imagekit/auth`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const authData = await authResponse.json().catch(() => null);
 
-        if (!authResponse.ok) {
-          const message = typeof authData?.error === 'string'
-            ? authData.error
-            : 'Não foi possível autenticar o envio da imagem.';
-          throw new Error(message);
-        }
+        // Calcula o tamanho total de todas as imagens para progresso agregado
+        const totalBytes = imagesToUpload.reduce((acc, file) => acc + file.size, 0);
+        let uploadedBytes = 0;
 
-        const { token: imageKitToken, expire, signature, publicKey } = authData ?? {};
-        if (!imageKitToken || !expire || !signature || !publicKey) {
-          throw new Error('O servidor não retornou os parâmetros de autenticação do ImageKit.');
-        }
+        const newUrls: string[] = [];
+        for (const file of imagesToUpload) {
+          // Renova o token de autenticação para cada imagem (evita token já usado)
+          const authResponse = await fetch(`${API_URL}/user/imagekit/auth`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const authData = await authResponse.json().catch(() => null);
 
-        const uploadPromises = imagesToUpload.map((file) =>
-          upload({
+          if (!authResponse.ok) {
+            const message = typeof authData?.error === 'string'
+              ? authData.error
+              : 'Não foi possível autenticar o envio da imagem.';
+            throw new Error(message);
+          }
+
+          const { token: imageKitToken, expire, signature, publicKey } = authData ?? {};
+          if (!imageKitToken || !expire || !signature || !publicKey) {
+            throw new Error('O servidor não retornou os parâmetros de autenticação do ImageKit.');
+          }
+
+          const res = await upload({
             file,
             fileName: file.name,
             publicKey,
@@ -157,20 +166,21 @@ export default function CreatePost({ authorId, onClose, onPostCreated, userName,
             useUniqueFileName: true,
             folder: '/posts',
             onProgress: (event) => {
-              if (event.total > 0) {
-                const pct = Math.round((event.loaded / event.total) * 100);
-                setUploadProgress(pct);
+              if (event.total > 0 && totalBytes > 0) {
+                const progressoAtual = Math.round(
+                  ((uploadedBytes + event.loaded) / totalBytes) * 100
+                );
+                setUploadProgress(Math.min(progressoAtual, 100));
               }
             },
-          })
-        );
-
-        const results = await Promise.all(uploadPromises);
-        const newUrls: string[] = [];
-        results.forEach((res) => {
+          });
           if (!res.url) throw new Error('O ImageKit não retornou a URL de uma imagem.');
           newUrls.push(res.url);
-        });
+
+          // Atualiza os bytes já enviados para calcular o progresso da próxima imagem
+          uploadedBytes += file.size;
+          setUploadProgress(Math.min(Math.round((uploadedBytes / totalBytes) * 100), 100));
+        }
 
         // Mescla URLs novas com as já existentes, preservando a ordem por índice
         const mergedUrls = [...uploadedImageUrls];
@@ -184,6 +194,7 @@ export default function CreatePost({ authorId, onClose, onPostCreated, userName,
         setUploadedImageUrls(mergedUrls);
         setImagePreviews(mergedUrls); // substitui object URLs pelas URLs definitivas
         setUploadProgress(100);
+        imagensParaEnviar = mergedUrls;
       }
 
       const postResponse = await fetch(`${API_URL}/user/posts`, {
@@ -197,7 +208,7 @@ export default function CreatePost({ authorId, onClose, onPostCreated, userName,
           titulo: title.trim(),
           conteudo: content.trim(),
           tags: tags.trim(),
-          imagens: uploadedImageUrls, // array de strings de URL (pode estar vazio)
+          imagens: imagensParaEnviar, // array de strings de URL (pode estar vazio)
           legendas: imageCaption.trim() ? [imageCaption.trim()] : [],
         }),
       });
