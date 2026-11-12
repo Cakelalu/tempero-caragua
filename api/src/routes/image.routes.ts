@@ -5,6 +5,7 @@ const router = express.Router();
 router.get('/proxy', async (req, res) => {
     const imageUrl = req.query.url as string | undefined;
 
+
     if (!imageUrl) {
         return res.status(400).json({ error: 'Informe o parâmetro ?url=' });
     }

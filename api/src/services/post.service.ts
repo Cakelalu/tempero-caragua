@@ -1,7 +1,19 @@
 import { v4 } from 'uuid'
 import fs from 'fs/promises'
-import slug from 'slug'
 import { prisma } from '../libs/prisma'
+
+// Função nativa para substituir a biblioteca 'slug' que quebra no build do Render
+const generateSlug = (text: string): string => {
+    return text
+        .toString()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+}
 
 export const getPostBySlug = async (slug: string) => {
     return await prisma.post.findUnique({
@@ -18,7 +30,7 @@ export const getPostBySlug = async (slug: string) => {
 
 export const handleCover = async (file: Express.Multer.File) => {
     const allowed = ['image/jpeg', 'image.png', 'image/jpg']
-    if(allowed.includes(file.mimetype)) {
+    if (allowed.includes(file.mimetype)) {
         const coverName = `${v4()}.jpg`
         try {
             await fs.rename(
@@ -35,7 +47,8 @@ export const handleCover = async (file: Express.Multer.File) => {
 }
 
 export const createPostSlug = async (title: string) => {
-    let newSlug = slug(title)
+    const baseSlug = generateSlug(title)
+    let newSlug = baseSlug
     let keepTrying = true
     let postCount = 1
 
@@ -44,7 +57,7 @@ export const createPostSlug = async (title: string) => {
         if (!existingPost) {
             keepTrying = false
         } else {
-            newSlug = `${slug(title)}-${postCount++}`
+            newSlug = `${baseSlug}-${postCount++}`
         }
     }
 
@@ -58,7 +71,6 @@ type CreatePostProps = {
     conteudo: string,
     imagens?: string[],
     legendas?: string[],
-    // cover: string
 }
 
 type CreateTaggedProps = {
@@ -67,7 +79,18 @@ type CreateTaggedProps = {
 }
 
 export const createPost = async (data: CreatePostProps) => {
-    return await prisma.post.create({ data })
+    return await prisma.post.create({
+        data: {
+            id: v4(), // Gera o UUID obrigatório exigido pelo seu model post
+            autorId: data.autorId,
+            slug: data.slug,
+            titulo: data.titulo,
+            conteudo: data.conteudo,
+            // Converte os arrays em texto JSON para o Prisma aceitar no campo String?
+            imagens: data.imagens ? JSON.stringify(data.imagens) : null,
+            legendas: data.legendas ? JSON.stringify(data.legendas) : null,
+        }
+    })
 }
 
 export const createTagged = async (data: CreateTaggedProps) => {
