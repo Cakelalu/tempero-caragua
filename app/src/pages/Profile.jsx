@@ -125,7 +125,7 @@ export default function Profile() {
         )}
 
         {/* Foto de Perfil Redonda Sobreposta */}
-        <div className="absolute -bottom-14 left-4 md:left-15">
+        <div className="absolute md:-bottom-15 -bottom-14 left-4 sm:left-15 md:left-25">
           {profile.imagemPerfil ? (
             <img 
               src={toProxyUrl(profile.imagemPerfil)} 
@@ -140,7 +140,7 @@ export default function Profile() {
          </div>
 
          {/* Barra de Contadores no canto direito, mesma altura da foto */}
-         <div className="absolute -bottom-14 right-4 md:right-8 flex items-center gap-6 rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
+         <div className="absolute md:-bottom-1/6 sm:-bottom-1/4 bottom-2/5 place-self-center sm:right-15 md:right-25 flex items-center gap-6 rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
            <div className="text-center">
              <span className="block text-lg font-bold text-gray-800">{profile.stats.postsCount}</span>
              <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Posts</span>
@@ -157,7 +157,7 @@ export default function Profile() {
       </div>
 
       {/* Grid Centralizado de Informações */}
-      <div className="mx-auto max-w-5xl px-4 pt-16 md:px-8">
+      <div className="mx-auto max-w-7xl px-4 pt-16 md:px-8">
         {/* Bloco de Nome, Bio e Métricas */}
         <div className="flex flex-col justify-between gap-6 border-b border-gray-200 pb-6 md:flex-row md:items-start">
           <div className="flex-1">
@@ -178,56 +178,54 @@ export default function Profile() {
           <h2 className="text-base font-bold text-gray-900 mb-4">Minhas Publicações</h2>
           
           {posts.length === 0 ? (
-            <div className = "grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+            <div className = "grid grid-cols-3 gap-4 sm:grid-cols-1 md:grid-cols-2">
               <button
                 aria-label="Criar publicação"
-                className="cols-1 flex min-h-44 items-center justify-center rounded-xl border border-gray-100 bg-white text-7xl text-pallete-dark-green-2 shadow-sm transition hover:border-pallete-muted-yellow hover:shadow-md"
+                className="cols-1 flex row-1 items-center justify-center rounded-xl border border-gray-100 bg-white text-7xl text-pallete-dark-green-2 shadow-sm transition hover:border-pallete-muted-yellow hover:shadow-md"
                 onClick={() => setIsCreatePostOpen(true)}
                 type="button"
               >
                 +
               </button>
-              <div className="text-center text-sm text-gray-400 py-16 bg-white rounded-xl border border-gray-100 shadow-sm cols-1 sm:cols-1 md:cols-2">
+              <div className="text-center cols-2 row-1 text-sm text-gray-400 py-16 bg-white rounded-xl border border-gray-100 shadow-sm cols-1 sm:cols-1 md:cols-2">
                 Nenhuma publicação encontrada neste perfil.
               </div>
             </div>
           ) : (
             <>
               {/* Grid Responsivo das Publicações */}
-              <div className = "grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+              <div className = "grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 grid-flow-row">
                 <button
                   aria-label="Criar publicação"
-                  className="cols-1 flex min-h-44 items-center justify-center rounded-xl border border-gray-100 bg-white text-7xl text-pallete-dark-green-2 shadow-sm transition hover:border-pallete-muted-yellow hover:shadow-md"
+                  className="cols-1 flex min-w-0 items-center  justify-center rounded-xl border border-gray-100 bg-white text-7xl text-pallete-dark-green-2 shadow-sm transition hover:border-pallete-muted-yellow hover:shadow-md"
                   onClick={() => setIsCreatePostOpen(true)}
                   type="button"
                 >
-                  +
+                  <text className='-translate-y-1/16'>+</text>
                 </button>
-                <div>
-                  {posts.map((post) => (
-                    <div key={post.id} className="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-shadow duration-200">
-                      <div className="h-44 w-full bg-gray-50 flex items-center justify-center">
-                        {obterLinkDaImagem(post.imagens) ? (
-                          <img 
-                            src={obterLinkDaImagem(post.imagens)} 
-                            alt={post.titulo} 
-                            className="h-full w-full object-cover"
-                            loading="lazy"
-                          />
-                        ) : (
-                          <div className="text-gray-400 text-xs">Sem imagem</div>
-                        )}
-                      </div>
-                      <div className="p-3">
-                        {/* Título de tamanho 12, preto e negrito como definido */}
-                        <h3 className="font-bold text-black text-[12px] line-clamp-2 leading-snug">{post.titulo}</h3>
-                        <span className="text-[10px] text-gray-400 mt-1 block">
-                          {new Date(post.dataPostagem).toLocaleDateString('pt-BR')}
-                        </span>
-                      </div>
+                {posts.map((post) => (
+                  <div key={post.id} className="overflow-hidden min-w-0 cols-1 rounded-xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-shadow duration-200">
+                    <div className="h-44 w-full bg-gray-50 flex items-center justify-center">
+                      {obterLinkDaImagem(post.imagens) ? (
+                        <img 
+                          src={obterLinkDaImagem(post.imagens)} 
+                          alt={post.titulo} 
+                          className="h-full w-full object-cover"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="text-gray-400 text-xs translate-y-1/6">Sem imagem</div>
+                      )}
                     </div>
-                  ))}
-                </div>
+                    <div className="p-3">
+                      {/* Título de tamanho 12, preto e negrito como definido */}
+                      <h3 className="font-bold text-black text-[12px] line-clamp-2 leading-snug">{post.titulo}</h3>
+                      <span className="text-[10px] text-gray-400 mt-1 block">
+                        {new Date(post.dataPostagem).toLocaleDateString('pt-BR')}
+                      </span>
+                    </div>
+                  </div>
+                ))}
               </div>
 
               {/* Botão Paginador Otimizado */}

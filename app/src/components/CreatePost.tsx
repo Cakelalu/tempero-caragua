@@ -241,13 +241,13 @@ export default function CreatePost({ authorId, onClose, onPostCreated, userName,
         <header className="relative flex h-14 shrink-0 items-center justify-center border-b border-gray-100 px-14">
           <button
             aria-label="Fechar"
-            className="absolute left-4 rounded-full p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-900"
+            className="absolute left-2 sm:left-4 rounded-full p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-900"
             onClick={onClose}
             type="button"
           >
             <FiX size={20} />
           </button>
-          <h2 className="text-base font-semibold text-gray-900" id="create-post-title">
+          <h2 className="text-base -translate-x-1/3 sm:translate-x-0 font-semibold text-gray-900" id="create-post-title">
             Nova publicação
           </h2>
           <button
@@ -264,14 +264,14 @@ export default function CreatePost({ authorId, onClose, onPostCreated, userName,
           </button>
         </header>
 
-        <div className="flex min-h-[360px] flex-1 flex-col items-center justify-center px-6 py-10 sm:min-h-[470px]">
+        <div className="flex min-h-[150px] md:max-h-none flex-1 flex-col items-center justify-center px-2 sm:px-4 md:px-6 py-6 sm:py-6 md:py-10 sm:min-h-[220px] md:min-h-[280px]">
           {imagePreviews.length > 0 ? (
-            <div className="flex w-full items-center justify-center gap-2 overflow-x-auto pb-4">
+            <div className="flex w-full min-h-[100px] sm:min-h-[150px] sm:max-h-[200px] md:min-h-[200px] md:max-h-none items-center justify-center gap-2 overflow-x-auto pb-0 sm:pb-2 md:pb-4">
               {imagePreviews.map((preview, index) => (
                 <div key={index} className="relative flex-shrink-0">
                   <img
                     alt={`Prévia da imagem ${index + 1}`}
-                    className="h-32 w-32 rounded-lg object-cover border border-gray-200"
+                    className="h-15 w-15 sm:h-25 sm:w-25 md:h-32 md:w-32 rounded-lg object-cover border border-gray-200"
                     src={preview}
                   />
                   <button
@@ -289,7 +289,7 @@ export default function CreatePost({ authorId, onClose, onPostCreated, userName,
               ))}
               {imagePreviews.length < MAX_IMAGES && (
                 <span
-                  className="shrink-0 flex h-32 w-32 items-center justify-center rounded-lg border-2 border-dashed border-gray-300 text-gray-400"
+                  className="shrink-0 flex h-15 w-15 sm:h-25 sm:w-25 md:h-32 md:w-32 text-[9px] sm:text-md text-center items-center justify-center rounded-lg border-2 border-dashed border-gray-300 text-gray-400"
                 >
                   +{MAX_IMAGES - imagePreviews.length} restante(s)
                 </span>
@@ -297,15 +297,15 @@ export default function CreatePost({ authorId, onClose, onPostCreated, userName,
             </div>
           ) : (
             <div className="flex flex-col items-center text-center">
-              <div className="mb-5 flex h-24 w-24 items-center justify-center rounded-full bg-pallete-light-orange/30 text-pallete-dark-green-2">
-                <FiImage size={42} strokeWidth={1.5} />
+              <div className="mb-0 sm:mb-3 md:mb-5 flex h-9 w-9 sm:h-15 sm:w-15 md:h-24 md:w-24 items-center justify-center rounded-full bg-pallete-light-orange/30 text-pallete-dark-green-2">
+                <FiImage className='size-6 sm:size-10 md:size-16' strokeWidth={1.5} />
               </div>
-              <p className="text-lg font-medium text-gray-800">Selecione pelo menos uma foto</p>
-              <p className="mt-2 text-sm text-gray-500">obrigatória — até {MAX_IMAGES} imagens</p>
+              <text className="text-lg font-medium text-gray-800">Selecione pelo menos uma foto</text>
+              <text className="mt-0 sm:mt-1 md:mt-2 text-sm text-gray-500">obrigatória — até {MAX_IMAGES} imagens</text>
             </div>
           )}
 
-          <label className="mt-6 cursor-pointer rounded-lg bg-pallete-dark-green-2 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-pallete-green">
+          <label className="mt-0 sm:mt-2 md:mt-5 cursor-pointer rounded-lg bg-pallete-dark-green-2 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-pallete-green">
             {imagePreviews.length > 0 ? 'Adicionar mais imagens' : 'Selecionar do computador'}
             <input
               accept="image/*"
@@ -321,9 +321,9 @@ export default function CreatePost({ authorId, onClose, onPostCreated, userName,
           </label>
 
           {imagePreviews.length > 0 && (
-            <p className="mt-2 text-xs text-gray-500">
+            <text className="mt-2 text-xs text-gray-500">
               {selectedImages.length} de {MAX_IMAGES} selecionada(s). Use o "X" em cada foto para remover.
-            </p>
+            </text>
           )}
         </div>
 
