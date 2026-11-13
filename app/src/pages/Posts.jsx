@@ -23,11 +23,11 @@ export default function Posts() {
                 }
 
                 const data = await response.json();
-                if (!Array.isArray(posts)) {
+                if (!Array.isArray(data)) {
                     throw new Error("A resposta da API não contém uma lista de postagens.");
                 }
 
-                setPosts(posts);
+                setPosts(data);
             } catch (loadError) {
                 if (loadError.name !== "AbortError") {
                     setError(loadError.message || "Erro ao carregar as postagens.");

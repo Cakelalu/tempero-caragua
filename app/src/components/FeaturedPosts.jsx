@@ -28,17 +28,34 @@ export default function FeaturedPosts({ posts = [] }) {
                 </p>
             ) : (
                 <div className="grid grid-cols-1 items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    {featuredPosts.map((post) => (
-                        <CardPost
-                            key={post.id || post.slug}
-                            bannerImage={post.cover || post.bannerImage}
-                            avatarImage={post.authorImage || post.avatarImage}
-                            date={post.dataPostagem}
-                            title={post.titulo}
-                            author={post.autorNome || post.autor}
-                            href={`/posts/${post.slug || post.id}`}
-                        />
-                    ))}
+                    {featuredPosts.map((post) => {
+                        // O campo 'imagens' vem como JSON string do banco; pega a primeira como banner
+                        let imagens = [];
+                        if (post.imagens) {
+                            try {
+                                imagens = typeof post.imagens === 'string'
+                                    ? JSON.parse(post.imagens)
+                                    : post.imagens;
+                            } catch {
+                                imagens = [];
+                            }
+                        }
+                        const bannerImage = imagens?.[0] || null;
+                        const avatarImage = post.user?.imagemPerfil || null;
+                        const author = post.user?.nomeUsuario || 'Autor desconhecido';
+
+                        return (
+                            <CardPost
+                                key={post.id || post.slug}
+                                bannerImage={bannerImage}
+                                avatarImage={avatarImage}
+                                date={post.dataPostagem}
+                                title={post.titulo}
+                                author={author}
+                                href={`/posts/${post.slug || post.id}`}
+                            />
+                        );
+                    })}
                 </div>
             )}
         </section>

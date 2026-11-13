@@ -53,13 +53,31 @@ export const getPosts: RequestHandler = async (req, res) => {
                     }
                 },
                 include: {
-                    post: true
+                    post: {
+                        include: {
+                            user: {
+                                select: {
+                                    nomeUsuario: true,
+                                    imagemPerfil: true,
+                                }
+                            }
+                        }
+                    }
                 }
             });
             const posts = taggedPosts.map(tagged => tagged.post);
             return res.status(200).json(posts);
         }
-        const allPosts = await prisma.post.findMany();
+        const allPosts = await prisma.post.findMany({
+            include: {
+                user: {
+                    select: {
+                        nomeUsuario: true,
+                        imagemPerfil: true,
+                    }
+                }
+            }
+        });
         return res.status(200).json(allPosts);
     } catch (error) {
         return res.status(500).json({ error: 'Erro ao buscar postagens' });

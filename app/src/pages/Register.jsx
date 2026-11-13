@@ -9,6 +9,7 @@ export default function Register() {
     const [Email, setEmail] = useState("")
     const [Senha, setSenha] = useState("")
     const [confirmarSenha, setConfirmarSenha] = useState("")
+    const [emailError, setEmailError] = useState("")
     const navigate = useNavigate()
 
     const handleRegister = async (e) => {
@@ -53,6 +54,10 @@ export default function Register() {
 
         } catch (error) {
             console.error('Erro no registro:', error)
+            const mensagem = error.message || 'Erro ao criar usuário'
+            if (mensagem.includes('Email já cadastrado') || mensagem.includes('email')) {
+                setEmailError(mensagem)
+            }
         }
     }
 
@@ -86,7 +91,8 @@ export default function Register() {
                                 Seu e-mail
                             </Label>
                         </div>
-                        <TextInput id="email" type="email" placeholder="" value={Email} onChange={(e) => setEmail(e.target.value)} required shadow />
+                        <TextInput id="email" type="email" placeholder="" value={Email} onChange={(e) => { setEmail(e.target.value); setEmailError("") }} required shadow />
+                        {emailError && <p className="text-red-400 text-xs mt-1">{emailError}</p>}
                     </div>
                     <div>
                         <div className="mb-2 block">
