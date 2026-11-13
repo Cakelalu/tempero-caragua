@@ -16,4 +16,4 @@ ALTER TABLE `favorited` DROP COLUMN `postId`,
     ADD COLUMN `postSlug` VARCHAR(191) NOT NULL;
 
 -- AddForeignKey
-ALTER TABLE `Favorited` ADD CONSTRAINT `Favorited_postSlug_fkey` FOREIGN KEY (`postSlug`) REFERENCES `Post`(`slug`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `favorited` ADD CONSTRAINT `Favorited_postSlug_fkey` FOREIGN KEY (`postSlug`) REFERENCES `post`(`slug`) ON DELETE RESTRICT ON UPDATE CASCADE;
