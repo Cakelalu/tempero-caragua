@@ -44,7 +44,7 @@ model post {
   id              String      @id
   slug            String      @unique(map: "Post_slug_key")
   titulo          String
-  conteudo        String
+  conteudo        String    @db.Text
   imagens         String?   @db.Text
   legendas        String?   @db.Text
   autorId         String
