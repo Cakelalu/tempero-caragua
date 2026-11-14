@@ -16,7 +16,8 @@ server.use(cors({
         "http://localhost:4500",
         "https://tempero-caragua-app.onrender.com",
         "https://dev-teca-app.onrender.com"
-    ]
+    ],
+    credentials: true
 }))
 // server.use(bodyParser.json())
 // server.use(bodyParser.urlencoded({ extended: true }))

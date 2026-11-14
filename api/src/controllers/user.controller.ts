@@ -571,18 +571,47 @@ export const followUser: RequestHandler = async (req, res) => {
     if (!req.user) {
         return res.status(401).json({ error: 'Não encontrado' })
     }
-    const { userFlwdId } = req.body
-    const user = await verifyToken(req.user.token)
-    if (!user) {
-        return res.status(404).json({ error: 'Usuário não encontrado' })
-    }
+    const { id: userFlwdId } = req.params
     const updatedFollowings = await prisma.followed.create({
         data: {
-            seguidorId: user.id,
+            id: v4(),
+            seguidorId: req.user.id,
             perfilId: userFlwdId
         }
     })
     res.status(200).json({ followed: updatedFollowings })
+}
+
+export const unfollowUser: RequestHandler = async (req, res) => {
+    if (!req.user) {
+        return res.status(401).json({ error: 'Não autorizado' })
+    }
+    const { id: userId } = req.params
+    await prisma.followed.delete({
+        where: {
+            perfilId_seguidorId: {
+                perfilId: userId,
+                seguidorId: req.user.id
+            }
+        }
+    })
+    res.status(200).json({ message: 'Deixou de seguir com sucesso' })
+}
+
+export const checkIfFollowing: RequestHandler = async (req, res) => {
+    if (!req.user) {
+        return res.status(401).json({ error: 'Não autorizado' })
+    }
+    const { id: userId } = req.params
+    const existingFollow = await prisma.followed.findUnique({
+        where: {
+            perfilId_seguidorId: {
+                perfilId: userId,
+                seguidorId: req.user.id
+            }
+        }
+    })
+    res.status(200).json({ isFollowing: !!existingFollow })
 }
 
 export const getAccountProfile: RequestHandler = async (req: ExtendedRequest, res: Response) => {
@@ -593,17 +622,18 @@ export const getAccountProfile: RequestHandler = async (req: ExtendedRequest, re
     }
 
     try {
-        const userId = req.user.id;
+        // 2. Determina qual usuário deve ser carregado: ID da URL (outro perfil) ou ID do logado (próprio perfil)
+        const targetUserId = req.params.id || req.user.id;
 
-        // 2. Lê a página atual enviada por query string
+        // 3. Lê a página atual enviada por query string
         const pageQuery = typeof req.query.page === 'string' ? req.query.page : undefined;
         const page = pageQuery ? parseInt(pageQuery, 10) : 1;
         const limit = 5;
         const skip = (page - 1) * limit;
 
-        // 3. Busca os dados essenciais e agrega os contadores de seguidores/seguindo
+        // 4. Busca os dados essenciais e agrega os contadores de seguidores/seguindo
         const profileData = await prisma.user.findUnique({
-            where: { id: userId },
+            where: { id: targetUserId },
             select: {
                 id: true,
                 nome: true,
@@ -627,9 +657,9 @@ export const getAccountProfile: RequestHandler = async (req: ExtendedRequest, re
             return;
         }
 
-        // 4. Busca os posts de forma isolada respeitando o limite e paginação
+        // 5. Busca os posts de forma isolada respeitando o limite e paginação
         const userPosts = await prisma.post.findMany({
-            where: { autorId: userId, dataDelecao: null },
+            where: { autorId: targetUserId, dataDelecao: null },
             select: {
                 id: true,
                 slug: true,
@@ -642,12 +672,22 @@ export const getAccountProfile: RequestHandler = async (req: ExtendedRequest, re
             skip: skip
         });
 
-        // 4.1. Conta com precisão apenas os posts ativos do usuário
+        // 6. Conta com precisão apenas os posts ativos do usuário
         const totalPostsAtivos = await prisma.post.count({
-            where: { autorId: userId, dataDelecao: null }
+            where: { autorId: targetUserId, dataDelecao: null }
         });
 
-        // 5. Retorna uma estrutura de payload limpa com os dados corrigidos
+        // 7. Verifica se o usuário logado está seguindo este perfil
+        const isFollowing = await prisma.followed.findUnique({
+            where: {
+                perfilId_seguidorId: {
+                    perfilId: targetUserId,
+                    seguidorId: req.user.id
+                }
+            }
+        });
+
+        // 8. Retorna uma estrutura de payload limpa com os dados corrigidos
         res.status(200).json({
             profile: {
                 id: profileData.id,
@@ -658,8 +698,9 @@ export const getAccountProfile: RequestHandler = async (req: ExtendedRequest, re
                 imagemBanner: profileData.imagemBanner,
                 numeroTel: profileData.numeroTel,
                 email: profileData.email,
+                isFollowing: !!isFollowing,
                 stats: {
-                    postsCount: totalPostsAtivos, // Contagem exata sem os deletados
+                    postsCount: totalPostsAtivos,
                     followersCount: profileData._count.followed_followed_perfilIdTouser,
                     followingCount: profileData._count.followed_followed_seguidorIdTouser,
                 }
@@ -729,5 +770,82 @@ export const getAccountPosts: RequestHandler = async (req: ExtendedRequest, res:
     } catch (error) {
         console.error("Erro ao carregar posts do perfil:", error)
         return res.status(500).json({ error: 'Erro interno do servidor' })
+    }
+}
+
+export const searchUsers: RequestHandler = async (req, res) => {
+    if (!req.user) {
+        return res.status(401).json({ error: 'Não autorizado' })
+    }
+
+    try {
+        const { q } = req.query;
+        const pageQuery = typeof req.query.page === 'string' ? req.query.page : undefined;
+        const page = pageQuery ? parseInt(pageQuery, 10) : 1;
+        const limit = 20;
+        const skip = (page - 1) * limit;
+
+        if (!q || typeof q !== 'string') {
+            return res.status(200).json([]);
+        }
+
+        const users = await prisma.user.findMany({
+            where: {
+                NOT: { id: req.user.id },
+                OR: [
+                    { nomeUsuario: { contains: q } },
+                    { nome: { contains: q } },
+                ]
+            },
+            select: {
+                id: true,
+                nome: true,
+                nomeUsuario: true,
+                imagemPerfil: true,
+            },
+            orderBy: { nomeUsuario: 'asc' },
+            take: limit,
+            skip: skip
+        });
+
+        // Busca quais usuários o usuário logado já está seguindo
+        const userFollowings = await prisma.followed.findMany({
+            where: {
+                seguidorId: req.user.id,
+                perfilId: { in: users.map(u => u.id) }
+            },
+            select: {
+                perfilId: true,
+            }
+        });
+        const followingIds = new Set(userFollowings.map(f => f.perfilId));
+
+        const usersWithFollowStatus = users.map(user => ({
+            ...user,
+            isFollowing: followingIds.has(user.id)
+        }));
+
+        const total = await prisma.user.count({
+            where: {
+                NOT: { id: req.user.id },
+                OR: [
+                    { nomeUsuario: { contains: q } },
+                    { nome: { contains: q } },
+                ]
+            }
+        });
+
+        return res.status(200).json({
+            users: usersWithFollowStatus,
+            pagination: {
+                currentPage: page,
+                limit: limit,
+                hasMore: total > page * limit,
+                total,
+            }
+        });
+    } catch (error) {
+        console.error("Erro ao buscar usuários:", error);
+        return res.status(500).json({ error: 'Erro interno do servidor' });
     }
 }

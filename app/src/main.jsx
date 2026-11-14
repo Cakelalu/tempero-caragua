@@ -31,6 +31,7 @@ createRoot(document.getElementById('root')).render(
             <Route index element={<Home />} />
             <Route path="/contato" element={<Contact />} />
             <Route path="/perfil" element={<Profile />} />
+            <Route path="/perfil/:id" element={<Profile />} />
             <Route path="/criar" element={<CreatePost />} />
             <Route path="/editar-perfil" element={<EditProfile />} />
             <Route path="/favoritos" element={<Favorites />} />

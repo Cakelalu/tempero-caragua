@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import FeaturedPosts from "../components/FeaturedPosts";
+import CardPost from "../components/CardPost";
 
 const API_BASE_URL = (import.meta.env.VITE_PUBLIC_API_URL || "http://localhost:4500").replace(/\/$/, "");
 
@@ -43,6 +43,10 @@ export default function Home() {
         return () => controller.abort();
     }, []);
 
+    const openPost = (post) => {
+        window.location.href = `/posts/${post.slug || post.id}`;
+    };
+
     if (error) {
         return (
             <main className="">
@@ -71,7 +75,37 @@ export default function Home() {
                 <h1>Bem-vindo ao Tempero Caraguá!</h1>
                 <p>Um projeto que oferece um ambiente seguro, inclusivo e diverso para os moradores caraguatatubenses,<br /> para que possam acessar e compartilhar saberes sobre a gastronomia caiçara da cidade, por meio do registro,<br /> preservação e difusão digital de receitas tradicionais de famílias de Caraguatatuba.</p>
 
-                <FeaturedPosts posts={posts} />
+                <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full max-w-7xl mx-auto px-4">
+                    {posts.length === 0 ? (
+                        <p className="col-span-full text-center text-gray-500">
+                            Nenhuma postagem disponível.
+                        </p>
+                    ) : (
+                        posts.map((post) => {
+                            let imagens = [];
+                            if (post.imagens) {
+                                try {
+                                    imagens = typeof post.imagens === "string"
+                                        ? JSON.parse(post.imagens)
+                                        : post.imagens;
+                                } catch {
+                                    imagens = [];
+                                }
+                            }
+                            return (
+                                <CardPost
+                                    key={post.id || post.slug}
+                                    bannerImage={imagens?.[0] || null}
+                                    avatarImage={post.user?.imagemPerfil || null}
+                                    date={post.dataPostagem}
+                                    title={post.titulo}
+                                    author={post.user?.nomeUsuario || "Autor desconhecido"}
+                                    href={`/posts/${post.slug || post.id}`}
+                                />
+                            );
+                        })
+                    )}
+                </div>
             </div>
         </main>
     );

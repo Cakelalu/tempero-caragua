@@ -84,25 +84,24 @@ export default function CreatePost({ authorId, onClose, onPostCreated, userName,
     event.target.value = '';
   };
 
-  const removeImage = (index: number) => {
-    setSelectedImages((prev) => {
-      const removed = prev[index];
-      if (removed && removed.name) {
-        // Se for um arquivo já enviado (sem object URL correspondente), apenas remove da lista
+    const removeImage = (index: number) => {
+      setSelectedImages((prev) => {
+        const removed = prev[index];
+        if (removed && removed.name) {
+          return prev.filter((_, i) => i !== index);
+        }
         return prev.filter((_, i) => i !== index);
-      }
-      return prev.filter((_, i) => i !== index);
-    });
+      });
 
-    setImagePreviews((prev) => {
-      const url = prev[index];
-      if (url && url.startsWith('blob:')) URL.revokeObjectURL(url);
-      return prev.filter((_, i) => i !== index);
-    });
+      setImagePreviews((prev) => {
+        const url = prev[index];
+        if (url && url.startsWith('blob:')) URL.revokeObjectURL(url);
+        return prev.filter((_, i) => i !== index);
+      });
 
-    setUploadedImageUrls((prev) => prev.filter((_, i) => i !== index));
-    setSubmitError('');
-  };
+      setUploadedImageUrls((prev) => prev.filter((_, i) => i !== index));
+      setSubmitError('');
+    };
 
   const handleShare = async () => {
     if (isSubmitting) return;
@@ -137,7 +136,9 @@ export default function CreatePost({ authorId, onClose, onPostCreated, userName,
         let uploadedBytes = 0;
 
         const newUrls: string[] = [];
-        for (const file of imagesToUpload) {
+        for (let i = 0; i < imagesToUpload.length; i++) {
+          const file = imagesToUpload[i];
+
           // Renova o token de autenticação para cada imagem (evita token já usado)
           const authResponse = await fetch(`${API_URL}/user/imagekit/auth`, {
             headers: { Authorization: `Bearer ${token}` },
@@ -279,12 +280,16 @@ export default function CreatePost({ authorId, onClose, onPostCreated, userName,
           {imagePreviews.length > 0 ? (
             <div className="flex w-full min-h-[100px] sm:min-h-[150px] sm:max-h-[200px] md:min-h-[200px] md:max-h-none items-center justify-center gap-2 overflow-x-auto pb-0 sm:pb-2 md:pb-4">
               {imagePreviews.map((preview, index) => (
-                <div key={index} className="relative flex-shrink-0">
-                  <img
-                    alt={`Prévia da imagem ${index + 1}`}
-                    className="h-15 w-15 sm:h-25 sm:w-25 md:h-32 md:w-32 rounded-lg object-cover border border-gray-200"
-                    src={preview}
-                  />
+                <div key={index} className="relative flex-shrink-0 group">
+                  <div
+                    className="relative h-15 w-15 sm:h-25 sm:w-25 md:h-32 md:w-32 rounded-lg overflow-hidden border border-gray-200 bg-gray-100"
+                  >
+                    <img
+                      alt={`Prévia da imagem ${index + 1}`}
+                      className="h-full w-full object-cover"
+                      src={preview}
+                    />
+                  </div>
                   <button
                     aria-label={`Remover imagem ${index + 1}`}
                     className="absolute top-1 right-1 rounded-full bg-black/60 p-1 text-white hover:bg-black/80 transition"
@@ -407,6 +412,7 @@ export default function CreatePost({ authorId, onClose, onPostCreated, userName,
             </label>
           </div>
         </div>
+
       </section>
     </div>,
     document.body,

@@ -1,78 +1,81 @@
-/**
- * Card de postagem para o blog de receitas caiçaras.
- *
- * Props:
- * - bannerImage: string (url da imagem de capa da postagem). Se não for
- *   informada, o card exibe o placeholder "banner" na cor sólida.
- * - avatarImage: string (url da foto do autor). Se não for informada,
- *   usa o ícone de avatar padrão.
- * - date: string já formatada, ex: "21/11/2026 às 10:30"
- * - title: string (título da postagem)
- * - author: string (nome do autor)
- * - href: string (link da postagem, opcional)
- */
 import { toProxyUrl } from "../utils/imageProxy";
 
+/**
+ * Card de postagem para o blog de receitas caiçaras.
+ * Design baseado na referência sectionsGridDivision.png.
+ *
+ * Props:
+ * - bannerImage: string (url da imagem de capa / banner do post)
+ * - avatarImage: string (url da foto de perfil do autor)
+ * - date: string da data de criação (ex: "2026-11-13T14:43:00" ou já formatada)
+ * - title: string (título da postagem)
+ * - author: string (nome do autor)
+ * - href: string (caminho para redirecionar ao post, ex: "/posts/123")
+ */
 export default function CardPost({
     bannerImage,
     avatarImage,
-    date = "<DD/MM/AAAA HH:MM>",
-    title = "<Título da postagem em negrito com a fonte de cor preta e tamanho 12>",
-    author = "<nome do autor>",
+    date = "",
+    title = "Título da postagem",
+    author = "Autor desconhecido",
     href = "#",
 }) {
-    const formattedDate = (() => {
-        if (!date) return "Data não informada";
-
-        if (/^\d{4}-\d{2}-\d{2}/.test(date)) {
-            const parsedDate = new Date(date);
-            if (!Number.isNaN(parsedDate.getTime())) {
-                return new Intl.DateTimeFormat("pt-BR", {
+    // Formata a data para exibição em português (pt-BR)
+    let formattedDate = date;
+    if (date) {
+        try {
+            const d = new Date(date);
+            if (!Number.isNaN(d.getTime())) {
+                formattedDate = new Intl.DateTimeFormat("pt-BR", {
                     dateStyle: "short",
                     timeStyle: "short",
-                }).format(parsedDate).replace(",", " às");
+                }).format(d).replace(",", " às");
             }
+        } catch {
+            formattedDate = date;
         }
-
-        const [datePart, timePart] = date.split(" ");
-        return timePart ? `${datePart} às ${timePart}` : datePart;
-    })();
+    }
 
     return (
         <a
             href={href}
-            className="theme-surface block h-full w-full overflow-hidden rounded-2xl shadow-md
-                 transition-transform duration-150 ease-out
-                 hover:-translate-y-0.5 hover:shadow-lg"
+            className="block rounded-3xl bg-pallete-gray shadow-sm
+                 transition-transform duration-150 ease-out hover:-translate-y-1"
         >
-            {/* Banner */}
+            {/* Banner da postagem (topo arredondado, verde ou imagem) */}
             <div
-                className="h-27.5 flex items-center justify-center bg-cover bg-center bg-pallete-green"
+                className="h-48 flex items-center justify-center bg-cover bg-center bg-pallete-green rounded-t-3xl overflow-hidden"
                 style={
                     bannerImage ? { backgroundImage: `url(${toProxyUrl(bannerImage)})` } : undefined
                 }
             >
                 {!bannerImage && (
-                    <span className="text-white text-2xl font-bold">banner</span>
+                    <span className="text-white text-3xl font-bold">banner</span>
                 )}
             </div>
 
-            {/* Avatar sobreposto entre o banner e o corpo do card */}
-            <div className="flex justify-center -mt-7">
+            {/* Foto de perfil do autor sobreposta entre o banner e o corpo */}
+            <div className="flex justify-center -mt-8">
                 <img
-                    src={toProxyUrl(avatarImage) || '/temperos.svg'}
-                    alt={`Foto de ${author}`}
-                    className="theme-border w-14 h-14 rounded-full object-cover border-[3px] bg-gray-200"
+                    src={toProxyUrl(avatarImage)}
+                    alt={`Foto de perfil de ${author}`}
+                    className="w-16 h-16 rounded-full object-cover border-[4px] border-white bg-white"
+                    onError={(e) => {
+                        e.target.src = "/temperos.svg";
+                    }}
                 />
             </div>
 
             {/* Corpo do card */}
-            <div className="px-3.5 pb-4 pt-1 text-center">
-                <p className="theme-text-muted mt-1 mb-2 text-xs">{formattedDate}</p>
-                <h3 className="theme-heading mb-1.5 text-[12pt] font-bold underline leading-tight">
+            <div className="px-5 pb-6 pt-3 text-center">
+                <p className="text-gray-500 mt-1 mb-2 text-sm">{formattedDate}</p>
+                <h3
+                    className="mb-1.5 text-base font-bold underline leading-tight"
+                    style={{ color: "#000", WebkitTextFillColor: "#000", backgroundImage: "none" }}
+                >
                     {title}
                 </h3>
-                <p className="theme-text-muted text-[0.8rem]">por {author}</p>
+                <p className="text-gray-500 text-sm">por {author}</p>
             </div>
         </a>
     );

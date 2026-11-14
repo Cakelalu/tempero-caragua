@@ -1,6 +1,5 @@
-import CardPost from "./CardPost";
-
 const API_BASE_URL = (import.meta.env.VITE_API_URL || "http://localhost:4000").replace(/\/$/, "");
+import CardPost from "./CardPost";
 
 // function getCoverUrl(cover) {
 //     if (!cover) return undefined;
@@ -29,7 +28,6 @@ export default function FeaturedPosts({ posts = [] }) {
             ) : (
                 <div className="grid grid-cols-1 items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {featuredPosts.map((post) => {
-                        // O campo 'imagens' vem como JSON string do banco; pega a primeira como banner
                         let imagens = [];
                         if (post.imagens) {
                             try {
@@ -40,18 +38,14 @@ export default function FeaturedPosts({ posts = [] }) {
                                 imagens = [];
                             }
                         }
-                        const bannerImage = imagens?.[0] || null;
-                        const avatarImage = post.user?.imagemPerfil || null;
-                        const author = post.user?.nomeUsuario || 'Autor desconhecido';
-
                         return (
                             <CardPost
                                 key={post.id || post.slug}
-                                bannerImage={bannerImage}
-                                avatarImage={avatarImage}
+                                bannerImage={imagens?.[0] || null}
+                                avatarImage={post.user?.imagemPerfil || null}
                                 date={post.dataPostagem}
                                 title={post.titulo}
-                                author={author}
+                                author={post.user?.nomeUsuario || 'Autor desconhecido'}
                                 href={`/posts/${post.slug || post.id}`}
                             />
                         );

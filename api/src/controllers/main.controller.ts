@@ -8,14 +8,31 @@ import { PrismaClient } from "@prisma/client"
 const prisma = new PrismaClient()
 
 export const getPost: RequestHandler = async (req, res) => {
-    if (!req.user) return
-
     const { slug } = req.params
     if (!slug) {
         return res.status(400).json({ error: 'Um slug é requerido' })
     }
 
-    const post = await prisma.post.findUnique({ where: { slug } })
+    const post = await prisma.post.findUnique({
+        where: { slug },
+        include: {
+            user: {
+                select: {
+                    nomeUsuario: true,
+                    imagemPerfil: true,
+                    nome: true,
+                }
+            },
+            tagged: {
+                select: {
+                    tagNome: true,
+                }
+            },
+            _count: {
+                select: { liked: true }
+            }
+        }
+    })
     if (!post) {
         return res.status(404).json({ error: 'Postagem não encontrada' })
     }
@@ -45,29 +62,73 @@ export const getPosts: RequestHandler = async (req, res) => {
     try {
         const { query } = req.query;
         if (query) {
-            const tags = query.split(',').map(tag => tag.trim());
-            const taggedPosts = await prisma.tagged.findMany({
+            const posts = await prisma.post.findMany({
                 where: {
-                    tagNome: {
-                        in: tags
-                    }
+                    titulo: {
+                        contains: query as string,
+                    },
                 },
                 include: {
-                    post: {
-                        include: {
-                            user: {
-                                select: {
-                                    nomeUsuario: true,
-                                    imagemPerfil: true,
-                                }
-                            }
+                    user: {
+                        select: {
+                            nomeUsuario: true,
+                            imagemPerfil: true,
                         }
                     }
-                }
+                },
+                orderBy: { dataPostagem: 'desc' }
             });
-            const posts = taggedPosts.map(tagged => tagged.post);
             return res.status(200).json(posts);
         }
+
+        const following = req.query.following === 'true';
+        const sort = req.query.sort;
+
+        if (following) {
+            if (!req.user) {
+                return res.status(401).json({ error: 'Usuário não autenticado' });
+            }
+            const follows = await prisma.followed.findMany({
+                where: { seguidorId: req.user.id },
+                select: { perfilId: true }
+            });
+            const perfilIds = follows.map(f => f.perfilId);
+            const allPosts = await prisma.post.findMany({
+                where: { autorId: { in: perfilIds } },
+                include: {
+                    user: {
+                        select: {
+                            nomeUsuario: true,
+                            imagemPerfil: true,
+                        }
+                    }
+                },
+                orderBy: { dataPostagem: 'desc' }
+            });
+            return res.status(200).json(allPosts);
+        }
+
+        if (sort === 'popular') {
+            const popularPosts = await prisma.post.findMany({
+                include: {
+                    user: {
+                        select: {
+                            nomeUsuario: true,
+                            imagemPerfil: true,
+                        }
+                    },
+                    _count: {
+                        select: { liked: true }
+                    }
+                },
+                orderBy: {
+                    liked: { _count: 'desc' }
+                },
+                take: 30
+            });
+            return res.status(200).json(popularPosts);
+        }
+
         const allPosts = await prisma.post.findMany({
             include: {
                 user: {
@@ -76,7 +137,8 @@ export const getPosts: RequestHandler = async (req, res) => {
                         imagemPerfil: true,
                     }
                 }
-            }
+            },
+            orderBy: { dataPostagem: 'desc' }
         });
         return res.status(200).json(allPosts);
     } catch (error) {

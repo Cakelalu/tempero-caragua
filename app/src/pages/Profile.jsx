@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { FiUser } from 'react-icons/fi';
 import { toProxyUrl } from '../utils/imageProxy';
 import CreatePost from '../components/CreatePost';
 
 export default function Profile() {
+  const { id: urlUserId } = useParams();
+
   const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(null);
 
   // 1. Estados para gerenciar os dados vindos do seu backend
   const [profile, setProfile] = useState(null);
@@ -19,11 +23,27 @@ export default function Profile() {
   const token = localStorage.getItem('token_login') || ''; 
   const API_URL = `${import.meta.env.VITE_PUBLIC_API_URL}/user`; 
 
+  // Decodifica o JWT para obter o ID do usuário logado
+  const getUserLoggedId = () => {
+    try {
+      if (!token) return null;
+      const payload = token.split('.')[1];
+      if (!payload) return null;
+      const decoded = JSON.parse(atob(payload));
+      return decoded.id || decoded.userId || null;
+    } catch {
+      return null;
+    }
+  };
+
+  const userLoggedId = getUserLoggedId();
+
   // 3. Função para carregar os dados cadastrais + página 1 de posts (Primeira carga da página)
   const carregarPerfilCompleto = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_URL}/u/?page=1`, {
+      const targetUserId = urlUserId || getUserLoggedId();
+      const response = await fetch(`${API_URL}/u/${targetUserId ? targetUserId : ''}?page=1`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -38,6 +58,7 @@ export default function Profile() {
       setProfile(data.profile);
       setPosts(data.posts);
       setHasMore(data.pagination.hasMore);
+      setIsFollowing(data.profile?.isFollowing ?? null);
     } catch (error) {
       console.error('Erro na requisição inicial:', error);
     } finally {
@@ -76,6 +97,48 @@ export default function Profile() {
     }
   };
 
+  const handleFollowProfile = async () => {
+    if (!profile) return;
+    try {
+      const token = localStorage.getItem('token_login') || '';
+      const response = await fetch(`${API_URL}/u/${profile.id}/seguir`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        credentials: 'include',
+      });
+      if (!response.ok) throw new Error('Não foi possível seguir o usuário.');
+      setIsFollowing(true);
+      // Atualiza o contador de seguidores
+      setProfile((prev) => prev ? { ...prev, stats: { ...prev.stats, followersCount: prev.stats.followersCount + 1 } } : prev);
+    } catch (error) {
+      console.error('Erro ao seguir perfil:', error);
+    }
+  };
+
+  const handleUnfollowProfile = async () => {
+    if (!profile) return;
+    try {
+      const token = localStorage.getItem('token_login') || '';
+      const response = await fetch(`${API_URL}/u/${profile.id}/deixar-seguir`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        credentials: 'include',
+      });
+      if (!response.ok) throw new Error('Não foi possível deixar de seguir o usuário.');
+      setIsFollowing(false);
+      // Atualiza o contador de seguidores
+      setProfile((prev) => prev ? { ...prev, stats: { ...prev.stats, followersCount: Math.max(0, prev.stats.followersCount - 1) } } : prev);
+    } catch (error) {
+      console.error('Erro ao deixar de seguir perfil:', error);
+    }
+  };
+
   // Dispara a busca assim que o componente é montado na tela
   useEffect(() => {
     async function load() {
@@ -83,6 +146,14 @@ export default function Profile() {
     }
     load();
   }, []);
+
+  // Recarrega o perfil quando o ID da URL mudar (visualizar outro usuário)
+  useEffect(() => {
+    async function load() {
+      await carregarPerfilCompleto();
+    }
+    load();
+  }, [urlUserId]);
 
   // Trata o campo 'imagens' stringificado vindo do Prisma
   const obterLinkDaImagem = (imagensString) => {
@@ -153,6 +224,14 @@ export default function Profile() {
              <span className="block text-lg font-bold text-gray-800">{profile.stats.followingCount}</span>
              <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Seguindo</span>
            </div>
+           {isFollowing !== null && profile.id !== userLoggedId && (
+             <button
+               onClick={isFollowing ? handleUnfollowProfile : handleFollowProfile}
+               className="ml-2 px-3 py-1 rounded-lg text-xs font-medium transition-colors border bg-black text-white border-white hover:bg-gray-800"
+             >
+               {isFollowing ? "Seguindo" : "Seguir"}
+             </button>
+           )}
          </div>
       </div>
 
@@ -204,7 +283,7 @@ export default function Profile() {
                   <text className='-translate-y-1/16'>+</text>
                 </button>
                 {posts.map((post) => (
-                  <div key={post.id} className="overflow-hidden min-w-0 cols-1 rounded-xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-shadow duration-200">
+                  <div key={post.id} className="overflow-hidden min-w-0 cols-1 rounded-xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer" onClick={() => { window.location.href = `/posts/${post.slug || post.id}`; }}>
                     <div className="h-44 w-full bg-gray-50 flex items-center justify-center">
                       {obterLinkDaImagem(post.imagens) ? (
                         <img 
