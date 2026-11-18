@@ -17,7 +17,10 @@ server.use(cors({
         "https://tempero-caragua-app.onrender.com",
         "https://dev-teca-app.onrender.com"
     ],
-    credentials: true
+    credentials: true,
+    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
+    allowedHeaders: ["Authorization", "Content-Type"],
+    maxAge: 86400
 }))
 // server.use(bodyParser.json())
 // server.use(bodyParser.urlencoded({ extended: true }))

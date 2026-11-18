@@ -4,8 +4,7 @@ import { getUserById } from '../services/user.service'
 import { handleCover, createPostSlug, createPost } from "../services/post.service"
 import { coverToUrl } from "../utils/cover-to-url"
 import type { ExtendedRequest } from '../types/extended-request';
-import { PrismaClient } from "@prisma/client"
-const prisma = new PrismaClient()
+import { prisma } from "../libs/prisma"
 
 export const getPost: RequestHandler = async (req, res) => {
     const { slug } = req.params
