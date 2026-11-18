@@ -7,6 +7,7 @@ import { adminRoutes } from './routes/admin.routes'
 import { userRoutes } from './routes/user.routes'
 import { guestRoutes } from './routes/guest.routes'
 import { imageRoutes } from './routes/image.routes'
+import { prisma } from './libs/prisma'
 
 const server = express()
 
@@ -37,3 +38,13 @@ server.use('/', mainRoutes)
 server.listen(4500, () => {
     console.log('API Online...')
 })
+
+// Keep-alive: mantém conexões com o banco ativas a cada 8 minutos
+setInterval(async () => {
+    try {
+        await prisma.$queryRaw`SELECT 1`;
+        console.log('[Keep-Alive] Conexão com o banco mantida ativa.');
+    } catch (err) {
+        console.error('[Keep-Alive] Erro ao manter conexão com o banco:', err);
+    }
+}, 8 * 60 * 1000);
