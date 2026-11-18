@@ -1,8 +1,9 @@
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { FiFilter } from "react-icons/fi";
 import CardPost from "../components/CardPost";
 import UserSearchCard from "../components/UserSearchCard";
 import FilterPanel from "../components/FilterPanel";
+import { useSearchPosts, useSearchUsers } from "../hooks/useSearch";
 
 const API_BASE_URL = (import.meta.env.VITE_PUBLIC_API_URL || "http://localhost:4500").replace(/\/$/, "");
 
@@ -13,179 +14,76 @@ const SECTIONS = [
 ];
 
 export default function Posts() {
-  // ---------- Estados gerais ----------
+  // ---------- Estados de UI ---------- 
   const [filterOpen, setFilterOpen] = useState(false);
   const [activeFilterTab, setActiveFilterTab] = useState("posts"); // "posts" | "users"
   const [searchQuery, setSearchQuery] = useState("");
 
-  // ---------- Estados por seção ----------
-  const [postsRecentes, setPostsRecentes] = useState([]);
+  // ---------- Estados de paginação por seção ---------- 
   const [postsRecentesPage, setPostsRecentesPage] = useState(1);
-  const [postsRecentesHasMore, setPostsRecentesHasMore] = useState(true);
-  const [postsRecentesLoading, setPostsRecentesLoading] = useState(false);
-
-  const [postsDestaques, setPostsDestaques] = useState([]);
   const [postsDestaquesPage, setPostsDestaquesPage] = useState(1);
-  const [postsDestaquesHasMore, setPostsDestaquesHasMore] = useState(true);
-  const [postsDestaquesLoading, setPostsDestaquesLoading] = useState(false);
-
-  const [postsSeguidores, setPostsSeguidores] = useState([]);
   const [postsSeguidoresPage, setPostsSeguidoresPage] = useState(1);
-  const [postsSeguidoresHasMore, setPostsSeguidoresHasMore] = useState(true);
-  const [postsSeguidoresLoading, setPostsSeguidoresLoading] = useState(false);
-
-  const [postsError, setPostsError] = useState("");
-
-  // ---------- Resultados de Usuários ----------
-  const [users, setUsers] = useState([]);
   const [usersPage, setUsersPage] = useState(1);
-  const [usersHasMore, setUsersHasMore] = useState(true);
-  const [usersLoading, setUsersLoading] = useState(false);
-  const [usersError, setUsersError] = useState("");
 
-  // ---------- Refs para infinite scroll ----------
+  // ---------- Refs para infinite scroll ---------- 
   const recentesRef = useRef(null);
   const destaquesRef = useRef(null);
   const seguidoresRef = useRef(null);
   const usersRef = useRef(null);
 
-  // ---------- Funções de busca ----------
+  // ---------- Hooks React Query (busca otimizada com debounce de 400ms) ---------- 
+  const postsRecentes = useSearchPosts(searchQuery, postsRecentesPage, null, null);
+  const postsDestaques = useSearchPosts(searchQuery, postsDestaquesPage, "popular", null);
+  const postsSeguidores = useSearchPosts(searchQuery, postsSeguidoresPage, null, true);
+  const users = useSearchUsers(searchQuery, usersPage);
 
-  const fetchSection = useCallback(async (
-    sectionKey,
-    setDataFn,
-    setPageFn,
-    setHasMoreFn,
-    setLoadingFn,
-    page,
-    append = false
-  ) => {
-    setLoadingFn(true);
-    try {
-      const params = new URLSearchParams();
-      if (searchQuery) params.append("query", searchQuery);
-      if (page > 1) params.append("page", String(page));
+  const {
+    data: postsRecentesData,
+    isFetching: postsRecentesFetching,
+    error: postsRecentesError,
+  } = postsRecentes;
 
-      const section = SECTIONS.find(s => s.key === sectionKey);
-      if (section?.sort) params.append("sort", section.sort);
-      if (section?.following) params.append("following", "true");
+  const {
+    data: postsDestaquesData,
+    isFetching: postsDestaquesFetching,
+    error: postsDestaquesError,
+  } = postsDestaques;
 
-      const token = localStorage.getItem("token_login") || "";
-      const headers = { "Content-Type": "application/json" };
-      if (token) headers["Authorization"] = `Bearer ${token}`;
+  const {
+    data: postsSeguidoresData,
+    isFetching: postsSeguidoresFetching,
+    error: postsSeguidoresError,
+  } = postsSeguidores;
 
-      const response = await fetch(`${API_BASE_URL}/posts?${params.toString()}`, {
-        method: "GET",
-        headers,
-        credentials: "include",
-      });
+  const {
+    data: usersData,
+    isFetching: usersFetching,
+    error: usersError,
+  } = users;
 
-      if (!response.ok) throw new Error("Não foi carregar as postagens.");
 
-      const data = await response.json();
-      const items = Array.isArray(data) ? data : data.posts || [];
 
-      if (append) {
-        setDataFn((prev) => [...prev, ...items]);
-      } else {
-        setDataFn(items);
-      }
-
-      const total = data.total || data.pagination?.total || items.length;
-      const limit = data.limit || data.pagination?.limit || 12;
-      setHasMoreFn(total > page * limit);
-    } catch (error) {
-      setPostsError(error.message || "Erro ao carregar postagens.");
-    } finally {
-      setLoadingFn(false);
-    }
-  }, [searchQuery, API_BASE_URL]);
-
-  const fetchUsers = useCallback(async (page, append = false) => {
-    if (usersLoading) return;
-    setUsersLoading(true);
-    try {
-      const params = new URLSearchParams();
-      if (searchQuery) params.append("q", searchQuery);
-      if (page > 1) params.append("page", String(page));
-
-      const token = localStorage.getItem("token_login") || "";
-      const headers = { "Content-Type": "application/json" };
-      if (token) headers["Authorization"] = `Bearer ${token}`;
-
-      const response = await fetch(`${API_BASE_URL}/user/search?${params.toString()}`, {
-        method: "GET",
-        headers,
-        credentials: "include",
-      });
-
-      if (!response.ok) throw new Error("Não foi possível buscar usuários.");
-
-      const data = await response.json();
-      const items = Array.isArray(data) ? data : data.users || [];
-
-      if (append) {
-        setUsers((prev) => [...prev, ...items]);
-      } else {
-        setUsers(items);
-      }
-
-      const total = data.total || data.pagination?.total || items.length;
-      const limit = data.limit || data.pagination?.limit || 20;
-      setUsersHasMore(total > page * limit);
-    } catch (error) {
-      setUsersError(error.message || "Erro ao buscar usuários.");
-    } finally {
-      setUsersLoading(false);
-    }
-  }, [searchQuery, API_BASE_URL]);
-
-  // ---------- Inicialização ----------
-  useEffect(() => {
-    setPostsRecentesPage(1);
-    setPostsRecentes([]);
-    setPostsRecentesHasMore(true);
-    fetchSection("recentes", setPostsRecentes, setPostsRecentesPage, setPostsRecentesHasMore, setPostsRecentesLoading, 1);
-
-    setPostsDestaquesPage(1);
-    setPostsDestaques([]);
-    setPostsDestaquesHasMore(true);
-    fetchSection("destaques", setPostsDestaques, setPostsDestaquesPage, setPostsDestaquesHasMore, setPostsDestaquesLoading, 1);
-
-    setPostsSeguidoresPage(1);
-    setPostsSeguidores([]);
-    setPostsSeguidoresHasMore(true);
-    fetchSection("seguidores", setPostsSeguidores, setPostsSeguidoresPage, setPostsSeguidoresHasMore, setPostsSeguidoresLoading, 1);
-  }, [searchQuery, fetchSection]);
-
-  useEffect(() => {
-    setUsersPage(1);
-    setUsers([]);
-    setUsersHasMore(true);
-    fetchUsers(1);
-  }, [searchQuery, fetchUsers]);
-
-  // ---------- Infinite scroll ----------
+  // ---------- Infinite scroll ---------- 
   const observerOptions = { threshold: 0.1 };
 
   useEffect(() => {
     const obs1 = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && postsRecentesHasMore && !postsRecentesLoading) {
+      if (entries[0].isIntersecting && postsRecentesData?.hasMore && !postsRecentesFetching) {
         setPostsRecentesPage((p) => p + 1);
       }
     }, observerOptions);
     const obs2 = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && postsDestaquesHasMore && !postsDestaquesLoading) {
+      if (entries[0].isIntersecting && postsDestaquesData?.hasMore && !postsDestaquesFetching) {
         setPostsDestaquesPage((p) => p + 1);
       }
     }, observerOptions);
     const obs3 = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && postsSeguidoresHasMore && !postsSeguidoresLoading) {
+      if (entries[0].isIntersecting && postsSeguidoresData?.hasMore && !postsSeguidoresFetching) {
         setPostsSeguidoresPage((p) => p + 1);
       }
     }, observerOptions);
     const obs4 = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && usersHasMore && !usersLoading) {
+      if (entries[0].isIntersecting && usersData?.hasMore && !usersFetching) {
         setUsersPage((p) => p + 1);
       }
     }, observerOptions);
@@ -201,25 +99,18 @@ export default function Posts() {
       obs3.disconnect();
       obs4.disconnect();
     };
-  }, [postsRecentesHasMore, postsRecentesLoading, postsDestaquesHasMore, postsDestaquesLoading, postsSeguidoresHasMore, postsSeguidoresLoading, usersHasMore, usersLoading]);
+  }, [
+    postsRecentesData?.hasMore,
+    postsRecentesFetching,
+    postsDestaquesData?.hasMore,
+    postsDestaquesFetching,
+    postsSeguidoresData?.hasMore,
+    postsSeguidoresFetching,
+    usersData?.hasMore,
+    usersFetching,
+  ]);
 
-  useEffect(() => {
-    if (postsRecentesPage > 1) fetchSection("recentes", setPostsRecentes, setPostsRecentesPage, setPostsRecentesHasMore, setPostsRecentesLoading, postsRecentesPage, true);
-  }, [postsRecentesPage, fetchSection]);
-
-  useEffect(() => {
-    if (postsDestaquesPage > 1) fetchSection("destaques", setPostsDestaques, setPostsDestaquesPage, setPostsDestaquesHasMore, setPostsDestaquesLoading, postsDestaquesPage, true);
-  }, [postsDestaquesPage, fetchSection]);
-
-  useEffect(() => {
-    if (postsSeguidoresPage > 1) fetchSection("seguidores", setPostsSeguidores, setPostsSeguidoresPage, setPostsSeguidoresHasMore, setPostsSeguidoresLoading, postsSeguidoresPage, true);
-  }, [postsSeguidoresPage, fetchSection]);
-
-  useEffect(() => {
-    if (usersPage > 1) fetchUsers(usersPage, true);
-  }, [usersPage, fetchUsers]);
-
-  // ---------- Handlers ----------
+  // ---------- Handlers ---------- 
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -227,49 +118,20 @@ export default function Posts() {
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    if (activeFilterTab === "posts") {
-      // Recarregar todas as seções de posts
-      setPostsRecentesPage(1);
-      setPostsRecentes([]);
-      setPostsRecentesHasMore(true);
-      fetchSection("recentes", setPostsRecentes, setPostsRecentesPage, setPostsRecentesHasMore, setPostsRecentesLoading, 1);
-
-      setPostsDestaquesPage(1);
-      setPostsDestaques([]);
-      setPostsDestaquesHasMore(true);
-      fetchSection("destaques", setPostsDestaques, setPostsDestaquesPage, setPostsDestaquesHasMore, setPostsDestaquesLoading, 1);
-
-      setPostsSeguidoresPage(1);
-      setPostsSeguidores([]);
-      setPostsSeguidoresHasMore(true);
-      fetchSection("seguidores", setPostsSeguidores, setPostsSeguidoresPage, setPostsSeguidoresHasMore, setPostsSeguidoresLoading, 1);
-    } else {
-      setUsersPage(1);
-      setUsers([]);
-      setUsersHasMore(true);
-      fetchUsers(1);
-    }
     setFilterOpen(false);
+    // React Query já reage ao debounce do searchQuery; apenas reseta paginação
+    setPostsRecentesPage(1);
+    setPostsDestaquesPage(1);
+    setPostsSeguidoresPage(1);
+    setUsersPage(1);
   };
 
-  const handleSelectTag = async (tag) => {
+  const handleSelectTag = (tag) => {
     setSearchQuery(tag);
     setFilterOpen(false);
-    // Recarregar todas as seções com a tag selecionada
     setPostsRecentesPage(1);
-    setPostsRecentes([]);
-    setPostsRecentesHasMore(true);
-    fetchSection("recentes", setPostsRecentes, setPostsRecentesPage, setPostsRecentesHasMore, setPostsRecentesLoading, 1);
-
     setPostsDestaquesPage(1);
-    setPostsDestaques([]);
-    setPostsDestaquesHasMore(true);
-    fetchSection("destaques", setPostsDestaques, setPostsDestaquesPage, setPostsDestaquesHasMore, setPostsDestaquesLoading, 1);
-
     setPostsSeguidoresPage(1);
-    setPostsSeguidores([]);
-    setPostsSeguidoresHasMore(true);
-    fetchSection("seguidores", setPostsSeguidores, setPostsSeguidoresPage, setPostsSeguidoresHasMore, setPostsSeguidoresLoading, 1);
   };
 
   // Escuta evento de seleção de tag vindo do FilterPanel
@@ -280,10 +142,6 @@ export default function Posts() {
     window.addEventListener("select-tag", handler);
     return () => window.removeEventListener("select-tag", handler);
   }, []);
-
-  const openPost = (post) => {
-    window.location.href = `/posts/${post.slug || post.id}`;
-  };
 
   const handleFollowUser = async (user) => {
     try {
@@ -297,13 +155,6 @@ export default function Posts() {
         credentials: "include",
       });
       if (!response.ok) throw new Error("Não foi possível seguir o usuário.");
-
-      // Atualiza o estado local para refletir que agora está seguindo
-      setUsers((prev) =>
-        prev.map((u) =>
-          u.id === user.id ? { ...u, isFollowing: true } : u
-        )
-      );
     } catch (error) {
       console.error("Erro ao seguir usuário:", error);
     }
@@ -322,20 +173,16 @@ export default function Posts() {
       });
       if (!response.ok) throw new Error("Não foi possível deixar de seguir o usuário.");
 
-      // Atualiza o estado local para refletir que deixou de seguir
-      setUsers((prev) =>
-        prev.map((u) =>
-          u.id === user.id ? { ...u, isFollowing: false } : u
-        )
-      );
+      // idem acima
     } catch (error) {
       console.error("Erro ao deixar de seguir usuário:", error);
     }
   };
 
-  // ---------- Renderização de uma seção ----------
+  // ---------- Renderização de uma seção de posts ---------- 
   const renderSection = (section, data, loading, hasMore, errorMsg, ref) => {
-    const isEmpty = data.length === 0 && !loading;
+    const items = data?.items || [];
+    const isEmpty = items.length === 0 && !loading;
     return (
       <section key={section.key} className="mb-12">
         <h2 className="mb-6 text-center text-3xl font-bold tracking-tight">
@@ -350,7 +197,7 @@ export default function Posts() {
         ) : (
           <>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {data.map((post) => {
+              {items.map((post) => {
                 let imagens = [];
                 if (post.imagens) {
                   try {
@@ -382,8 +229,9 @@ export default function Posts() {
     );
   };
 
-  // ---------- Renderização ----------
+  // ---------- Renderização ---------- 
   const isUsersTab = activeFilterTab === "users";
+  const usersItems = usersData?.items || [];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -401,7 +249,6 @@ export default function Posts() {
                 }
                 value={searchQuery}
                 onChange={handleSearchChange}
-                onSubmit={handleSearchSubmit}
                 className="w-full pl-10 pr-20 py-3 rounded-xl border border-gray-200 text-gray-900 focus:ring-2 focus:ring-pallete-green focus:outline-none text-base"
               />
               <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
@@ -440,11 +287,11 @@ export default function Posts() {
           <div className="space-y-0">
             {usersError ? (
               <p className="text-center text-red-500 text-sm py-8">{usersError}</p>
-            ) : users.length === 0 ? (
+            ) : usersItems.length === 0 ? (
               <p className="text-center text-gray-500 text-sm py-12">Nenhum usuário encontrado.</p>
             ) : (
               <>
-                {users.map((user) => (
+                {usersItems.map((user) => (
                   <UserSearchCard
                     key={user.id}
                     user={{
@@ -458,8 +305,8 @@ export default function Posts() {
                     onUnfollow={handleUnfollowUser}
                   />
                 ))}
-                {usersHasMore && !usersLoading && <div ref={usersRef} className="h-20" />}
-                {usersLoading && <p className="text-center text-gray-400 text-sm py-4">Buscando mais usuários...</p>}
+                {usersData?.hasMore && !usersFetching && <div ref={usersRef} className="h-20" />}
+                {usersFetching && <p className="text-center text-gray-400 text-sm py-4">Buscando mais usuários...</p>}
               </>
             )}
           </div>
@@ -467,26 +314,26 @@ export default function Posts() {
           <>
             {renderSection(
               SECTIONS[0],
-              postsRecentes,
-              postsRecentesLoading,
-              postsRecentesHasMore,
-              postsError,
+              postsRecentesData,
+              postsRecentesFetching,
+              postsRecentesData?.hasMore,
+              postsRecentesError?.message,
               recentesRef
             )}
             {renderSection(
               SECTIONS[1],
-              postsDestaques,
-              postsDestaquesLoading,
-              postsDestaquesHasMore,
-              postsError,
+              postsDestaquesData,
+              postsDestaquesFetching,
+              postsDestaquesData?.hasMore,
+              postsDestaquesError?.message,
               destaquesRef
             )}
             {renderSection(
               SECTIONS[2],
-              postsSeguidores,
-              postsSeguidoresLoading,
-              postsSeguidoresHasMore,
-              postsError,
+              postsSeguidoresData,
+              postsSeguidoresFetching,
+              postsSeguidoresData?.hasMore,
+              postsSeguidoresError?.message,
               seguidoresRef
             )}
           </>
