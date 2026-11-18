@@ -9,4 +9,5 @@ mainRoutes.get('/api/teste', (req, res) => {
     res.json({ message: 'API funcionando!' })
 })
 mainRoutes.get('/posts', authOptional, mainController.getPosts)
+mainRoutes.get('/posts/feed', authOptional, mainController.getPostsFeed)
 mainRoutes.get('/post/:slug', mainController.getPost)

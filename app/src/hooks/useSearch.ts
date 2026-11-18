@@ -22,6 +22,27 @@ export interface SearchResponse<T> {
   hasMore: boolean;
 }
 
+/** Campos realmente consumidos pelas listagens de posts (Cards, grades, etc.) */
+export interface PostListItem {
+  id: string;
+  slug: string;
+  titulo: string;
+  imagens: string | null;
+  dataPostagem: string;
+  user: {
+    nomeUsuario: string;
+    imagemPerfil: string | null;
+  } | null;
+}
+
+export interface SelectedPostsResponse {
+  items: PostListItem[];
+  total: number;
+  limit: number;
+  page: number;
+  hasMore: boolean;
+}
+
 export function useSearchPosts(
   query: string,
   page: number = 1,
@@ -30,7 +51,7 @@ export function useSearchPosts(
 ) {
   const debouncedQuery = useDebounce(query, 400);
 
-  return useQuery<SearchResponse<any>>({
+  return useQuery<SearchResponse<any>, Error, SelectedPostsResponse>({
     queryKey: [
       "posts",
       "search",
@@ -74,6 +95,53 @@ export function useSearchPosts(
     },
     // Busca mesmo com query vazia na primeira carga (page === 1)
     enabled: debouncedQuery.length > 0 || page === 1,
+    staleTime: 1000 * 60 * 5,
+    select: (data) => {
+      const items = Array.isArray(data) ? data : data.posts || [];
+      const total =
+        data.total || data.pagination?.total || items.length;
+      const limit =
+        data.limit || data.pagination?.limit || 12;
+
+      return {
+        items: items.map((post) => ({
+          id: post.id,
+          slug: post.slug,
+          titulo: post.titulo,
+          imagens: post.imagens,
+          dataPostagem: post.dataPostagem,
+          user: post.user
+            ? {
+                nomeUsuario: post.user.nomeUsuario,
+                imagemPerfil: post.user.imagemPerfil,
+              }
+            : null,
+        })),
+        total,
+        limit,
+        page,
+        hasMore: total > page * limit,
+      };
+    },
+  });
+}
+
+export function usePostsFeed() {
+  return useQuery<{
+    recentes: any[];
+    populares: any[];
+    seguindo: any[];
+  }>({
+    queryKey: ["posts", "feed"],
+    queryFn: async () => {
+      const response = await fetch(`${API_BASE_URL}/posts/feed`, {
+        method: "GET",
+        headers: getAuthHeaders(),
+        credentials: "include",
+      });
+      if (!response.ok) throw new Error("Não foi possível carregar o feed.");
+      return response.json();
+    },
     staleTime: 1000 * 60 * 5,
   });
 }

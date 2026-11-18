@@ -3,14 +3,14 @@ import { FiFilter } from "react-icons/fi";
 import CardPost from "../components/CardPost";
 import UserSearchCard from "../components/UserSearchCard";
 import FilterPanel from "../components/FilterPanel";
-import { useSearchPosts, useSearchUsers } from "../hooks/useSearch";
+import { usePostsFeed, useSearchUsers } from "../hooks/useSearch";
 
 const API_BASE_URL = (import.meta.env.VITE_PUBLIC_API_URL || "http://localhost:4500").replace(/\/$/, "");
 
 const SECTIONS = [
-  { key: "recentes", label: "Recentes", sort: null, following: null },
-  { key: "destaques", label: "Destaques", sort: "popular", following: null },
-  { key: "seguidores", label: "Seguidores", sort: null, following: true },
+  { key: "recentes", label: "Recentes" },
+  { key: "destaques", label: "Destaques" },
+  { key: "seguindo", label: "Seguindo" },
 ];
 
 export default function Posts() {
@@ -19,10 +19,7 @@ export default function Posts() {
   const [activeFilterTab, setActiveFilterTab] = useState("posts"); // "posts" | "users"
   const [searchQuery, setSearchQuery] = useState("");
 
-  // ---------- Estados de paginação por seção ---------- 
-  const [postsRecentesPage, setPostsRecentesPage] = useState(1);
-  const [postsDestaquesPage, setPostsDestaquesPage] = useState(1);
-  const [postsSeguidoresPage, setPostsSeguidoresPage] = useState(1);
+  // ---------- Estados de paginação apenas para usuários ---------- 
   const [usersPage, setUsersPage] = useState(1);
 
   // ---------- Refs para infinite scroll ---------- 
@@ -31,29 +28,28 @@ export default function Posts() {
   const seguidoresRef = useRef(null);
   const usersRef = useRef(null);
 
-  // ---------- Hooks React Query (busca otimizada com debounce de 400ms) ---------- 
-  const postsRecentes = useSearchPosts(searchQuery, postsRecentesPage, null, null);
-  const postsDestaques = useSearchPosts(searchQuery, postsDestaquesPage, "popular", null);
-  const postsSeguidores = useSearchPosts(searchQuery, postsSeguidoresPage, null, true);
+  // ---------- Hook React Query: feed agregado (1 requisição para 3 seções) ---------- 
+  const postsFeed = usePostsFeed();
+
+  const {
+    data: feedData,
+    isFetching: feedFetching,
+    error: feedError,
+  } = postsFeed;
+
+  const postsRecentesData = feedData?.recentes ?? [];
+  const postsDestaquesData = feedData?.populares ?? [];
+  const postsSeguidoresData = feedData?.seguindo ?? [];
+
+  const postsRecentesError = feedError;
+  const postsDestaquesError = feedError;
+  const postsSeguidoresError = feedError;
+
+  const postsRecentesFetching = feedFetching;
+  const postsDestaquesFetching = feedFetching;
+  const postsSeguidoresFetching = feedFetching;
+
   const users = useSearchUsers(searchQuery, usersPage);
-
-  const {
-    data: postsRecentesData,
-    isFetching: postsRecentesFetching,
-    error: postsRecentesError,
-  } = postsRecentes;
-
-  const {
-    data: postsDestaquesData,
-    isFetching: postsDestaquesFetching,
-    error: postsDestaquesError,
-  } = postsDestaques;
-
-  const {
-    data: postsSeguidoresData,
-    isFetching: postsSeguidoresFetching,
-    error: postsSeguidoresError,
-  } = postsSeguidores;
 
   const {
     data: usersData,
@@ -63,52 +59,22 @@ export default function Posts() {
 
 
 
-  // ---------- Infinite scroll ---------- 
+  // ---------- Infinite scroll (apenas para usuários) ---------- 
   const observerOptions = { threshold: 0.1 };
 
   useEffect(() => {
-    const obs1 = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && postsRecentesData?.hasMore && !postsRecentesFetching) {
-        setPostsRecentesPage((p) => p + 1);
-      }
-    }, observerOptions);
-    const obs2 = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && postsDestaquesData?.hasMore && !postsDestaquesFetching) {
-        setPostsDestaquesPage((p) => p + 1);
-      }
-    }, observerOptions);
-    const obs3 = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && postsSeguidoresData?.hasMore && !postsSeguidoresFetching) {
-        setPostsSeguidoresPage((p) => p + 1);
-      }
-    }, observerOptions);
     const obs4 = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting && usersData?.hasMore && !usersFetching) {
         setUsersPage((p) => p + 1);
       }
     }, observerOptions);
 
-    if (recentesRef.current) obs1.observe(recentesRef.current);
-    if (destaquesRef.current) obs2.observe(destaquesRef.current);
-    if (seguidoresRef.current) obs3.observe(seguidoresRef.current);
     if (usersRef.current) obs4.observe(usersRef.current);
 
     return () => {
-      obs1.disconnect();
-      obs2.disconnect();
-      obs3.disconnect();
       obs4.disconnect();
     };
-  }, [
-    postsRecentesData?.hasMore,
-    postsRecentesFetching,
-    postsDestaquesData?.hasMore,
-    postsDestaquesFetching,
-    postsSeguidoresData?.hasMore,
-    postsSeguidoresFetching,
-    usersData?.hasMore,
-    usersFetching,
-  ]);
+  }, [usersData?.hasMore, usersFetching]);
 
   // ---------- Handlers ---------- 
 
@@ -119,19 +85,12 @@ export default function Posts() {
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     setFilterOpen(false);
-    // React Query já reage ao debounce do searchQuery; apenas reseta paginação
-    setPostsRecentesPage(1);
-    setPostsDestaquesPage(1);
-    setPostsSeguidoresPage(1);
     setUsersPage(1);
   };
 
   const handleSelectTag = (tag) => {
     setSearchQuery(tag);
     setFilterOpen(false);
-    setPostsRecentesPage(1);
-    setPostsDestaquesPage(1);
-    setPostsSeguidoresPage(1);
   };
 
   // Escuta evento de seleção de tag vindo do FilterPanel
@@ -180,8 +139,7 @@ export default function Posts() {
   };
 
   // ---------- Renderização de uma seção de posts ---------- 
-  const renderSection = (section, data, loading, hasMore, errorMsg, ref) => {
-    const items = data?.items || [];
+  const renderSection = (section, items, loading, errorMsg, ref) => {
     const isEmpty = items.length === 0 && !loading;
     return (
       <section key={section.key} className="mb-12">
@@ -221,8 +179,7 @@ export default function Posts() {
                 );
               })}
             </div>
-            {hasMore && !loading && <div ref={ref} className="h-20" />}
-            {loading && <p className="text-center text-gray-400 text-sm py-4">Carregando mais postagens...</p>}
+            {loading && <p className="text-center text-gray-400 text-sm py-4">Carregando postagens...</p>}
           </>
         )}
       </section>
@@ -316,7 +273,6 @@ export default function Posts() {
               SECTIONS[0],
               postsRecentesData,
               postsRecentesFetching,
-              postsRecentesData?.hasMore,
               postsRecentesError?.message,
               recentesRef
             )}
@@ -324,7 +280,6 @@ export default function Posts() {
               SECTIONS[1],
               postsDestaquesData,
               postsDestaquesFetching,
-              postsDestaquesData?.hasMore,
               postsDestaquesError?.message,
               destaquesRef
             )}
@@ -332,7 +287,6 @@ export default function Posts() {
               SECTIONS[2],
               postsSeguidoresData,
               postsSeguidoresFetching,
-              postsSeguidoresData?.hasMore,
               postsSeguidoresError?.message,
               seguidoresRef
             )}

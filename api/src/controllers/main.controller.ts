@@ -57,6 +57,69 @@ export const getPostWithTags: RequestHandler = async (req, res) => {
     res.status(200).json({ posts })
 }
 
+export const getPostsFeed: RequestHandler = async (req, res) => {
+    try {
+        const recentes = await prisma.post.findMany({
+            include: {
+                user: {
+                    select: {
+                        nomeUsuario: true,
+                        imagemPerfil: true,
+                    }
+                }
+            },
+            orderBy: { dataPostagem: 'desc' },
+            take: 12
+        });
+
+        const populares = await prisma.post.findMany({
+            include: {
+                user: {
+                    select: {
+                        nomeUsuario: true,
+                        imagemPerfil: true,
+                    }
+                },
+                _count: {
+                    select: { liked: true }
+                }
+            },
+            orderBy: {
+                liked: { _count: 'desc' }
+            },
+            take: 12
+        });
+
+        let seguindo: any[] = [];
+        if (req.user) {
+            const follows = await prisma.followed.findMany({
+                where: { seguidorId: (req as any).user.id },
+                select: { perfilId: true }
+            });
+            const perfilIds = follows.map(f => f.perfilId);
+            if (perfilIds.length > 0) {
+                seguindo = await prisma.post.findMany({
+                    where: { autorId: { in: perfilIds } },
+                    include: {
+                        user: {
+                            select: {
+                                nomeUsuario: true,
+                                imagemPerfil: true,
+                            }
+                        }
+                    },
+                    orderBy: { dataPostagem: 'desc' },
+                    take: 12
+                });
+            }
+        }
+
+        return res.status(200).json({ recentes, populares, seguindo });
+    } catch (error) {
+        return res.status(500).json({ error: 'Erro ao buscar feed de postagens' });
+    }
+}
+
 export const getPosts: RequestHandler = async (req, res) => {
     try {
         const { query } = req.query;
