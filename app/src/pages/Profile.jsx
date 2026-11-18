@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { FiUser } from 'react-icons/fi';
 import { toProxyUrl } from '../utils/imageProxy';
@@ -20,8 +20,8 @@ export default function Profile() {
 
   // 2. Configurações de Integração com a sua API
   // Ajuste o local onde você salva seu JWT (ex: localStorage, sessionStorage ou cookies)
-  const token = localStorage.getItem('token_login') || ''; 
-  const API_URL = `${import.meta.env.VITE_PUBLIC_API_URL}/user`; 
+  const token = localStorage.getItem('token_login') || '';
+  const API_URL = `${import.meta.env.VITE_PUBLIC_API_URL}/user`;
 
   // Decodifica o JWT para obter o ID do usuário logado
   const getUserLoggedId = () => {
@@ -39,7 +39,7 @@ export default function Profile() {
   const userLoggedId = getUserLoggedId();
 
   // 3. Função para carregar os dados cadastrais + página 1 de posts (Primeira carga da página)
-  const carregarPerfilCompleto = async () => {
+  const carregarPerfilCompleto = useCallback(async () => {
     try {
       setLoading(true);
       const targetUserId = urlUserId || getUserLoggedId();
@@ -50,11 +50,11 @@ export default function Profile() {
           'Authorization': `Bearer ${token}` // Envia para o seu middleware de 'auth' da API
         }
       });
-      
+
       if (!response.ok) throw new Error('Não foi possível carregar o perfil.');
-      
+
       const data = await response.json();
-      
+
       setProfile(data.profile);
       setPosts(data.posts);
       setHasMore(data.pagination.hasMore);
@@ -64,16 +64,16 @@ export default function Profile() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [urlUserId, userLoggedId, API_URL, token]);
 
   // 4. Função otimizada para carregar apenas as próximas páginas de posts (Limite de 5)
   const carregarMaisPosts = async () => {
     if (loadingPosts || !hasMore) return;
-    
+
     try {
       setLoadingPosts(true);
       const proximaPagina = page + 1;
-      
+
       const response = await fetch(`${API_URL}/u/posts/?page=${proximaPagina}`, {
         method: 'GET',
         headers: {
@@ -81,11 +81,11 @@ export default function Profile() {
           'Authorization': `Bearer ${token}`
         }
       });
-      
+
       if (!response.ok) throw new Error('Erro ao carregar mais postagens.');
-      
+
       const data = await response.json();
-      
+
       // Concatena de forma otimizada os 5 novos posts aos que já estavam na tela
       setPosts((postsAtuais) => [...postsAtuais, ...data.posts]);
       setPage(proximaPagina);
@@ -139,21 +139,9 @@ export default function Profile() {
     }
   };
 
-  // Dispara a busca assim que o componente é montado na tela
   useEffect(() => {
-    async function load() {
-      await carregarPerfilCompleto();
-    }
-    load();
-  }, []);
-
-  // Recarrega o perfil quando o ID da URL mudar (visualizar outro usuário)
-  useEffect(() => {
-    async function load() {
-      await carregarPerfilCompleto();
-    }
-    load();
-  }, [urlUserId]);
+    carregarPerfilCompleto();
+  }, [carregarPerfilCompleto]);
 
   // Trata o campo 'imagens' stringificado vindo do Prisma
   const obterLinkDaImagem = (imagensString) => {
@@ -198,9 +186,9 @@ export default function Profile() {
         {/* Foto de Perfil Redonda Sobreposta */}
         <div className="absolute md:-bottom-15 -bottom-14 left-4 sm:left-15 md:left-25">
           {profile.imagemPerfil ? (
-            <img 
-              src={toProxyUrl(profile.imagemPerfil)} 
-              alt={profile.nome} 
+            <img
+              src={toProxyUrl(profile.imagemPerfil)}
+              alt={profile.nome}
               className="h-28 w-28 rounded-full border-4 border-white bg-white object-cover shadow-sm md:h-32 md:w-32"
             />
           ) : (
@@ -208,31 +196,31 @@ export default function Profile() {
               <FiUser size={20} className="text-gray-400" />
             </div>
           )}
-         </div>
+        </div>
 
-         {/* Barra de Contadores no canto direito, mesma altura da foto */}
-         <div className="absolute md:-bottom-1/6 sm:-bottom-1/4 bottom-2/5 place-self-center sm:right-15 md:right-25 flex items-center gap-6 rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
-           <div className="text-center">
-             <span className="block text-lg font-bold text-gray-800">{profile.stats.postsCount}</span>
-             <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Posts</span>
-           </div>
-           <div className="text-center border-x border-gray-100 px-6">
-             <span className="block text-lg font-bold text-gray-800">{profile.stats.followersCount}</span>
-             <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Seguidores</span>
-           </div>
-           <div className="text-center">
-             <span className="block text-lg font-bold text-gray-800">{profile.stats.followingCount}</span>
-             <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Seguindo</span>
-           </div>
-           {isFollowing !== null && profile.id !== userLoggedId && (
-             <button
-               onClick={isFollowing ? handleUnfollowProfile : handleFollowProfile}
-               className="ml-2 px-3 py-1 rounded-lg text-xs font-medium transition-colors border bg-black text-white border-white hover:bg-gray-800"
-             >
-               {isFollowing ? "Seguindo" : "Seguir"}
-             </button>
-           )}
-         </div>
+        {/* Barra de Contadores no canto direito, mesma altura da foto */}
+        <div className="absolute md:-bottom-1/6 sm:-bottom-1/4 bottom-2/5 place-self-center sm:right-15 md:right-25 flex items-center gap-6 rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
+          <div className="text-center">
+            <span className="block text-lg font-bold text-gray-800">{profile.stats.postsCount}</span>
+            <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Posts</span>
+          </div>
+          <div className="text-center border-x border-gray-100 px-6">
+            <span className="block text-lg font-bold text-gray-800">{profile.stats.followersCount}</span>
+            <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Seguidores</span>
+          </div>
+          <div className="text-center">
+            <span className="block text-lg font-bold text-gray-800">{profile.stats.followingCount}</span>
+            <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Seguindo</span>
+          </div>
+          {isFollowing !== null && profile.id !== userLoggedId && (
+            <button
+              onClick={isFollowing ? handleUnfollowProfile : handleFollowProfile}
+              className="ml-2 px-3 py-1 rounded-lg text-xs font-medium transition-colors border bg-black text-white border-white hover:bg-gray-800"
+            >
+              {isFollowing ? "Seguindo" : "Seguir"}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Grid Centralizado de Informações */}
@@ -255,9 +243,9 @@ export default function Profile() {
         {/* Bloco Inferior com as Imagens/Postagens */}
         <div className="mt-8">
           <h2 className="text-base font-bold text-gray-900 mb-4">Minhas Publicações</h2>
-          
+
           {posts.length === 0 ? (
-            <div className = "grid grid-cols-3 gap-4 sm:grid-cols-1 md:grid-cols-2">
+            <div className="grid grid-cols-3 gap-4 sm:grid-cols-1 md:grid-cols-2">
               <button
                 aria-label="Criar publicação"
                 className="cols-1 flex row-1 items-center justify-center rounded-xl border border-gray-100 bg-white text-7xl text-pallete-dark-green-2 shadow-sm transition hover:border-pallete-muted-yellow hover:shadow-md"
@@ -273,7 +261,7 @@ export default function Profile() {
           ) : (
             <>
               {/* Grid Responsivo das Publicações */}
-              <div className = "grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 grid-flow-row">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 grid-flow-row">
                 <button
                   aria-label="Criar publicação"
                   className="cols-1 flex min-w-0 items-center  justify-center rounded-xl border border-gray-100 bg-white text-7xl text-pallete-dark-green-2 shadow-sm transition hover:border-pallete-muted-yellow hover:shadow-md"
@@ -286,9 +274,9 @@ export default function Profile() {
                   <div key={post.id} className="overflow-hidden min-w-0 cols-1 rounded-xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer" onClick={() => { window.location.href = `/posts/${post.slug || post.id}`; }}>
                     <div className="h-44 w-full bg-gray-50 flex items-center justify-center">
                       {obterLinkDaImagem(post.imagens) ? (
-                        <img 
-                          src={obterLinkDaImagem(post.imagens)} 
-                          alt={post.titulo} 
+                        <img
+                          src={obterLinkDaImagem(post.imagens)}
+                          alt={post.titulo}
                           className="h-full w-full object-cover"
                           loading="lazy"
                         />
