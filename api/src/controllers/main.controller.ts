@@ -59,46 +59,45 @@ export const getPostWithTags: RequestHandler = async (req, res) => {
 
 export const getPostsFeed: RequestHandler = async (req, res) => {
     try {
-        const recentes = await prisma.post.findMany({
-            include: {
-                user: {
-                    select: {
-                        nomeUsuario: true,
-                        imagemPerfil: true,
-                    }
-                }
-            },
-            orderBy: { dataPostagem: 'desc' },
-            take: 12
-        });
-
-        const populares = await prisma.post.findMany({
-            include: {
-                user: {
-                    select: {
-                        nomeUsuario: true,
-                        imagemPerfil: true,
+        const [recentes, populares, seguindo] = await Promise.all([
+            prisma.post.findMany({
+                include: {
+                    user: {
+                        select: {
+                            nomeUsuario: true,
+                            imagemPerfil: true,
+                        }
                     }
                 },
-                _count: {
-                    select: { liked: true }
-                }
-            },
-            orderBy: {
-                liked: { _count: 'desc' }
-            },
-            take: 12
-        });
-
-        let seguindo: any[] = [];
-        if (req.user) {
-            const follows = await prisma.followed.findMany({
-                where: { seguidorId: (req as any).user.id },
-                select: { perfilId: true }
-            });
-            const perfilIds = follows.map(f => f.perfilId);
-            if (perfilIds.length > 0) {
-                seguindo = await prisma.post.findMany({
+                orderBy: { dataPostagem: 'desc' },
+                take: 12
+            }),
+            prisma.post.findMany({
+                include: {
+                    user: {
+                        select: {
+                            nomeUsuario: true,
+                            imagemPerfil: true,
+                        }
+                    },
+                    _count: {
+                        select: { liked: true }
+                    }
+                },
+                orderBy: {
+                    liked: { _count: 'desc' }
+                },
+                take: 12
+            }),
+            (async () => {
+                if (!req.user) return [];
+                const follows = await prisma.followed.findMany({
+                    where: { seguidorId: (req as any).user.id },
+                    select: { perfilId: true }
+                });
+                const perfilIds = follows.map(f => f.perfilId);
+                if (perfilIds.length === 0) return [];
+                return prisma.post.findMany({
                     where: { autorId: { in: perfilIds } },
                     include: {
                         user: {
@@ -111,8 +110,8 @@ export const getPostsFeed: RequestHandler = async (req, res) => {
                     orderBy: { dataPostagem: 'desc' },
                     take: 12
                 });
-            }
-        }
+            })()
+        ]);
 
         return res.status(200).json({ recentes, populares, seguindo });
     } catch (error) {
@@ -123,6 +122,11 @@ export const getPostsFeed: RequestHandler = async (req, res) => {
 export const getPosts: RequestHandler = async (req, res) => {
     try {
         const { query } = req.query;
+        const pageQuery = typeof req.query.page === 'string' ? req.query.page : undefined;
+        const page = pageQuery ? parseInt(pageQuery, 10) : 1;
+        const limit = req.query.limit ? parseInt(String(req.query.limit), 10) : 12;
+        const skip = (page - 1) * limit;
+
         if (query) {
             const posts = await prisma.post.findMany({
                 where: {
@@ -138,7 +142,9 @@ export const getPosts: RequestHandler = async (req, res) => {
                         }
                     }
                 },
-                orderBy: { dataPostagem: 'desc' }
+                orderBy: { dataPostagem: 'desc' },
+                take: limit,
+                skip: skip
             });
             return res.status(200).json(posts);
         }
@@ -151,11 +157,14 @@ export const getPosts: RequestHandler = async (req, res) => {
                 return res.status(401).json({ error: 'Usuário não autenticado' });
             }
             const follows = await prisma.followed.findMany({
-                where: { seguidorId: req.user.id },
+                where: { seguidorId: (req as any).user.id },
                 select: { perfilId: true }
             });
             const perfilIds = follows.map(f => f.perfilId);
-            const allPosts = await prisma.post.findMany({
+            if (perfilIds.length === 0) {
+                return res.status(200).json([]);
+            }
+            const posts = await prisma.post.findMany({
                 where: { autorId: { in: perfilIds } },
                 include: {
                     user: {
@@ -165,13 +174,15 @@ export const getPosts: RequestHandler = async (req, res) => {
                         }
                     }
                 },
-                orderBy: { dataPostagem: 'desc' }
+                orderBy: { dataPostagem: 'desc' },
+                take: limit,
+                skip: skip
             });
-            return res.status(200).json(allPosts);
+            return res.status(200).json(posts);
         }
 
         if (sort === 'popular') {
-            const popularPosts = await prisma.post.findMany({
+            const posts = await prisma.post.findMany({
                 include: {
                     user: {
                         select: {
@@ -186,12 +197,13 @@ export const getPosts: RequestHandler = async (req, res) => {
                 orderBy: {
                     liked: { _count: 'desc' }
                 },
-                take: 30
+                take: limit,
+                skip: skip
             });
-            return res.status(200).json(popularPosts);
+            return res.status(200).json(posts);
         }
 
-        const allPosts = await prisma.post.findMany({
+        const posts = await prisma.post.findMany({
             include: {
                 user: {
                     select: {
@@ -200,9 +212,11 @@ export const getPosts: RequestHandler = async (req, res) => {
                     }
                 }
             },
-            orderBy: { dataPostagem: 'desc' }
+            orderBy: { dataPostagem: 'desc' },
+            take: limit,
+            skip: skip
         });
-        return res.status(200).json(allPosts);
+        return res.status(200).json(posts);
     } catch (error) {
         return res.status(500).json({ error: 'Erro ao buscar postagens' });
     }

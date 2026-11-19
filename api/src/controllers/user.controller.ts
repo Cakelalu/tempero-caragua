@@ -431,14 +431,11 @@ export const deletePost: RequestHandler = async (req, res) => {
     }
 
     const { slug } = req.params
-    const postTeste = await prisma.post.findFirst({
-        where: { slug }
-    })
 
-    // console.log('Post encontrado:', postTeste)
     if (!slug) {
         return res.status(400).json({ error: 'Um slug é requerido' })
     }
+
     const post = await prisma.post.findUnique({ where: { slug } })
     if (!post) {
         return res.status(404).json({ error: 'Postagem não encontrada' })
@@ -446,26 +443,11 @@ export const deletePost: RequestHandler = async (req, res) => {
     if (post.autorId !== req.user.id) {
         return res.status(403).json({ error: 'Você não está autorizado a deletar essa postagem' })
     }
-    await prisma.post.delete({ where: { slug } })
 
-    const postLikes = await prisma.liked.findMany({
-        where: {
-            postSlug: slug
-        }
-    })
-    // console.log('Curtidas encontradas:', postLikes.length)
-    await prisma.liked.delete(postLikes)
-
-    await prisma.liked.deleteMany({
-        where: {
-            postSlug: slug
-        }
-    })
-    // console.log('Tags encontradas:', postTags.length)
-    await prisma.tagged.deleteMany({
-        where: {
-            postSlug: slug
-        }
+    await prisma.$transaction(async (tx) => {
+        await tx.liked.deleteMany({ where: { postSlug: slug } })
+        await tx.tagged.deleteMany({ where: { postSlug: slug } })
+        await tx.post.delete({ where: { slug } })
     })
 
     res.status(200).json({ message: 'Deleção de postagem bem-sucedida' })
@@ -538,27 +520,21 @@ export const likePost: RequestHandler = async (req, res) => {
             return res.status(404).json({ error: 'Usuário não encontrado' });
         }
 
-        // 3. Usa o upsert para criar se não existir, ou atualizar se já existir
-        const updatedLikes = await prisma.liked.upsert({
-            where: {
-                userId: user.id
-            },
-            update: {
-                likedPosts: {
-                    connect: { postSlug: postSlug }
-                }
-            },
-            create: {
-                userId: user.id,
-                likedPosts: {
-                    connect: { postSlug: postSlug }
-                }
-            },
-            // Opcional: inclui os posts curtidos na resposta se necessário
-            include: { likedPosts: true }
+        // 3. Verifica se já existe curtida desse usuário neste post
+        const existing = await prisma.liked.findFirst({
+            where: { userId: user.id, postSlug }
         });
 
-        return res.status(200).json({ liked: updatedLikes });
+        if (existing) {
+            await prisma.liked.delete({ where: { id: existing.id } });
+            return res.status(200).json({ liked: false, message: 'Curtida removida' });
+        }
+
+        await prisma.liked.create({
+            data: { userId: user.id, postSlug }
+        });
+
+        return res.status(200).json({ liked: true, message: 'Post curtido' });
 
     } catch (error) {
         console.error('Erro ao curtir o post:', error);
@@ -572,6 +548,20 @@ export const followUser: RequestHandler = async (req, res) => {
         return res.status(401).json({ error: 'Não encontrado' })
     }
     const { id: userFlwdId } = req.params
+
+    const existing = await prisma.followed.findUnique({
+        where: {
+            perfilId_seguidorId: {
+                perfilId: userFlwdId,
+                seguidorId: req.user.id
+            }
+        }
+    });
+
+    if (existing) {
+        return res.status(409).json({ error: 'Você já está seguindo este usuário' });
+    }
+
     const updatedFollowings = await prisma.followed.create({
         data: {
             id: v4(),
@@ -631,61 +621,57 @@ export const getAccountProfile: RequestHandler = async (req: ExtendedRequest, re
         const limit = 5;
         const skip = (page - 1) * limit;
 
-        // 4. Busca os dados essenciais e agrega os contadores de seguidores/seguindo
-        const profileData = await prisma.user.findUnique({
-            where: { id: targetUserId },
-            select: {
-                id: true,
-                nome: true,
-                nomeUsuario: true,
-                biografia: true,
-                imagemPerfil: true,
-                imagemBanner: true,
-                numeroTel: true,
-                email: true,
-                _count: {
-                    select: {
-                        followed_followed_perfilIdTouser: true, // Seguidores
-                        followed_followed_seguidorIdTouser: true, // Seguindo
+        // 4. Busca os dados essenciais e agrega os contadores de seguidores/seguindo em paralelo
+        const [profileData, userPosts, totalPostsAtivos, isFollowing] = await Promise.all([
+            prisma.user.findUnique({
+                where: { id: targetUserId },
+                select: {
+                    id: true,
+                    nome: true,
+                    nomeUsuario: true,
+                    biografia: true,
+                    imagemPerfil: true,
+                    imagemBanner: true,
+                    numeroTel: true,
+                    email: true,
+                    _count: {
+                        select: {
+                            followed_followed_perfilIdTouser: true, // Seguidores
+                            followed_followed_seguidorIdTouser: true, // Seguindo
+                        }
                     }
                 }
-            }
-        });
+            }),
+            prisma.post.findMany({
+                where: { autorId: targetUserId, dataDelecao: null },
+                select: {
+                    id: true,
+                    slug: true,
+                    titulo: true,
+                    imagens: true,
+                    dataPostagem: true,
+                },
+                orderBy: { dataPostagem: 'desc' },
+                take: limit,
+                skip: skip
+            }),
+            prisma.post.count({
+                where: { autorId: targetUserId, dataDelecao: null }
+            }),
+            prisma.followed.findUnique({
+                where: {
+                    perfilId_seguidorId: {
+                        perfilId: targetUserId,
+                        seguidorId: req.user.id
+                    }
+                }
+            })
+        ]);
 
         if (!profileData) {
             res.status(404).json({ error: 'Usuário não encontrado' });
             return;
         }
-
-        // 5. Busca os posts de forma isolada respeitando o limite e paginação
-        const userPosts = await prisma.post.findMany({
-            where: { autorId: targetUserId, dataDelecao: null },
-            select: {
-                id: true,
-                slug: true,
-                titulo: true,
-                imagens: true,
-                dataPostagem: true,
-            },
-            orderBy: { dataPostagem: 'desc' },
-            take: limit,
-            skip: skip
-        });
-
-        // 6. Conta com precisão apenas os posts ativos do usuário
-        const totalPostsAtivos = await prisma.post.count({
-            where: { autorId: targetUserId, dataDelecao: null }
-        });
-
-        // 7. Verifica se o usuário logado está seguindo este perfil
-        const isFollowing = await prisma.followed.findUnique({
-            where: {
-                perfilId_seguidorId: {
-                    perfilId: targetUserId,
-                    seguidorId: req.user.id
-                }
-            }
-        });
 
         // 8. Retorna uma estrutura de payload limpa com os dados corrigidos
         res.status(200).json({
@@ -733,30 +719,30 @@ export const getAccountPosts: RequestHandler = async (req: ExtendedRequest, res:
         const limit = 5
         const skip = (page - 1) * limit
 
-        // Busca APENAS os posts daquela página específica
-        const userPosts = await prisma.post.findMany({
-            where: {
-                autorId: userId,
-                dataDelecao: null
-            },
-            select: {
-                id: true,
-                slug: true,
-                titulo: true,
-                imagens: true,
-                dataPostagem: true,
-            },
-            orderBy: {
-                dataPostagem: 'desc'
-            },
-            take: limit,
-            skip: skip
-        })
-
-        // Conta o total apenas para saber se ainda tem mais páginas pela frente
-        const totalPosts = await prisma.post.count({
-            where: { autorId: userId, dataDelecao: null }
-        })
+        // Busca posts e total em paralelo
+        const [userPosts, totalPosts] = await Promise.all([
+            prisma.post.findMany({
+                where: {
+                    autorId: userId,
+                    dataDelecao: null
+                },
+                select: {
+                    id: true,
+                    slug: true,
+                    titulo: true,
+                    imagens: true,
+                    dataPostagem: true,
+                },
+                orderBy: {
+                    dataPostagem: 'desc'
+                },
+                take: limit,
+                skip: skip
+            }),
+            prisma.post.count({
+                where: { autorId: userId, dataDelecao: null }
+            })
+        ])
 
         return res.status(200).json({
             posts: userPosts,
@@ -789,26 +775,37 @@ export const searchUsers: RequestHandler = async (req, res) => {
             return res.status(200).json([]);
         }
 
-        const users = await prisma.user.findMany({
-            where: {
-                NOT: { id: req.user.id },
-                OR: [
-                    { nomeUsuario: { contains: q } },
-                    { nome: { contains: q } },
-                ]
-            },
-            select: {
-                id: true,
-                nome: true,
-                nomeUsuario: true,
-                imagemPerfil: true,
-            },
-            orderBy: { nomeUsuario: 'asc' },
-            take: limit,
-            skip: skip
-        });
+        const [users, total] = await Promise.all([
+            prisma.user.findMany({
+                where: {
+                    NOT: { id: req.user.id },
+                    OR: [
+                        { nomeUsuario: { contains: q } },
+                        { nome: { contains: q } },
+                    ]
+                },
+                select: {
+                    id: true,
+                    nome: true,
+                    nomeUsuario: true,
+                    imagemPerfil: true,
+                },
+                orderBy: { nomeUsuario: 'asc' },
+                take: limit,
+                skip: skip
+            }),
+            prisma.user.count({
+                where: {
+                    NOT: { id: req.user.id },
+                    OR: [
+                        { nomeUsuario: { contains: q } },
+                        { nome: { contains: q } },
+                    ]
+                }
+            })
+        ]);
 
-        // Busca quais usuários o usuário logado já está seguindo
+        // Busca quais usuários o usuário logado já está seguindo (depois de saber os IDs de users)
         const userFollowings = await prisma.followed.findMany({
             where: {
                 seguidorId: req.user.id,
@@ -824,16 +821,6 @@ export const searchUsers: RequestHandler = async (req, res) => {
             ...user,
             isFollowing: followingIds.has(user.id)
         }));
-
-        const total = await prisma.user.count({
-            where: {
-                NOT: { id: req.user.id },
-                OR: [
-                    { nomeUsuario: { contains: q } },
-                    { nome: { contains: q } },
-                ]
-            }
-        });
 
         return res.status(200).json({
             users: usersWithFollowStatus,
