@@ -10,6 +10,7 @@ import { imageRoutes } from './routes/image.routes'
 import { prisma } from './libs/prisma'
 
 const server = express()
+const port = process.env.PORT || 4500
 
 server.use(cors({
     origin: [
@@ -35,7 +36,7 @@ server.use('/user', userRoutes)
 server.use('/guest', guestRoutes)
 server.use('/', mainRoutes)
 
-server.listen(4500, () => {
+server.listen(port, () => {
     console.log('API Online...')
 })
 
