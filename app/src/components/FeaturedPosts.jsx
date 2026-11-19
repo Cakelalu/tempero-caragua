@@ -26,7 +26,7 @@ export default function FeaturedPosts({ posts = [] }) {
                     Nenhuma postagem disponível.
                 </p>
             ) : (
-                <div className="grid grid-cols-1 items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3 items-stretch max-w-full">
                     {featuredPosts.map((post) => {
                         let imagens = [];
                         if (post.imagens) {

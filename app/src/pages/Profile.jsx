@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { FiUser } from 'react-icons/fi';
+import { FiUser, FiTrash2 } from 'react-icons/fi';
 import { toProxyUrl } from '../utils/imageProxy';
 import CreatePost from '../components/CreatePost';
 
@@ -15,6 +15,8 @@ export default function Profile() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingPosts, setLoadingPosts] = useState(false);
+  const [deletingPostId, setDeletingPostId] = useState(null);
+  const [confirmDeleteSlug, setConfirmDeleteSlug] = useState(null);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
 
@@ -139,6 +141,46 @@ export default function Profile() {
     }
   };
 
+  const handleDeletePost = (slug, e) => {
+    if (e) e.stopPropagation();
+    if (!slug) return;
+    setConfirmDeleteSlug(slug);
+  };
+
+  const executarDeletePost = async () => {
+    if (!confirmDeleteSlug) return;
+
+    setDeletingPostId(confirmDeleteSlug);
+    setConfirmDeleteSlug(null);
+
+    try {
+      const token = localStorage.getItem('token_login') || '';
+      const response = await fetch(`${API_URL}/post/${confirmDeleteSlug}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        throw new Error(data?.error || 'Não foi possível excluir a publicação.');
+      }
+
+      // Remove o post da lista local sem recarregar a página
+      setPosts((prev) => prev.filter((post) => post.slug !== confirmDeleteSlug));
+      // Atualiza o contador de posts do perfil
+      setProfile((prev) => prev ? { ...prev, stats: { ...prev.stats, postsCount: Math.max(0, prev.stats.postsCount - 1) } } : prev);
+    } catch (error) {
+      console.error('Erro ao excluir postagem:', error);
+      alert(error.message || 'Erro ao excluir a publicação.');
+    } finally {
+      setDeletingPostId(null);
+    }
+  };
+
   useEffect(() => {
     carregarPerfilCompleto();
   }, [carregarPerfilCompleto]);
@@ -174,7 +216,7 @@ export default function Profile() {
 
   // 6. Renderização da Interface Visual com Tailwind CSS
   return (
-    <div className="min-h-screen bg-gray-50 pb-16 dark:bg-pallete-dark-gray">
+    <div className="bg-gray-50 pb-16 dark:bg-pallete-dark-gray">
       {/* Banner / Foto de Capa */}
       <div className="relative h-44 w-full bg-gray-200 md:h-60">
         {profile.imagemBanner ? (
@@ -289,8 +331,21 @@ export default function Profile() {
                       )}
                     </div>
                     <div className="p-3">
-                      {/* Título de tamanho 12, preto e negrito como definido */}
-                      <h3 className="font-bold text-black text-[12px] line-clamp-2 leading-snug">{post.titulo}</h3>
+                      <div className="flex items-center justify-between">
+                        {/* Título de tamanho 12, preto e negrito como definido */}
+                        <h3 className="font-bold text-black text-[12px] line-clamp-2 leading-snug">{post.titulo}</h3>
+                        {profile.id === userLoggedId && (
+                          <button
+                            onClick={(e) => handleDeletePost(post.slug, e)}
+                            disabled={deletingPostId === post.slug}
+                            className={`text-gray-400 hover:text-red-600 hover:bg-red-50 rounded p-1.5 transition-colors ${deletingPostId === post.slug ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            title="Excluir publicação"
+                            aria-label="Excluir publicação"
+                          >
+                            <FiTrash2 size={14} strokeWidth={2} />
+                          </button>
+                        )}
+                      </div>
                       <span className="text-[10px] text-gray-400 mt-1 block">
                         {new Date(post.dataPostagem).toLocaleDateString('pt-BR')}
                       </span>
@@ -323,6 +378,36 @@ export default function Profile() {
           profileImage={toProxyUrl(profile.imagemPerfil) || 'https://placeholder.com'}
           userName={profile.nomeUsuario ? `@${profile.nomeUsuario}` : profile.nome}
         />
+      )}
+
+      {/* Modal de confirmação de exclusão */}
+      {confirmDeleteSlug && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setConfirmDeleteSlug(null)}>
+          <div
+            className="bg-white rounded-2xl p-6 shadow-2xl w-full max-w-sm"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-lg font-bold text-gray-900 mb-2">Excluir publicação</h3>
+            <p className="text-gray-600 mb-6">
+              Tem certeza que deseja excluir esta publicação? Esta ação não poderá ser desfeita.
+            </p>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setConfirmDeleteSlug(null)}
+                className="px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={executarDeletePost}
+                disabled={deletingPostId === confirmDeleteSlug}
+                className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {deletingPostId === confirmDeleteSlug ? 'Excluindo...' : 'Excluir'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

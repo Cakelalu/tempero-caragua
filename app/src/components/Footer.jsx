@@ -7,7 +7,7 @@ export default function Footer() {
     }
     return(
         <footer className="flex flex-col items-center">
-            <div id="pt1" className="bg-pallete-green min-w-screen flex flex-row gap-10 justify-center py-1">
+            <div id="pt1" className="hidden lg:flex bg-pallete-green min-w-screen flex-row gap-10 justify-center py-1">
                 <div id="logo" className="h-auto flex justify-center items-center cursor-pointer" onClick={() => {navigate('/')}}>
                     <img src="/logo.svg" alt="Logo" className="h-[70%] w-auto"/>
                 </div>

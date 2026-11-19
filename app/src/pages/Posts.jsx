@@ -154,7 +154,7 @@ export default function Posts() {
           </p>
         ) : (
           <>
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 max-w-full">
               {items.map((post) => {
                 let imagens = [];
                 if (post.imagens) {
@@ -191,8 +191,8 @@ export default function Posts() {
   const usersItems = usersData?.items || [];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Barra de pesquisa sticky no topo */}
+    <div className="bg-gray-50">
+      {/* Barra de pesquisa sticky no topo */} 
       <div className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-gray-100">
         <div className="max-w-2xl mx-auto px-4 py-3">
           <div className="relative w-full">

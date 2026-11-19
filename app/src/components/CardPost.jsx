@@ -1,16 +1,17 @@
 import { toProxyUrl } from "../utils/imageProxy";
 
 /**
- * Card de postagem para o blog de receitas caiçaras.
- * Design baseado na referência sectionsGridDivision.png.
+ * Card de postagem com estilo Instagram em mobile.
+ * - Mobile (< 640px): card estreito, imagem quadrada, layout compacto (estilo Instagram)
+ * - Desktop: mantém o design original com banner largo e avatar sobreposto
  *
  * Props:
  * - bannerImage: string (url da imagem de capa / banner do post)
  * - avatarImage: string (url da foto de perfil do autor)
- * - date: string da data de criação (ex: "2026-11-13T14:43:00" ou já formatada)
+ * - date: string da data de criação
  * - title: string (título da postagem)
  * - author: string (nome do autor)
- * - href: string (caminho para redirecionar ao post, ex: "/posts/123")
+ * - href: string (caminho para redirecionar ao post)
  */
 export default function CardPost({
     bannerImage,
@@ -39,43 +40,60 @@ export default function CardPost({
     return (
         <a
             href={href}
-            className="block rounded-3xl bg-pallete-gray shadow-sm
-                 transition-transform duration-150 ease-out hover:-translate-y-1"
+            className="block rounded-xl overflow-hidden transition-transform duration-150 ease-out hover:-translate-y-1 bg-white border border-gray-100"
         >
-            {/* Banner da postagem (topo arredondado, verde ou imagem) */}
-            <div
-                className="h-48 flex items-center justify-center bg-cover bg-center bg-pallete-green rounded-t-3xl overflow-hidden"
-                style={
-                    bannerImage ? { backgroundImage: `url(${toProxyUrl(bannerImage)})` } : undefined
-                }
-            >
-                {!bannerImage && (
-                    <span className="text-white text-3xl font-bold">banner</span>
+            {/* Wrapper do banner: quadrado em mobile, retangular em desktop */}
+            <div className="relative h-48 sm:h-64 w-full bg-gray-200 overflow-hidden">
+                {/* Imagem de fundo (desktop) */}
+                {bannerImage ? (
+                    <div
+                        className="absolute inset-0 bg-cover bg-center"
+                        style={{ backgroundImage: `url(${toProxyUrl(bannerImage)})` }}
+                    />
+                ) : (
+                    <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-amber-500 flex items-center justify-center">
+                        <span className="text-white font-bold text-lg sm:text-xl">banner</span>
+                    </div>
+                )}
+
+                {/* Imagem estilo Instagram em mobile (quadrada, ocupa a largura total do card) */}
+                {bannerImage && (
+                    <img
+                        src={toProxyUrl(bannerImage)}
+                        alt={title}
+                        className="hidden sm:block w-full h-full object-cover"
+                    />
                 )}
             </div>
 
-            {/* Foto de perfil do autor sobreposta entre o banner e o corpo */}
-            <div className="flex justify-center -mt-8">
-                <img
-                    src={toProxyUrl(avatarImage)}
-                    alt={`Foto de perfil de ${author}`}
-                    className="w-16 h-16 rounded-full object-cover border-[4px] border-white bg-white"
-                    onError={(e) => {
-                        e.target.src = "/temperos.svg";
-                    }}
-                />
+            {/* Avatar sobreposto (apenas em desktop) */}
+            <div className="hidden sm:flex justify-center -mt-8">
+                {avatarImage ? (
+                    <img
+                        src={toProxyUrl(avatarImage)}
+                        alt={`Foto de perfil de ${author}`}
+                        className="w-16 h-16 rounded-full object-cover border-[4px] border-white bg-white shadow-sm"
+                        onError={(e) => {
+                            e.target.src = "/temperos.svg";
+                        }}
+                    />
+                ) : (
+                    <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center shadow-sm">
+                        <span className="text-gray-400">?</span>
+                    </div>
+                )}
             </div>
 
             {/* Corpo do card */}
-            <div className="px-5 pb-6 pt-3 text-center">
-                <p className="text-gray-500 mt-1 mb-2 text-sm">{formattedDate}</p>
+            <div className="px-4 sm:px-5 pb-4 sm:pb-6 pt-2 sm:pt-3 text-left sm:text-center">
+                <p className="text-gray-400 text-xs sm:text-sm mt-1 mb-1">{formattedDate}</p>
                 <h3
-                    className="mb-1.5 text-base font-bold underline leading-tight"
-                    style={{ color: "#000", WebkitTextFillColor: "#000", backgroundImage: "none" }}
+                    className="mb-1 sm:mb-1.5 font-bold text-gray-900 line-clamp-2 text-sm sm:text-base leading-tight"
+                    style={{ WebkitLineClamp: 2 }}
                 >
                     {title}
                 </h3>
-                <p className="text-gray-500 text-sm">por {author}</p>
+                <p className="text-gray-500 text-xs sm:text-sm">por {author}</p>
             </div>
         </a>
     );

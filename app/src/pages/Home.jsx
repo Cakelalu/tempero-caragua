@@ -55,9 +55,8 @@ export default function Home() {
 
   return (
     <main className="">
-      <div className="h-screen w-screen flex flex-col items-center justify-center">
-
-        <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full max-w-7xl mx-auto px-4">
+      <div className="bg-gray-50 min-h-0">
+        <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full max-w-7xl mx-auto px-4 max-w-full">
           {posts.length === 0 ? (
             <p className="col-span-full text-center text-gray-500">
               Nenhuma postagem disponível.

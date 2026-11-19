@@ -7,6 +7,7 @@ import { ExtendedRequest } from "../types/extended-request"
 import { verifyToken } from "./auth.controller"
 import { createPostSlug } from "../services/post.service"
 import { prisma } from '../libs/prisma';
+import { imagekit } from '../libs/imagekit';
 import { v4 } from 'uuid';
 
 export const getImageKitAuth: RequestHandler = async (
@@ -362,7 +363,7 @@ export const editPost: RequestHandler = async (req: ExtendedRequest, res: Respon
     const schema = z.object({
         titulo: z.string(),
         tags: z.string().optional(),
-        imagens: z.array(z.string()).max(10).optional(), // Proteção contra payloads gigantes
+        imagens: z.array(z.string()).max(10).optional(),
         legendas: z.array(z.string()).max(10).optional(),
         conteudo: z.string()
     })
@@ -427,7 +428,7 @@ export const editPost: RequestHandler = async (req: ExtendedRequest, res: Respon
     }
 }
 
-export const deletePost: RequestHandler = async (req, res) => {
+export const deletePost: RequestHandler = async (req: ExtendedRequest, res) => {
     if (!req.user) {
         return res.status(401).json({
             error: 'Não autorizado'
@@ -448,13 +449,68 @@ export const deletePost: RequestHandler = async (req, res) => {
         return res.status(403).json({ error: 'Você não está autorizado a deletar essa postagem' })
     }
 
+    // Extrai URLs das imagens para excluí-las do ImageKit
+    let imageUrls: string[] = []
+    try {
+        imageUrls = post.imagens ? JSON.parse(post.imagens) : []
+    } catch {
+        imageUrls = []
+    }
+
+    // Exclui arquivos do ImageKit (não bloqueia a exclusão no banco se falhar)
+    for (const url of imageUrls) {
+        try {
+            if (!url || typeof url !== 'string') continue
+
+            // Remove query parameters (transformações do ImageKit) se existirem
+            const cleanUrl = url.split('?')[0]
+            const urlObj = new URL(cleanUrl)
+
+            // O fileId do ImageKit é o caminho do arquivo no storage
+            // Ex: "https://ik.imagekit.io/Teca/posts/abc123.jpg" -> "/posts/abc123.jpg" ou "posts/abc123.jpg"
+            let fileId = urlObj.pathname
+
+            // Tenta deletar com o path completo (com barra inicial)
+            try {
+                await imagekit.deleteFile({ fileId: fileId })
+                continue
+            } catch {
+                // Se falhar, tenta sem a barra inicial
+            }
+
+            const fileIdNoLeadingSlash = fileId.replace(/^\//, '')
+            try {
+                await imagekit.deleteFile({ fileId: fileIdNoLeadingSlash })
+                continue
+            } catch {
+                // Se falhar, tenta extrair apenas os últimos 2 segmentos do path
+            }
+
+            const pathParts = fileIdNoLeadingSlash.split('/')
+            if (pathParts.length >= 2) {
+                const shortFileId = pathParts.slice(-2).join('/')
+                try {
+                    await imagekit.deleteFile({ fileId: shortFileId })
+                    continue
+                } catch {
+                    // Última tentativa falhou, segue para próxima imagem
+                }
+            }
+
+            console.error('Não foi possível excluir a imagem do ImageKit:', url)
+        } catch (err) {
+            console.error('Erro ao processar URL de imagem para exclusão:', err)
+        }
+    }
+
     await prisma.$transaction(async (tx) => {
         await tx.liked.deleteMany({ where: { postSlug: slug } })
+        await tx.favorited.deleteMany({ where: { postSlug: slug } })
         await tx.tagged.deleteMany({ where: { postSlug: slug } })
         await tx.post.delete({ where: { slug } })
     })
 
-    res.status(200).json({ message: 'Deleção de postagem bem-sucedida' })
+    res.status(200).json({ message: 'Postagem excluída com sucesso' })
 }
 
 export const getFavoritePosts: RequestHandler = async (req, res) => {
