@@ -284,7 +284,6 @@ export const addPost: RequestHandler = async (req: ExtendedRequest, res: Respons
     if (!req.user) return res.status(401).json({
         error: 'Usuário não autenticado'
     })
-    const authorId = req.user.id;
 
     const schema = z.object({
         titulo: z.string(),
@@ -297,6 +296,11 @@ export const addPost: RequestHandler = async (req: ExtendedRequest, res: Respons
     const data = schema.safeParse(req.body)
     if (!data.success) {
         return res.status(400).json({ error: data.error.flatten().fieldErrors })
+    }
+
+    // Segurança: somente o próprio usuário autenticado pode criar posts na sua conta
+    if (data.data.autorId !== req.user.id) {
+        return res.status(403).json({ error: 'Você não tem permissão para criar postagens nesta conta.' })
     }
 
     const slug = await createPostSlug(data.data.titulo)
@@ -316,7 +320,7 @@ export const addPost: RequestHandler = async (req: ExtendedRequest, res: Respons
         const post = await transaction.post.create({
             data: {
                 id: v4(),
-                autorId: authorId,
+                autorId: req.user.id,
                 slug,
                 titulo: data.data.titulo,
                 conteudo: data.data.conteudo,

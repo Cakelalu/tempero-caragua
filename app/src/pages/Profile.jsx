@@ -246,14 +246,16 @@ export default function Profile() {
 
           {posts.length === 0 ? (
             <div className="grid grid-cols-3 gap-4 sm:grid-cols-1 md:grid-cols-2">
-              <button
-                aria-label="Criar publicação"
-                className="cols-1 flex row-1 items-center justify-center rounded-xl border border-gray-100 bg-white text-7xl text-pallete-dark-green-2 shadow-sm transition hover:border-pallete-muted-yellow hover:shadow-md"
-                onClick={() => setIsCreatePostOpen(true)}
-                type="button"
-              >
-                +
-              </button>
+              {profile.id === userLoggedId && (
+                <button
+                  aria-label="Criar publicação"
+                  className="cols-1 flex row-1 items-center justify-center rounded-xl border border-gray-100 bg-white text-7xl text-pallete-dark-green-2 shadow-sm transition hover:border-pallete-muted-yellow hover:shadow-md"
+                  onClick={() => setIsCreatePostOpen(true)}
+                  type="button"
+                >
+                  +
+                </button>
+              )}
               <div className="text-center cols-2 row-1 text-sm text-gray-400 py-16 bg-white rounded-xl border border-gray-100 shadow-sm cols-1 sm:cols-1 md:cols-2">
                 Nenhuma publicação encontrada neste perfil.
               </div>
@@ -262,14 +264,16 @@ export default function Profile() {
             <>
               {/* Grid Responsivo das Publicações */}
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 grid-flow-row">
-                <button
-                  aria-label="Criar publicação"
-                  className="cols-1 flex min-w-0 items-center  justify-center rounded-xl border border-gray-100 bg-white text-7xl text-pallete-dark-green-2 shadow-sm transition hover:border-pallete-muted-yellow hover:shadow-md"
-                  onClick={() => setIsCreatePostOpen(true)}
-                  type="button"
-                >
-                  <text className='-translate-y-1/16'>+</text>
-                </button>
+                {profile.id === userLoggedId && (
+                  <button
+                    aria-label="Criar publicação"
+                    className="cols-1 flex min-w-0 items-center  justify-center rounded-xl border border-gray-100 bg-white text-7xl text-pallete-dark-green-2 shadow-sm transition hover:border-pallete-muted-yellow hover:shadow-md"
+                    onClick={() => setIsCreatePostOpen(true)}
+                    type="button"
+                  >
+                    <text className='-translate-y-1/16'>+</text>
+                  </button>
+                )}
                 {posts.map((post) => (
                   <div key={post.id} className="overflow-hidden min-w-0 cols-1 rounded-xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer" onClick={() => { window.location.href = `/posts/${post.slug || post.id}`; }}>
                     <div className="h-44 w-full bg-gray-50 flex items-center justify-center">
@@ -311,7 +315,7 @@ export default function Profile() {
           )}
         </div>
       </div>
-      {isCreatePostOpen && (
+      {profile.id === userLoggedId && isCreatePostOpen && (
         <CreatePost
           authorId={profile.id}
           onClose={() => setIsCreatePostOpen(false)}
