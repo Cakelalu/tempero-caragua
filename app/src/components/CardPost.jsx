@@ -43,7 +43,7 @@ export default function CardPost({
             className="block rounded-xl overflow-hidden transition-transform duration-150 ease-out hover:-translate-y-1 bg-white border border-gray-100"
         >
             {/* Wrapper do banner: quadrado em mobile, retangular em desktop */}
-            <div className="relative h-48 sm:h-64 w-full bg-gray-200 overflow-hidden">
+            <div className="relative h-48 sm:h-64 w-full bg-gray-200">
                 {/* Imagem de fundo (desktop) */}
                 {bannerImage ? (
                     <div
@@ -64,29 +64,28 @@ export default function CardPost({
                         className="hidden sm:block w-full h-full object-cover"
                     />
                 )}
-            </div>
 
-            {/* Avatar sobreposto (apenas em desktop) */}
-            <div className="hidden sm:flex justify-center -mt-8">
-                {avatarImage ? (
-                    <img
-                        src={toProxyUrl(avatarImage)}
-                        alt={`Foto de perfil de ${author}`}
-                        className="w-16 h-16 rounded-full object-cover border-[4px] border-white bg-white shadow-sm"
-                        onError={(e) => {
-                            e.target.src = "/temperos.svg";
-                        }}
-                    />
-                ) : (
-                    <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center shadow-sm">
-                        <span className="text-gray-400">?</span>
-                    </div>
-                )}
+                {/* Avatar sobreposto (apenas em tablet e desktop) */}
+                <div className="absolute left-1/2 -translate-x-1/2 bottom-[-32px] hidden sm:flex items-center">
+                    {avatarImage ? (
+                        <img
+                            src={toProxyUrl(avatarImage)}
+                            alt={`Foto de perfil de ${author}`}
+                            className="w-16 h-16 rounded-full object-cover border-[4px] border-white bg-white shadow-sm"
+                            onError={(e) => {
+                                e.target.src = "/temperos.svg";
+                            }}
+                        />
+                    ) : (
+                        <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center shadow-sm">
+                            <span className="text-gray-400">?</span>
+                        </div>
+                    )}
+                </div>
             </div>
 
             {/* Corpo do card */}
-            <div className="px-4 sm:px-5 pb-4 sm:pb-6 pt-2 sm:pt-3 text-left sm:text-center">
-                <p className="text-gray-400 text-xs sm:text-sm mt-1 mb-1">{formattedDate}</p>
+            <div className="px-4 sm:px-5 pb-4 sm:pb-6 pt-2 sm:pt-10 text-left sm:text-center">
                 <h3
                     className="mb-1 sm:mb-1.5 font-bold text-gray-900 line-clamp-2 text-sm sm:text-base leading-tight"
                     style={{ WebkitLineClamp: 2 }}
@@ -94,6 +93,7 @@ export default function CardPost({
                     {title}
                 </h3>
                 <p className="text-gray-500 text-xs sm:text-sm">por {author}</p>
+                <p className="text-gray-400 text-xs sm:text-sm mt-1">{formattedDate}</p>
             </div>
         </a>
     );
