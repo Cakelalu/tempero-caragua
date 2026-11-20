@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import Menu from "./DropdownMenu";
 import Preferences from "./preferences/Preferences";
 import { useState, useEffect } from "react";
@@ -10,6 +10,11 @@ export default function Header() {
     }
 
     const [menuOpen, setMenuOpen] = useState(false);
+    const location = useLocation();
+
+    useEffect(() => {
+        setMenuOpen(false);
+    }, [location]);
 
     const [user, setUser] = useState(() => {
         try {
