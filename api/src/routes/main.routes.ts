@@ -5,8 +5,8 @@ import { authOptional } from '../middlewares/auth-optional'
 
 export const mainRoutes = Router()
 
-mainRoutes.get('/api/teste', (req, res) => {
-    res.json({ message: 'API funcionando!' })
+mainRoutes.get('/health', (req, res) => {
+    res.status(200).json({ status: 'ok' })
 })
 mainRoutes.get('/posts', authOptional, mainController.getPosts)
 mainRoutes.get('/posts/feed', authOptional, mainController.getPostsFeed)
