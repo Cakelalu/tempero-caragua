@@ -1,0 +1,23 @@
+services:
+  - type: static
+    name: tempero-caragua-app
+    rootDirectory: app
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    headers:
+      # Assets do Vite (JS e CSS com hash) – cache imutável por 1 ano
+      - source: /assets/(.*)
+        headers:
+          Cache-Control: "public, max-age=31536000, immutable"
+      # Imagens, SVGs e fontes estáticas – cache imutável por 1 ano
+      - source: /(.*\.(svg|png|jpg|jpeg|webp|ico|woff|woff2|ttf|otf))
+        headers:
+          Cache-Control: "public, max-age=31536000, immutable"
+      # HTML – sem cache longo para não travar deploys
+      - source: /(.*\.html)
+        headers:
+          Cache-Control: "public, max-age=0, must-revalidate"
+      # Demais arquivos – cache curto com revalidação
+      - source: /(.*)
+        headers:
+          Cache-Control: "public, max-age=3600"
