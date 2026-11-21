@@ -97,14 +97,10 @@ export function useSearchPosts(
     enabled: debouncedQuery.length > 0 || page === 1,
     staleTime: 1000 * 60 * 5,
     select: (data) => {
-      const items = Array.isArray(data) ? data : data.posts || [];
-      const total =
-        data.total || data.pagination?.total || items.length;
-      const limit =
-        data.limit || data.pagination?.limit || 12;
-
+      // O queryFn já retorna { items, total, limit, page, hasMore }
+      // Apenas mapeia os itens para o formato PostListItem
       return {
-        items: items.map((post) => ({
+        items: (data.items || []).map((post) => ({
           id: post.id,
           slug: post.slug,
           titulo: post.titulo,
@@ -117,10 +113,10 @@ export function useSearchPosts(
               }
             : null,
         })),
-        total,
-        limit,
-        page,
-        hasMore: total > page * limit,
+        total: data.total,
+        limit: data.limit,
+        page: data.page,
+        hasMore: data.hasMore,
       };
     },
   });

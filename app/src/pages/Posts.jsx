@@ -3,7 +3,7 @@ import { FiFilter } from "react-icons/fi";
 import CardPost from "../components/CardPost";
 import UserSearchCard from "../components/UserSearchCard";
 import FilterPanel from "../components/FilterPanel";
-import { usePostsFeed, useSearchUsers } from "../hooks/useSearch";
+import { usePostsFeed, useSearchPosts, useSearchUsers } from "../hooks/useSearch";
 
 const API_BASE_URL = (import.meta.env.VITE_PUBLIC_API_URL || "http://localhost:4500").replace(/\/$/, "");
 
@@ -19,8 +19,9 @@ export default function Posts() {
   const [activeFilterTab, setActiveFilterTab] = useState("posts"); // "posts" | "users"
   const [searchQuery, setSearchQuery] = useState("");
 
-  // ---------- Estados de paginação apenas para usuários ---------- 
+  // ---------- Estados de paginação ---------- 
   const [usersPage, setUsersPage] = useState(1);
+  const [searchPostsPage, setSearchPostsPage] = useState(1);
 
   // ---------- Refs para infinite scroll ---------- 
   const recentesRef = useRef(null);
@@ -57,7 +58,19 @@ export default function Posts() {
     error: usersError,
   } = users;
 
+  // ---------- Hook: busca de posts por pesquisa ---------- 
+  const postsSearch = useSearchPosts(searchQuery, searchPostsPage);
 
+  const {
+    data: searchPostsData,
+    isFetching: searchPostsFetching,
+    error: searchPostsError,
+  } = postsSearch;
+
+  // ---------- Resetar página de pesquisa quando a query mudar ---------- 
+  useEffect(() => {
+    setSearchPostsPage(1);
+  }, [searchQuery]);
 
   // ---------- Infinite scroll (apenas para usuários) ---------- 
   const observerOptions = { threshold: 0.1 };
@@ -267,6 +280,48 @@ export default function Posts() {
               </>
             )}
           </div>
+        ) : searchQuery ? (
+          <section key="search-results" className="mb-12">
+            <h2 className="mb-6 text-center text-3xl font-bold tracking-tight">
+              Resultados para "{searchQuery}"
+            </h2>
+            {searchPostsError ? (
+              <p className="text-center text-red-500 text-sm py-8">{searchPostsError.message}</p>
+            ) : searchPostsData?.items?.length === 0 ? (
+              <p className="text-center text-gray-500 text-sm py-12">
+                Nenhuma postagem encontrada para "{searchQuery}".
+              </p>
+            ) : (
+              <>
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 max-w-full">
+                  {searchPostsData?.items?.map((post) => {
+                    let imagens = [];
+                    if (post.imagens) {
+                      try {
+                        imagens = typeof post.imagens === "string"
+                          ? JSON.parse(post.imagens)
+                          : post.imagens;
+                      } catch {
+                        imagens = [];
+                      }
+                    }
+                    return (
+                      <CardPost
+                        key={post.id || post.slug}
+                        bannerImage={imagens?.[0] || null}
+                        avatarImage={post.user?.imagemPerfil || null}
+                        date={post.dataPostagem}
+                        title={post.titulo}
+                        author={post.user?.nomeUsuario || "Autor desconhecido"}
+                        href={`/posts/${post.slug || post.id}`}
+                      />
+                    );
+                  })}
+                </div>
+                {searchPostsFetching && <p className="text-center text-gray-400 text-sm py-4">Buscando postagens...</p>}
+              </>
+            )}
+          </section>
         ) : (
           <>
             {renderSection(
