@@ -28,7 +28,7 @@ export const getPost: RequestHandler = async (req, res) => {
                 }
             },
             _count: {
-                select: { liked: true }
+                select: { liked: true, comentario: true }
             }
         }
     })
@@ -67,6 +67,9 @@ export const getPostsFeed: RequestHandler = async (req, res) => {
                             nomeUsuario: true,
                             imagemPerfil: true,
                         }
+                    },
+                    _count: {
+                        select: { liked: true }
                     }
                 },
                 orderBy: { dataPostagem: 'desc' },
@@ -105,6 +108,9 @@ export const getPostsFeed: RequestHandler = async (req, res) => {
                                 nomeUsuario: true,
                                 imagemPerfil: true,
                             }
+                        },
+                        _count: {
+                            select: { liked: true }
                         }
                     },
                     orderBy: { dataPostagem: 'desc' },
@@ -140,6 +146,9 @@ export const getPosts: RequestHandler = async (req, res) => {
                             nomeUsuario: true,
                             imagemPerfil: true,
                         }
+                    },
+                    _count: {
+                        select: { liked: true }
                     }
                 },
                 orderBy: { dataPostagem: 'desc' },
@@ -172,6 +181,9 @@ export const getPosts: RequestHandler = async (req, res) => {
                             nomeUsuario: true,
                             imagemPerfil: true,
                         }
+                    },
+                    _count: {
+                        select: { liked: true }
                     }
                 },
                 orderBy: { dataPostagem: 'desc' },
@@ -210,6 +222,9 @@ export const getPosts: RequestHandler = async (req, res) => {
                         nomeUsuario: true,
                         imagemPerfil: true,
                     }
+                },
+                _count: {
+                    select: { liked: true }
                 }
             },
             orderBy: { dataPostagem: 'desc' },

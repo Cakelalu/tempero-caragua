@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { toProxyUrl } from "../utils/imageProxy";
+import PostActions from "../components/PostActions";
+import PostCommentsModal from "../components/PostCommentsModal";
 
 const API_BASE_URL = (import.meta.env.VITE_PUBLIC_API_URL || "http://localhost:4500").replace(/\/$/, "");
 
@@ -9,6 +11,13 @@ export default function Post() {
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isLiked, setIsLiked] = useState(false);
+  const [likesCount, setLikesCount] = useState(0);
+  const [isFavorited, setIsFavorited] = useState(false);
+  const [favoritesCount, setFavoritesCount] = useState(0);
+  const [commentsCount, setCommentsCount] = useState(0);
+  const [commentsOpen, setCommentsOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -39,7 +48,10 @@ export default function Post() {
         }
 
         const data = await response.json();
-        setPost(data.post || data);
+        const postData = data.post || data;
+        setPost(postData);
+        setLikesCount(postData._count?.liked || 0);
+        setCommentsCount(postData._count?.comentario || 0);
       } catch (loadError) {
         if (loadError.name !== "AbortError") {
           setError(loadError.message || "Erro ao carregar a postagem.");
@@ -100,6 +112,23 @@ export default function Post() {
   const imagemPerfilAutor = post.user?.imagemPerfil;
   const nomeAutor = post.user?.nome || autor;
 
+  // Decodifica o JWT para obter o ID do usuário logado
+  const getUserLoggedId = () => {
+    try {
+      const token = localStorage.getItem("token_login") || "";
+      if (!token) return null;
+      const payload = token.split(".")[1];
+      if (!payload) return null;
+      const decoded = JSON.parse(atob(payload));
+      return decoded.id || decoded.userId || null;
+    } catch {
+      return null;
+    }
+  };
+
+  const userLoggedId = getUserLoggedId();
+  const isOwner = post?.autorId === userLoggedId;
+
   const formatarData = (dateString) => {
     if (!dateString) return "";
     return new Date(dateString).toLocaleDateString("pt-BR", {
@@ -130,16 +159,38 @@ export default function Post() {
         ) : null}
 
         {/* 2. Autor do post */}
-        <div className="flex items-center gap-3 mb-4">
-          <img
-            src={imagemPerfilAutor ? toProxyUrl(imagemPerfilAutor) : "/temperos.svg"}
-            alt={autor}
-            className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm"
-          />
-          <div>
-            <p className="text-sm font-semibold text-gray-900 dark:text-[var(--color-text-primary-dark)] leading-tight">{nomeAutor}</p>
-            <p className="text-xs text-gray-500 dark:text-[var(--color-text-muted-dark)]">@{autor} • {formatarData(post.dataPostagem)}</p>
+        <div className="flex items-center justify-between gap-3 mb-4">
+          <div className="flex items-center gap-3">
+            <img
+              src={imagemPerfilAutor ? toProxyUrl(imagemPerfilAutor) : "/temperos.svg"}
+              alt={autor}
+              className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm"
+            />
+            <div>
+              <p className="text-sm font-semibold text-gray-900 dark:text-[var(--color-text-primary-dark)] leading-tight">{nomeAutor}</p>
+              <p className="text-xs text-gray-500 dark:text-[var(--color-text-muted-dark)]">@{autor} • {formatarData(post.dataPostagem)}</p>
+            </div>
           </div>
+
+          <PostActions
+            likesCount={likesCount}
+            favoritesCount={favoritesCount}
+            commentsCount={commentsCount}
+            isLiked={isLiked}
+            isFavorited={isFavorited}
+            isOwner={isOwner}
+            postSlug={post?.slug || ""}
+            onPostDeleted={() => navigate("/posts")}
+            onLikeToggle={(liked, count) => {
+              setIsLiked(liked);
+              setLikesCount(count);
+            }}
+            onFavoriteToggle={(favorited) => {
+              setIsFavorited(favorited);
+              setFavoritesCount((prev) => (favorited ? prev + 1 : Math.max(0, prev - 1)));
+            }}
+            onCommentsToggle={() => setCommentsOpen(true)}
+          />
         </div>
 
         {/* 3. Título */}
@@ -214,6 +265,19 @@ export default function Post() {
             ))}
           </div>
         )}
+
+        {/* Modal de Comentários */}
+        <PostCommentsModal
+          postSlug={post?.slug || ""}
+          isOpen={commentsOpen}
+          onClose={() => setCommentsOpen(false)}
+          onCommentAdded={() => {
+            setCommentsCount((prev) => prev + 1);
+          }}
+          onCommentRemoved={() => {
+            setCommentsCount((prev) => Math.max(0, prev - 1));
+          }}
+        />
 
       </div>
     </div>

@@ -521,12 +521,57 @@ export const getFavoritePosts: RequestHandler = async (req, res) => {
     if (!user) {
         return res.status(404).json({ error: 'Usuário não encontrado' })
     }
-    const favoritePosts = await prisma.favorited.findMany({
-        where: {
-            userId: user.id
+    const pageQuery = typeof req.query.page === 'string' ? req.query.page : undefined;
+    const page = pageQuery ? parseInt(pageQuery, 10) : 1;
+    const limit = req.query.limit ? parseInt(String(req.query.limit), 10) : 12;
+    const skip = (page - 1) * limit;
+
+    const [favorites, total] = await Promise.all([
+        prisma.favorited.findMany({
+            where: {
+                userId: user.id
+            },
+            include: {
+                post: {
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                nome: true,
+                                nomeUsuario: true,
+                                imagemPerfil: true,
+                            }
+                        },
+                        _count: {
+                            select: { liked: true }
+                        }
+                    }
+                }
+            },
+            orderBy: { id: 'desc' },
+            take: limit,
+            skip: skip
+        }),
+        prisma.favorited.count({
+            where: {
+                userId: user.id
+            }
+        })
+    ]);
+
+    return res.status(200).json({
+        favorites: favorites.map(f => ({
+            id: f.id,
+            postSlug: f.postSlug,
+            post: f.post
+        })),
+        pagination: {
+            currentPage: page,
+            limit: limit,
+            total,
+            hasMore: total > page * limit
         }
     })
-    res.status(200).json({ favoritePosts })
 }
 
 export const addFavoritePost: RequestHandler = async (req, res) => {
@@ -536,7 +581,9 @@ export const addFavoritePost: RequestHandler = async (req, res) => {
     }
 
     // 2. Extrai e valida se o parâmetro obrigatório existe
-    const { postSlug } = req.params
+    // A rota está definida como /post/:slug/favoritar, então o parâmetro se chama 'slug'
+    const { slug } = req.params
+    const postSlug = slug
     if (!postSlug) {
         return res.status(400).json({ error: 'O parâmetro postSlug é obrigatório.' })
     }
@@ -544,18 +591,45 @@ export const addFavoritePost: RequestHandler = async (req, res) => {
     const user = req.user
 
     try {
-        // 3. Cria o registro no banco
-        const updatedFavorites = await prisma.favorited.create({
+        // 3. Verifica se o post existe antes de favoritar
+        const postExists = await prisma.post.findUnique({
+            where: { slug: postSlug },
+            select: { id: true }
+        });
+
+        if (!postExists) {
+            return res.status(404).json({ error: 'Postagem não encontrada' });
+        }
+
+        // 4. Verifica se já existe favorito desse usuário neste post
+        const existing = await prisma.favorited.findFirst({
+            where: { userId: user.id, postSlug }
+        });
+
+        if (existing) {
+            // Desfavoritar: remove o registro
+            await prisma.favorited.delete({ where: { id: existing.id } });
+            return res.status(200).json({ favorited: false, message: 'Post removido dos favoritos' });
+        }
+
+        // Favoritar: cria o registro
+        const created = await prisma.favorited.create({
             data: {
+                id: v4(),
                 userId: user.id,
                 postSlug: postSlug
             }
-        })
+        });
 
-        return res.status(200).json({ favorited: updatedFavorites })
-    } catch (error) {
-        // 4. Tratamento de erro (Ex: se o post já foi favoritado e a relação for única)
-        console.error(error)
+        return res.status(200).json({ favorited: true, message: 'Post adicionado aos favoritos', favorited: created });
+    } catch (error: any) {
+        console.error('Erro ao favoritar postagem:', error);
+
+        // Trata erro de chave estrangeira do Prisma (P2003)
+        if (error?.code === 'P2003') {
+            return res.status(404).json({ error: 'Postagem não encontrada' });
+        }
+
         return res.status(500).json({ error: 'Erro interno ao favoritar o post.' })
     }
 };
@@ -566,38 +640,77 @@ export const likePost: RequestHandler = async (req, res) => {
         return res.status(401).json({ error: 'Não autorizado' });
     }
 
-    const { postSlug } = req.body;
+    // 2. Lê o slug do parâmetro de rota (consistente com a definição /post/:slug/curtir)
+    const { slug } = req.params;
+    const postSlug = slug;
 
-    // Validação básica do corpo da requisição
+    // Validação básica do parâmetro de rota
     if (!postSlug) {
         return res.status(400).json({ error: 'O slug do post é obrigatório' });
     }
 
     try {
-        // 2. Valida o token / busca o usuário no banco
-        const user = await verifyToken(req.user.token);
+        // 3. O usuário já foi resolvido pelo middleware de autenticação (auth)
+        const user = req.user;
         if (!user) {
             return res.status(404).json({ error: 'Usuário não encontrado' });
         }
 
-        // 3. Verifica se já existe curtida desse usuário neste post
+        // 4. Verifica se o post existe e não está deletado (soft delete)
+        const postExists = await prisma.post.findUnique({
+            where: { slug: postSlug },
+            select: { id: true, dataDelecao: true }
+        });
+
+        if (!postExists) {
+            return res.status(404).json({ error: 'Postagem não encontrada' });
+        }
+
+        if (postExists.dataDelecao !== null) {
+            return res.status(400).json({ error: 'Não é possível curtir uma postagem excluída' });
+        }
+
+        // 5. Verifica se já existe curtida desse usuário neste post
         const existing = await prisma.liked.findFirst({
             where: { userId: user.id, postSlug }
         });
 
         if (existing) {
+            // Descurtir: remove o registro
             await prisma.liked.delete({ where: { id: existing.id } });
-            return res.status(200).json({ liked: false, message: 'Curtida removida' });
+
+            // Conta quantas curtidas restam no post
+            const likesCount = await prisma.liked.count({
+                where: { postSlug }
+            });
+
+            return res.status(200).json({ liked: false, message: 'Curtida removida', likesCount });
         }
 
+        // Curtir: cria o registro
         await prisma.liked.create({
-            data: { userId: user.id, postSlug }
+            data: {
+                id: v4(),
+                userId: user.id,
+                postSlug
+            }
         });
 
-        return res.status(200).json({ liked: true, message: 'Post curtido' });
+        // Conta quantas curtidas o post tem agora
+        const likesCount = await prisma.liked.count({
+            where: { postSlug }
+        });
 
-    } catch (error) {
+        return res.status(200).json({ liked: true, message: 'Post curtido', likesCount });
+
+    } catch (error: any) {
         console.error('Erro ao curtir o post:', error);
+
+        // Trata erro de chave estrangeira do Prisma (P2003)
+        if (error?.code === 'P2003') {
+            return res.status(404).json({ error: 'Postagem não encontrada' });
+        }
+
         return res.status(500).json({ error: 'Erro interno do servidor' });
     }
 };
@@ -895,4 +1008,174 @@ export const searchUsers: RequestHandler = async (req, res) => {
         console.error("Erro ao buscar usuários:", error);
         return res.status(500).json({ error: 'Erro interno do servidor' });
     }
-}
+};
+
+export const createComentario: RequestHandler = async (req, res) => {
+    if (!req.user) {
+        return res.status(401).json({ error: 'Não autorizado' });
+    }
+
+    const { slug } = req.params;
+    const postSlug = slug;
+
+    if (!postSlug) {
+        return res.status(400).json({ error: 'O slug do post é obrigatório' });
+    }
+
+    const schema = z.object({
+        conteudo: z.string().trim().min(1).max(2000)
+    });
+
+    const data = schema.safeParse(req.body);
+    if (!data.success) {
+        return res.status(400).json({ error: data.error.flatten().fieldErrors });
+    }
+
+    const user = req.user;
+
+    try {
+        // Verifica se o post existe e não está deletado
+        const postExists = await prisma.post.findUnique({
+            where: { slug: postSlug },
+            select: { id: true, dataDelecao: true }
+        });
+
+        if (!postExists) {
+            return res.status(404).json({ error: 'Postagem não encontrada' });
+        }
+
+        if (postExists.dataDelecao !== null) {
+            return res.status(400).json({ error: 'Não é possível comentar em uma postagem excluída' });
+        }
+
+        const comentario = await prisma.comentario.create({
+            data: {
+                id: v4(),
+                conteudo: data.data.conteudo,
+                autorId: user.id,
+                postSlug: postSlug
+            },
+            include: {
+                autor: {
+                    select: {
+                        id: true,
+                        nome: true,
+                        nomeUsuario: true,
+                        imagemPerfil: true
+                    }
+                }
+            }
+        });
+
+        return res.status(201).json({ comentario, message: 'Comentário adicionado' });
+    } catch (error: any) {
+        console.error('Erro ao criar comentário:', error);
+
+        if (error?.code === 'P2003') {
+            return res.status(404).json({ error: 'Postagem não encontrada' });
+        }
+
+        return res.status(500).json({ error: 'Erro interno ao criar comentário' });
+    }
+};
+
+export const getComentariosPorPost: RequestHandler = async (req, res) => {
+    const { slug } = req.params;
+    const postSlug = slug;
+
+    if (!postSlug) {
+        return res.status(400).json({ error: 'O slug do post é obrigatório' });
+    }
+
+    const pageQuery = typeof req.query.page === 'string' ? req.query.page : undefined;
+    const page = pageQuery ? parseInt(pageQuery, 10) : 1;
+    const limit = req.query.limit ? parseInt(String(req.query.limit), 10) : 20;
+    const skip = (page - 1) * limit;
+
+    try {
+        const [comentarios, total] = await Promise.all([
+            prisma.comentario.findMany({
+                where: {
+                    postSlug: postSlug,
+                    dataDelecao: null
+                },
+                include: {
+                    autor: {
+                        select: {
+                            id: true,
+                            nome: true,
+                            nomeUsuario: true,
+                            imagemPerfil: true
+                        }
+                    }
+                },
+                orderBy: { createdAt: 'asc' },
+                take: limit,
+                skip: skip
+            }),
+            prisma.comentario.count({
+                where: {
+                    postSlug: postSlug,
+                    dataDelecao: null
+                }
+            })
+        ]);
+
+        return res.status(200).json({
+            comentarios,
+            pagination: {
+                currentPage: page,
+                limit: limit,
+                total,
+                hasMore: total > page * limit
+            }
+        });
+    } catch (error) {
+        console.error('Erro ao buscar comentários:', error);
+        return res.status(500).json({ error: 'Erro interno ao buscar comentários' });
+    }
+};
+
+export const deleteComentario: RequestHandler = async (req, res) => {
+    if (!req.user) {
+        return res.status(401).json({ error: 'Não autorizado' });
+    }
+
+    const { id } = req.params;
+
+    if (!id) {
+        return res.status(400).json({ error: 'O ID do comentário é obrigatório' });
+    }
+
+    const user = req.user;
+
+    try {
+        const comentario = await prisma.comentario.findUnique({
+            where: { id },
+            select: { id: true, autorId: true, dataDelecao: true }
+        });
+
+        if (!comentario) {
+            return res.status(404).json({ error: 'Comentário não encontrado' });
+        }
+
+        if (comentario.dataDelecao !== null) {
+            return res.status(400).json({ error: 'Comentário já foi excluído' });
+        }
+
+        // Apenas o autor ou moderador pode excluir
+        const isModerator = user.tipo === 'MODERATOR';
+        if (comentario.autorId !== user.id && !isModerator) {
+            return res.status(403).json({ error: 'Você não tem permissão para excluir este comentário' });
+        }
+
+        await prisma.comentario.delete({
+            where: { id }
+        });
+
+        return res.status(200).json({ message: 'Comentário excluído' });
+    } catch (error) {
+        console.error('Erro ao excluir comentário:', error);
+        return res.status(500).json({ error: 'Erro interno ao excluir comentário' });
+    }
+};

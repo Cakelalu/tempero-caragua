@@ -53,10 +53,25 @@ model post {
   dataDelecao     DateTime?
   favorited       favorited[]
   liked           liked[]
+  comentario      comentario[]
   user            user        @relation(fields: [autorId], references: [id], map: "Post_autorId_fkey")
   tagged          tagged[]
 
   @@index([autorId], map: "Post_autorId_fkey")
+}
+
+model comentario {
+  id         String   @id @default(uuid())
+  conteudo   String   @db.Text
+  autorId    String
+  postSlug   String
+  createdAt  DateTime @default(now())
+  dataDelecao DateTime?
+  autor      user     @relation(fields: [autorId], references: [id], map: "Comentario_autorId_fkey")
+  post       post     @relation(fields: [postSlug], references: [slug], map: "Comentario_postSlug_fkey")
+
+  @@index([postSlug], map: "Comentario_postSlug_fkey")
+  @@index([autorId], map: "Comentario_autorId_fkey")
 }
 
 model tag {
@@ -94,6 +109,7 @@ model user {
   followed_followed_perfilIdTouser   followed[]  @relation("followed_perfilIdTouser")
   followed_followed_seguidorIdTouser followed[]  @relation("followed_seguidorIdTouser")
   liked                              liked[]
+  comentario                         comentario[]
   post                               post[]
 }
 
