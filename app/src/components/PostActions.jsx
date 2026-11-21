@@ -158,12 +158,12 @@ export default function PostActions({
                 aria-label={isLiked ? "Descurtir" : "Curtir"}
                 className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
                     isLiked
-                        ? "text-white bg-white/10 hover:bg-white/20 dark:text-white dark:bg-white/10"
-                        : "text-gray-600 hover:text-pallete-green hover:bg-gray-50 dark:text-white dark:hover:text-pallete-green dark:hover:bg-[var(--color-pallete-gray-dark)]"
+                        ? "text-black bg-black/10 hover:bg-black/20 dark:text-white dark:bg-white/10"
+                        : "text-black hover:text-black hover:bg-gray-50 dark:text-white dark:hover:text-pallete-green dark:hover:bg-[var(--color-pallete-gray-dark)]"
                 }`}
             >
-                <FiThumbsUp size={16} className={isLiked ? "text-white" : "text-gray-400 dark:text-white"} />
-                <span className={isLiked ? "text-white font-medium" : "text-gray-600 dark:text-white"}>{likesCount}</span>
+                <FiThumbsUp size={16} className={isLiked ? "text-black" : "text-black dark:text-white"} />
+                <span className={isLiked ? "text-black font-medium" : "text-black dark:text-white"}>{likesCount}</span>
             </button>
 
             {/* Botão Favoritar */}
@@ -173,12 +173,12 @@ export default function PostActions({
                 aria-label={isFavorited ? "Desfavoritar" : "Favoritar"}
                 className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
                     isFavorited
-                        ? "text-white bg-white/10 hover:bg-white/20 dark:text-white dark:bg-white/10"
-                        : "text-gray-600 hover:text-pallete-green hover:bg-gray-50 dark:text-white dark:hover:text-pallete-green dark:hover:bg-[var(--color-pallete-gray-dark)]"
+                        ? "text-black bg-black/10 hover:bg-black/20 dark:text-white dark:bg-white/10"
+                        : "text-black hover:text-black hover:bg-gray-50 dark:text-white dark:hover:text-pallete-green dark:hover:bg-[var(--color-pallete-gray-dark)]"
                 }`}
             >
-                <FiStar size={16} className={isFavorited ? "text-white fill-white" : "text-gray-400 dark:text-white"} />
-                <span className={isFavorited ? "text-white font-medium" : "text-gray-600 dark:text-white"}>{favoritesCount}</span>
+                <FiStar size={16} className={isFavorited ? "text-black fill-black" : "text-black dark:text-white"} />
+                <span className={isFavorited ? "text-black font-medium" : "text-black dark:text-white"}>{favoritesCount}</span>
             </button>
 
             {/* Botão Comentários */}
@@ -187,11 +187,11 @@ export default function PostActions({
                 onClick={onCommentsToggle}
                 aria-label="Comentários"
                 className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
-                    "text-gray-600 hover:text-pallete-green hover:bg-gray-50 dark:text-white dark:hover:text-pallete-green dark:hover:bg-[var(--color-pallete-gray-dark)]"
+                    "text-black hover:text-black hover:bg-gray-50 dark:text-white dark:hover:text-pallete-green dark:hover:bg-[var(--color-pallete-gray-dark)]"
                 }`}
             >
-                <FiMessageCircle size={16} className="text-gray-400 dark:text-white" />
-                <span className="text-gray-600 dark:text-white">{commentsCount}</span>
+                <FiMessageCircle size={16} className="text-black dark:text-white" />
+                <span className="text-black dark:text-white">{commentsCount}</span>
             </button>
 
             {/* Divisor visual */}
@@ -204,7 +204,7 @@ export default function PostActions({
                     onClick={toggleMenu}
                     aria-label="Mais opções"
                     aria-expanded={menuOpen}
-                    className="rounded-lg p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:text-white dark:hover:text-white dark:hover:bg-[var(--color-pallete-gray-dark)] transition-colors"
+                    className="rounded-lg p-1.5 text-black hover:text-black hover:bg-gray-100 dark:text-white dark:hover:text-white dark:hover:bg-[var(--color-pallete-gray-dark)] transition-colors"
                 >
                     <FiMoreHorizontal size={18} />
                 </button>
@@ -221,7 +221,7 @@ export default function PostActions({
                                             <button
                                                 type="button"
                                                 onClick={() => setConfirmDelete(false)}
-                                                className="flex-1 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 dark:text-[var(--color-text-muted-dark)] dark:hover:bg-[var(--color-pallete-gray-dark)] rounded-lg transition-colors"
+                                                className="flex-1 px-4 py-2 text-sm font-medium text-black hover:bg-gray-50 dark:text-[var(--color-text-muted-dark)] dark:hover:bg-[var(--color-pallete-gray-dark)] rounded-lg transition-colors"
                                             >
                                                 Cancelar
                                             </button>
@@ -252,10 +252,10 @@ export default function PostActions({
                             <button
                                 type="button"
                                 onClick={closeMenu}
-                                className="w-full text-left px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 dark:text-white dark:hover:text-white dark:hover:bg-[var(--color-pallete-gray-dark)] transition-colors flex items-center gap-2"
+                                className="w-full text-left px-4 py-2 text-sm font-medium text-black hover:text-black hover:bg-gray-50 dark:text-white dark:hover:text-white dark:hover:bg-[var(--color-pallete-gray-dark)] transition-colors flex items-center gap-2"
                                 disabled
                             >
-                                <FiFlag size={16} className="text-gray-400 dark:text-white" />
+                                <FiFlag size={16} className="text-black dark:text-white" />
                                 Denunciar post
                             </button>
                         )}
