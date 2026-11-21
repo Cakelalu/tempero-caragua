@@ -40,10 +40,10 @@ export default function CardPost({
     return (
         <a
             href={href}
-            className="block rounded-xl overflow-hidden transition-transform duration-150 ease-out hover:-translate-y-1 bg-white border border-gray-100"
+            className="block rounded-xl overflow-hidden transition-transform duration-150 ease-out hover:-translate-y-1 bg-white border border-gray-100 dark:bg-[var(--color-pallete-card-dark)] dark:border-[var(--color-pallete-gray-dark)]"
         >
             {/* Wrapper do banner: quadrado em mobile, retangular em desktop */}
-            <div className="relative h-48 sm:h-64 w-full bg-gray-200">
+            <div className="relative h-48 sm:h-64 w-full bg-gray-200 dark:bg-[var(--color-pallete-gray-dark)]">
                 {/* Imagem de fundo (desktop) */}
                 {bannerImage ? (
                     <div
@@ -77,8 +77,8 @@ export default function CardPost({
                             }}
                         />
                     ) : (
-                        <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center shadow-sm">
-                            <span className="text-gray-400">?</span>
+                        <div className="w-16 h-16 rounded-full bg-gray-200 dark:bg-[var(--color-pallete-gray-dark)] flex items-center justify-center shadow-sm">
+                            <span className="text-gray-400 dark:text-[var(--color-text-muted-dark)]">?</span>
                         </div>
                     )}
                 </div>
@@ -87,13 +87,13 @@ export default function CardPost({
             {/* Corpo do card */}
             <div className="px-4 sm:px-5 pb-4 sm:pb-6 pt-2 sm:pt-10 text-left sm:text-center">
                 <h3
-                    className="mb-1 sm:mb-1.5 font-bold text-gray-900 line-clamp-2 text-sm sm:text-base leading-tight"
+                    className="mb-1 sm:mb-1.5 font-bold text-gray-900 dark:text-[var(--color-text-primary-dark)] line-clamp-2 text-sm sm:text-base leading-tight"
                     style={{ WebkitLineClamp: 2 }}
                 >
                     {title}
                 </h3>
-                <p className="text-gray-500 text-xs sm:text-sm">por {author}</p>
-                <p className="text-gray-400 text-xs sm:text-sm mt-1">{formattedDate}</p>
+                <p className="text-gray-500 dark:text-[var(--color-text-muted-dark)] text-xs sm:text-sm">por {author}</p>
+                <p className="text-gray-400 dark:text-[var(--color-text-muted-dark)] text-xs sm:text-sm mt-1">{formattedDate}</p>
             </div>
         </a>
     );

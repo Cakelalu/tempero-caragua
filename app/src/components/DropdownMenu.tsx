@@ -40,13 +40,13 @@ export default function Menu() {
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 top-full z-50 mt-2 min-w-44 rounded-sm bg-pallete-background p-2 text-pallete-dark-green shadow-md">
-                    <NavLink className="block px-3 py-2 hover:bg-pallete-light-green" to='/perfil'>Minha conta</NavLink>
-                    <NavLink className="block px-3 py-2 hover:bg-pallete-light-green" to='/editar-perfil'>Editar perfil</NavLink>
+                <div className="absolute right-0 top-full z-50 mt-2 min-w-44 rounded-sm bg-pallete-background p-2 text-pallete-dark-green shadow-md dark:bg-[var(--color-pallete-card-dark)] dark:text-[var(--color-text-primary-dark)] dark:border dark:border-[var(--color-pallete-gray-dark)]">
+                    <NavLink className="block px-3 py-2 hover:bg-pallete-light-green dark:hover:bg-[var(--color-pallete-light-green-dark)] dark:hover:text-[var(--color-text-primary-dark)]" to='/perfil'>Minha conta</NavLink>
+                    <NavLink className="block px-3 py-2 hover:bg-pallete-light-green dark:hover:bg-[var(--color-pallete-light-green-dark)] dark:hover:text-[var(--color-text-primary-dark)]" to='/editar-perfil'>Editar perfil</NavLink>
                     <button
                         type="button"
                         onClick={handleLogout}
-                        className="block w-full px-3 py-2 text-left hover:bg-pallete-light-green"
+                        className="block w-full px-3 py-2 text-left hover:bg-pallete-light-green dark:hover:bg-[var(--color-pallete-light-green-dark)] dark:hover:text-[var(--color-text-primary-dark)]"
                     >
                         Sair
                     </button>

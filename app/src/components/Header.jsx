@@ -43,7 +43,7 @@ export default function Header() {
     }, []);
 
     return (
-        <header className="sticky top-0 z-50 bg-pallete-green py-1 px-4 lg:px-17 flex flex-col lg:flex-row justify-between items-center">
+        <header className="sticky top-0 z-50 bg-pallete-green py-1 px-4 lg:px-17 flex flex-col lg:flex-row justify-between items-center dark:bg-[var(--color-pallete-green-dark)]">
             <div className="w-full flex flex-row justify-between items-center lg:w-auto">
                 <NavLink to="/">
                     <img

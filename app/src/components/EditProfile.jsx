@@ -18,9 +18,9 @@ function getStoredUser() {
 }
 
 const inputClassName =
-    "w-full rounded-lg border-2 border-[#a0a0a0] bg-pallete-background px-3 py-2 text-secondary outline-none transition focus:border-pallete-blue-green focus:ring-2 focus:ring-pallete-blue-green/20 dark:border-pallete-light-green dark:bg-pallete-dark-gray dark:text-primary";
+    "w-full rounded-lg border-2 border-[#a0a0a0] bg-pallete-background px-3 py-2 text-secondary outline-none transition focus:border-pallete-blue-green focus:ring-2 focus:ring-pallete-blue-green/20 dark:border-pallete-light-green dark:bg-pallete-dark-gray dark:text-primary dark:border-[var(--color-pallete-gray-dark)] dark:bg-[var(--color-pallete-card-dark)] dark:text-[var(--color-text-primary-dark)]";
 
-const labelClassName = "text-sm font-bold text-[#8f8f8f] dark:text-pallete-gray";
+const labelClassName = "text-sm font-bold text-[#8f8f8f] dark:text-pallete-gray dark:text-[var(--color-text-muted-dark)]";
 
 function getRequestErrorMessage(error, fallback) {
     if (error instanceof TypeError) {
@@ -464,7 +464,7 @@ export default function EditProfile() {
                                     <label className={labelClassName} htmlFor="profile-name">
                                         Nome Completo
                                     </label>
-                                    <span className="text-sm font-bold text-[#b8b8b8]">
+                                    <span className="text-sm font-bold text-[#b8b8b8] dark:text-[var(--color-text-muted-dark)]">
                                         {nome.length}/300
                                     </span>
                                 </div>
@@ -484,7 +484,7 @@ export default function EditProfile() {
                                     <label className={labelClassName} htmlFor="profile-nickname">
                                         Nome de usuário
                                     </label>
-                                    <span className="text-sm font-bold text-[#b8b8b8]">
+                                    <span className="text-sm font-bold text-[#b8b8b8] dark:text-[var(--color-text-muted-dark)]">
                                         {apelido.length}/30
                                     </span>
                                 </div>
@@ -504,7 +504,7 @@ export default function EditProfile() {
                                     <label className={labelClassName} htmlFor="profile-email">
                                         E-mail
                                     </label>
-                                    <span className="text-sm font-bold text-[#b8b8b8]">
+                                    <span className="text-sm font-bold text-[#b8b8b8] dark:text-[var(--color-text-muted-dark)]">
                                         {email.length}/191
                                     </span>
                                 </div>
@@ -521,7 +521,7 @@ export default function EditProfile() {
                         </div>
 
                         <div className="flex flex-col items-center justify-center gap-2 lg:pt-8">
-                            <div className="flex h-44 w-44 items-center justify-center overflow-hidden rounded-full bg-pallete-light-green">
+                            <div className="flex h-44 w-44 items-center justify-center overflow-hidden rounded-full bg-pallete-light-green dark:bg-[var(--color-pallete-light-green-dark)]">
                                 {avatar ? (
                                     <img
                                         src={toProxyUrl(avatar)}
@@ -539,7 +539,7 @@ export default function EditProfile() {
                                 className={`rounded-full bg-pallete-gray px-3 py-1 text-xs text-[#777] transition ${uploadingAvatar
                                         ? "cursor-not-allowed opacity-50"
                                         : "cursor-pointer hover:bg-pallete-light-green hover:text-white"
-                                    }`}
+                                    } dark:bg-[var(--color-pallete-gray-dark)] dark:text-[var(--color-text-primary-dark)] dark:hover:bg-[var(--color-pallete-light-green-dark)]`}
                             >
                                 {uploadingAvatar ? "Enviando imagem..." : "Escolher imagem"}
 
@@ -555,9 +555,9 @@ export default function EditProfile() {
 
                             {uploadingAvatar && (
                                 <div className="w-full max-w-44">
-                                    <div className="h-2 overflow-hidden rounded-full bg-pallete-gray">
+                                    <div className="h-2 overflow-hidden rounded-full bg-pallete-gray dark:bg-[var(--color-pallete-gray-dark)]">
                                         <div
-                                            className="h-full rounded-full bg-pallete-blue-green transition-all"
+                                            className="h-full rounded-full bg-pallete-blue-green dark:bg-[var(--color-pallete-blue-green-dark)] transition-all"
                                             style={{ width: `${uploadProgress}%` }}
                                         />
                                     </div>
@@ -653,7 +653,7 @@ export default function EditProfile() {
                             </div>
                         </div>
                         <button
-                            className="mx-auto mt-8 block rounded-xl bg-pallete-orange px-5 py-2 text-sm text-white transition-colors hover:bg-pallete-dark-orange disabled:cursor-not-allowed disabled:opacity-60"
+                            className="mx-auto mt-8 block rounded-xl bg-pallete-orange px-5 py-2 text-sm text-white transition-colors hover:bg-pallete-dark-orange disabled:cursor-not-allowed disabled:opacity-60 dark:bg-[var(--color-pallete-orange-dark)] dark:hover:bg-pallete-dark-orange"
                             type="button"
                             onClick={handleChangePassword}
                             disabled={changingPassword || !currentPassword || !newPassword || !confirmPassword}
@@ -663,7 +663,7 @@ export default function EditProfile() {
                     </section>
 
                     <section aria-label="Excluir conta">
-                        <p className="max-w-xl text-sm leading-relaxed text-red-500">
+                        <p className="max-w-xl text-sm leading-relaxed text-red-500 dark:text-red-400">
                             A exclusão da conta é permanente e remove seus dados de perfil. Essa ação
                             não poderá ser desfeita.
                         </p>
@@ -700,7 +700,7 @@ export default function EditProfile() {
                                         {deletingAccount ? "Excluindo..." : "Confirmar exclusão"}
                                     </button>
                                     <button
-                                        className="rounded-lg border border-pallete-gray px-4 py-2 text-sm text-secondary dark:text-primary"
+                                        className="rounded-lg border border-pallete-gray px-4 py-2 text-sm text-secondary dark:text-primary dark:border-[var(--color-pallete-gray-dark)] dark:text-[var(--color-text-primary-dark)]"
                                         type="button"
                                         onClick={() => {
                                             setConfirmDelete(false);
@@ -716,7 +716,7 @@ export default function EditProfile() {
                     </section>
 
                     <button
-                        className="mx-auto block rounded-xl bg-pallete-orange px-5 py-2 text-sm text-white underline underline-offset-2 transition-colors hover:bg-pallete-dark-orange disabled:cursor-not-allowed disabled:opacity-60"
+                        className="mx-auto block rounded-xl bg-pallete-orange px-5 py-2 text-sm text-white underline underline-offset-2 transition-colors hover:bg-pallete-dark-orange disabled:cursor-not-allowed disabled:opacity-60 dark:bg-[var(--color-pallete-orange-dark)] dark:hover:bg-pallete-dark-orange"
                         type="submit"
                         disabled={saving || uploadingAvatar}
                     >

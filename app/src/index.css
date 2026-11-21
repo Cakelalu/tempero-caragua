@@ -53,9 +53,53 @@
         -webkit-text-fill-color: transparent;
     }
 }
-    .dark p{
-        color: var(--color-primary);
-    }
+/* ============================================
+   CORES MODO DARK - derivadas da paleta clara
+   (sem alterar as cores do modo claro acima)
+   ============================================ */
+.dark {
+    /* Fundos e superfícies */
+    --color-pallete-background-dark: #121212;
+    --color-pallete-surface-dark: #191a18;
+    --color-pallete-card-dark: #1f1f1f;
+
+    /* Textos (inversão do claro para contraste em fundo escuro) */
+    --color-text-primary-dark: #ffffff;
+    --color-text-secondary-dark: #d6dcd8;
+    --color-text-muted-dark: #a2a183;
+
+    /* Cores da paleta adaptadas para dark */
+    --color-pallete-light-orange-dark: #5c4a2b;
+    --color-pallete-orange-dark: #b57a2e;
+    --color-pallete-dark-orange-dark: #d4a373;
+    --color-pallete-green-dark: #8a8a5a;
+    --color-pallete-pink-dark: #b58d7a;
+    --color-pallete-light-yellow-dark: #5c4a2b;
+    --color-pallete-light-green-dark: #6e6e5e;
+    --color-pallete-dark-green-dark: #a3a37a;
+    --color-pallete-gray-dark: #3a3a3a;
+    --color-pallete-blue-green-dark: #7aa8a3;
+    --color-pallete-muted-yellow-dark: #6e6e5e;
+
+    /* Gradientes invertidos para dark */
+    --background-image-yellow-gradient-dark: linear-gradient(to right, #5c4a2b, #8a8a5a);
+    --background-image-brown-gradient-dark: linear-gradient(to right, #8a8a5a, #5c4a2b);
+}
+
+/* Títulos em dark usam o gradiente escuro correspondente */
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4,
+.dark h5,
+.dark h6 {
+    background-image: var(--background-image-brown-gradient-dark);
+}
+
+/* Texto de parágrafos em dark */
+.dark p {
+    color: var(--color-text-primary-dark);
+}
 
 /* Reset global para a aplicação */
 *,

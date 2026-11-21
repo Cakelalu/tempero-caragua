@@ -199,7 +199,7 @@ export default function Profile() {
   // 5. Estados de Carregamento e Telas de Erro de Interface
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-gray-50 text-base font-medium text-gray-600">
+      <div className="flex h-screen items-center justify-center bg-gray-50 dark:bg-[var(--color-pallete-surface-dark)] text-base font-medium text-gray-600 dark:text-[var(--color-text-muted-dark)]">
         Carregando dados do perfil...
       </div>
     );
@@ -207,18 +207,18 @@ export default function Profile() {
 
   if (!profile) {
     return (
-      <div className="flex h-screen flex-col items-center justify-center bg-gray-50 gap-2 px-4 text-center">
+      <div className="flex h-screen flex-col items-center justify-center bg-gray-50 dark:bg-[var(--color-pallete-surface-dark)] gap-2 px-4 text-center">
         <p className="text-base font-semibold text-red-500">Perfil não encontrado.</p>
-        <p className="text-sm text-gray-500">Verifique sua conexão ou se seu login ainda está ativo.</p>
+        <p className="text-sm text-gray-500 dark:text-[var(--color-text-muted-dark)]">Verifique sua conexão ou se seu login ainda está ativo.</p>
       </div>
     );
   }
 
   // 6. Renderização da Interface Visual com Tailwind CSS
   return (
-    <div className="bg-gray-50 pb-16 dark:bg-pallete-dark-gray">
+    <div className="bg-gray-50 pb-16 dark:bg-[var(--color-pallete-surface-dark)]">
       {/* Banner / Foto de Capa */}
-      <div className="relative h-44 w-full bg-gray-200 md:h-60">
+      <div className="relative h-44 w-full bg-gray-200 dark:bg-[var(--color-pallete-gray-dark)] md:h-60">
         {profile.imagemBanner ? (
           <img src={toProxyUrl(profile.imagemBanner)} alt="Banner" className="h-full w-full object-cover" />
         ) : (
@@ -234,30 +234,30 @@ export default function Profile() {
               className="h-28 w-28 rounded-full border-4 border-white bg-white object-cover shadow-sm md:h-32 md:w-32"
             />
           ) : (
-            <div className="h-28 w-28 rounded-full border-4 border-white bg-gray-200 shadow-sm md:h-32 md:w-32 flex items-center justify-center">
-              <FiUser size={20} className="text-gray-400" />
+            <div className="h-28 w-28 rounded-full border-4 border-white bg-gray-200 dark:bg-[var(--color-pallete-gray-dark)] shadow-sm md:h-32 md:w-32 flex items-center justify-center">
+              <FiUser size={20} className="text-gray-400 dark:text-[var(--color-text-muted-dark)]" />
             </div>
           )}
         </div>
 
         {/* Barra de Contadores no canto direito, mesma altura da foto */}
-        <div className="absolute md:-bottom-1/6 sm:-bottom-1/4 bottom-2/5 place-self-center sm:right-15 md:right-25 flex items-center gap-6 rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
+        <div className="absolute -bottom-14 right-4 sm:-bottom-1/6 sm:right-15 md:-bottom-1/4 md:right-25 flex items-center gap-0 sm:gap-6 rounded-md border border-gray-100 dark:border-[var(--color-pallete-gray-dark)] bg-white p-0.5 sm:p-4 shadow-sm dark:bg-[var(--color-pallete-card-dark)] whitespace-nowrap">
           <div className="text-center">
-            <span className="block text-lg font-bold text-gray-800">{profile.stats.postsCount}</span>
-            <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Posts</span>
+            <span className="block text-sm font-bold text-gray-800 dark:text-[var(--color-text-primary-dark)] sm:text-lg">{profile.stats.postsCount}</span>
+            <span className="text-[8px] text-gray-400 dark:text-[var(--color-text-muted-dark)] uppercase font-bold tracking-wider sm:text-[10px]">Posts</span>
           </div>
-          <div className="text-center border-x border-gray-100 px-6">
-            <span className="block text-lg font-bold text-gray-800">{profile.stats.followersCount}</span>
-            <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Seguidores</span>
+          <div className="text-center border-x border-gray-100 dark:border-[var(--color-pallete-gray-dark)] px-1 sm:px-6">
+            <span className="block text-sm font-bold text-gray-800 dark:text-[var(--color-text-primary-dark)] sm:text-lg">{profile.stats.followersCount}</span>
+            <span className="text-[8px] text-gray-400 dark:text-[var(--color-text-muted-dark)] uppercase font-bold tracking-wider sm:text-[10px]">Seguidores</span>
           </div>
           <div className="text-center">
-            <span className="block text-lg font-bold text-gray-800">{profile.stats.followingCount}</span>
-            <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Seguindo</span>
+            <span className="block text-sm font-bold text-gray-800 dark:text-[var(--color-text-primary-dark)] sm:text-lg">{profile.stats.followingCount}</span>
+            <span className="text-[8px] text-gray-400 dark:text-[var(--color-text-muted-dark)] uppercase font-bold tracking-wider sm:text-[10px]">Seguindo</span>
           </div>
           {isFollowing !== null && profile.id !== userLoggedId && (
             <button
               onClick={isFollowing ? handleUnfollowProfile : handleFollowProfile}
-              className="ml-2 px-3 py-1 rounded-lg text-xs font-medium transition-colors border bg-black text-white border-white hover:bg-gray-800"
+              className="ml-2 px-3 py-1 rounded-lg text-xs font-medium transition-colors border bg-black text-white border-white hover:bg-gray-800 dark:bg-[var(--color-text-primary-dark)] dark:text-[var(--color-text-secondary-dark)] dark:border-[var(--color-text-secondary-dark)] dark:hover:bg-[var(--color-text-muted-dark)]"
             >
               {isFollowing ? "Seguindo" : "Seguir"}
             </button>
@@ -268,12 +268,12 @@ export default function Profile() {
       {/* Grid Centralizado de Informações */}
       <div className="mx-auto max-w-7xl px-4 pt-16 md:px-8">
         {/* Bloco de Nome, Bio e Métricas */}
-        <div className="flex flex-col justify-between gap-6 border-b border-gray-200 pb-6 md:flex-row md:items-start">
+        <div className="flex flex-col justify-between gap-6 border-b border-gray-200 dark:border-[var(--color-pallete-gray-dark)] pb-6 md:flex-row md:items-start">
           <div className="flex-1">
-            <h1 className="text-xl font-bold text-gray-900 md:text-2xl">{profile.nome}</h1>
-            <p className="text-xs text-gray-400 md:text-sm">@{profile.nomeUsuario}</p>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-[var(--color-text-primary-dark)] md:text-2xl">{profile.nome}</h1>
+            <p className="text-xs text-gray-400 dark:text-[var(--color-text-muted-dark)] md:text-sm">@{profile.nomeUsuario}</p>
             {profile.biografia && (
-              <p className="mt-3 max-w-xl text-sm text-gray-600 whitespace-pre-line leading-relaxed">
+              <p className="mt-3 max-w-xl text-sm text-gray-600 dark:text-[var(--color-text-muted-dark)] whitespace-pre-line leading-relaxed">
                 {profile.biografia}
               </p>
             )}
@@ -284,21 +284,21 @@ export default function Profile() {
 
         {/* Bloco Inferior com as Imagens/Postagens */}
         <div className="mt-8">
-          <h2 className="text-base font-bold text-gray-900 mb-4">Minhas Publicações</h2>
+          <h2 className="text-base font-bold text-gray-900 dark:text-[var(--color-text-primary-dark)] mb-4">Minhas Publicações</h2>
 
           {posts.length === 0 ? (
             <div className="grid grid-cols-3 gap-4 sm:grid-cols-1 md:grid-cols-2">
               {profile.id === userLoggedId && (
                 <button
                   aria-label="Criar publicação"
-                  className="cols-1 flex row-1 items-center justify-center rounded-xl border border-gray-100 bg-white text-7xl text-pallete-dark-green-2 shadow-sm transition hover:border-pallete-muted-yellow hover:shadow-md"
+                  className="cols-1 flex row-1 items-center justify-center rounded-xl border border-gray-100 dark:border-[var(--color-pallete-gray-dark)] bg-white text-7xl text-pallete-dark-green-2 shadow-sm transition hover:border-pallete-muted-yellow hover:shadow-md dark:bg-[var(--color-pallete-card-dark)] dark:text-[var(--color-pallete-dark-green-dark)] dark:hover:border-[var(--color-pallete-muted-yellow-dark)]"
                   onClick={() => setIsCreatePostOpen(true)}
                   type="button"
                 >
                   +
                 </button>
               )}
-              <div className="text-center cols-2 row-1 text-sm text-gray-400 py-16 bg-white rounded-xl border border-gray-100 shadow-sm cols-1 sm:cols-1 md:cols-2">
+              <div className="text-center cols-2 row-1 text-sm text-gray-400 dark:text-[var(--color-text-muted-dark)] py-16 bg-white rounded-xl border border-gray-100 dark:border-[var(--color-pallete-gray-dark)] shadow-sm cols-1 sm:cols-1 md:cols-2 dark:bg-[var(--color-pallete-card-dark)]">
                 Nenhuma publicação encontrada neste perfil.
               </div>
             </div>
@@ -309,7 +309,7 @@ export default function Profile() {
                 {profile.id === userLoggedId && (
                   <button
                     aria-label="Criar publicação"
-                    className="cols-1 flex min-w-0 items-center  justify-center rounded-xl border border-gray-100 bg-white text-7xl text-pallete-dark-green-2 shadow-sm transition hover:border-pallete-muted-yellow hover:shadow-md"
+                    className="cols-1 flex min-w-0 items-center  justify-center rounded-xl border border-gray-100 dark:border-[var(--color-pallete-gray-dark)] bg-white text-7xl text-pallete-dark-green-2 shadow-sm transition hover:border-pallete-muted-yellow hover:shadow-md dark:bg-[var(--color-pallete-card-dark)] dark:text-[var(--color-pallete-dark-green-dark)] dark:hover:border-[var(--color-pallete-muted-yellow-dark)]"
                     onClick={() => setIsCreatePostOpen(true)}
                     type="button"
                   >
@@ -317,8 +317,8 @@ export default function Profile() {
                   </button>
                 )}
                 {posts.map((post) => (
-                  <div key={post.id} className="overflow-hidden min-w-0 cols-1 rounded-xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer" onClick={() => { window.location.href = `/posts/${post.slug || post.id}`; }}>
-                    <div className="h-44 w-full bg-gray-50 flex items-center justify-center">
+                  <div key={post.id} className="overflow-hidden min-w-0 cols-1 rounded-xl border border-gray-100 dark:border-[var(--color-pallete-gray-dark)] bg-white shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer dark:bg-[var(--color-pallete-card-dark)]" onClick={() => { window.location.href = `/posts/${post.slug || post.id}`; }}>
+                    <div className="h-44 w-full bg-gray-50 flex items-center justify-center dark:bg-[var(--color-pallete-gray-dark)]">
                       {obterLinkDaImagem(post.imagens) ? (
                         <img
                           src={obterLinkDaImagem(post.imagens)}
@@ -327,13 +327,13 @@ export default function Profile() {
                           loading="lazy"
                         />
                       ) : (
-                        <div className="text-gray-400 text-xs translate-y-1/6">Sem imagem</div>
+                        <div className="text-gray-400 dark:text-[var(--color-text-muted-dark)] text-xs translate-y-1/6">Sem imagem</div>
                       )}
                     </div>
                     <div className="p-3">
                       <div className="flex items-center justify-between">
                         {/* Título de tamanho 12, preto e negrito como definido */}
-                        <h3 className="font-bold text-black text-[12px] line-clamp-2 leading-snug">{post.titulo}</h3>
+                        <h3 className="font-bold text-black dark:text-[var(--color-text-primary-dark)] text-[12px] line-clamp-2 leading-snug">{post.titulo}</h3>
                         {profile.id === userLoggedId && (
                           <button
                             onClick={(e) => handleDeletePost(post.slug, e)}
@@ -346,7 +346,7 @@ export default function Profile() {
                           </button>
                         )}
                       </div>
-                      <span className="text-[10px] text-gray-400 mt-1 block">
+                      <span className="text-[10px] text-gray-400 dark:text-[var(--color-text-muted-dark)] mt-1 block">
                         {new Date(post.dataPostagem).toLocaleDateString('pt-BR')}
                       </span>
                     </div>
@@ -384,17 +384,17 @@ export default function Profile() {
       {confirmDeleteSlug && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setConfirmDeleteSlug(null)}>
           <div
-            className="bg-white rounded-2xl p-6 shadow-2xl w-full max-w-sm"
+            className="bg-white rounded-2xl p-6 shadow-2xl w-full max-w-sm dark:bg-[var(--color-pallete-card-dark)]"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-lg font-bold text-gray-900 mb-2">Excluir publicação</h3>
-            <p className="text-gray-600 mb-6">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-[var(--color-text-primary-dark)] mb-2">Excluir publicação</h3>
+            <p className="text-gray-600 dark:text-[var(--color-text-muted-dark)] mb-6">
               Tem certeza que deseja excluir esta publicação? Esta ação não poderá ser desfeita.
             </p>
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setConfirmDeleteSlug(null)}
-                className="px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+                className="px-4 py-2 rounded-lg text-gray-600 dark:text-[var(--color-text-muted-dark)] hover:bg-gray-100 dark:hover:bg-[var(--color-pallete-gray-dark)] transition-colors"
               >
                 Cancelar
               </button>

@@ -1,4 +1,3 @@
-
 import { NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google'
@@ -92,7 +91,7 @@ export default function Login() {
     };
 
     return (
-        <main className="grid min-h-screen w-full grid-cols-1 overflow-hidden bg-pallete-dark-green-2 lg:h-screen lg:grid-cols-[61.3%_38.7%]">
+        <main className="grid min-h-screen w-full grid-cols-1 overflow-hidden bg-pallete-dark-green-2 lg:h-screen lg:grid-cols-[61.3%_38.7%] dark:bg-[var(--color-pallete-dark-green-dark)]">
 
             {/* Painel de login */}
             <section className="flex min-h-screen w-full flex-col items-center px-6 py-7 lg:min-h-0 lg:h-full lg:px-0 lg:pt-7">
@@ -105,7 +104,7 @@ export default function Login() {
                 />
 
                 {/* Título */}
-                <h1 className="mb-4 text-center text-xl font-medium text-[#e8d9a5] sm:text-2xl">
+                <h1 className="mb-4 text-center text-xl font-medium text-[#e8d9a5] sm:text-2xl dark:text-[var(--color-text-primary-dark)]">
                     Acesse sua conta
                 </h1>
 
@@ -117,7 +116,7 @@ export default function Login() {
                     {/* E-mail */}
                     <label
                         htmlFor="email"
-                        className="mb-1.5 text-sm font-bold text-white sm:text-base"
+                        className="mb-1.5 text-sm font-bold text-white sm:text-base dark:text-[var(--color-text-primary-dark)]"
                     >
                         E-mail
                     </label>
@@ -130,21 +129,21 @@ export default function Login() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
-                        className="h-11 w-full rounded-xl border border-[#c9c5b8] bg-transparent px-3 text-white outline-none transition-colors focus:border-[#c58b36] focus:ring-1 focus:ring-[#c58b36]"
+                        className="h-11 w-full rounded-xl border border-[#c9c5b8] bg-transparent px-3 text-white outline-none transition-colors focus:border-[#c58b36] focus:ring-1 focus:ring-[#c58b36] dark:text-[var(--color-text-primary-dark)] dark:border-[var(--color-pallete-gray-dark)] dark:focus:border-pallete-orange dark:focus:ring-pallete-orange"
                     />
 
                     {/* Senha */}
                     <div className="mb-1.5 mt-5 flex items-center justify-between gap-3">
                         <label
                             htmlFor="password"
-                            className="text-sm font-bold text-white sm:text-base"
+                            className="text-sm font-bold text-white sm:text-base dark:text-[var(--color-text-primary-dark)]"
                         >
                             Senha
                         </label>
 
                         <NavLink
                             to="/recuperar-senha"
-                            className="text-sm text-[#e8d9a5] underline underline-offset-2 hover:text-white sm:text-base"
+                            className="text-sm text-[#e8d9a5] underline underline-offset-2 hover:text-white sm:text-base dark:text-[var(--color-pallete-light-orange-dark)] dark:hover:text-[var(--color-text-primary-dark)]"
                         >
                             Esqueci minha senha
                         </NavLink>
@@ -158,20 +157,20 @@ export default function Login() {
                         value={senha}
                         onChange={(e) => setSenha(e.target.value)}
                         required
-                        className="h-11 w-full rounded-xl border border-[#c9c5b8] bg-transparent px-3 text-white outline-none transition-colors focus:border-[#c58b36] focus:ring-1 focus:ring-[#c58b36]"
+                        className="h-11 w-full rounded-xl border border-[#c9c5b8] bg-transparent px-3 text-white outline-none transition-colors focus:border-[#c58b36] focus:ring-1 focus:ring-[#c58b36] dark:text-[var(--color-text-primary-dark)] dark:border-[var(--color-pallete-gray-dark)] dark:focus:border-pallete-orange dark:focus:ring-pallete-orange"
                     />
 
                     {/* Botão entrar */}
                     <button
                         type="submit"
-                        className="mt-4 h-10 w-32 self-center rounded-xl bg-pallete-orange font-medium text-white underline underline-offset-2 transition-colors duration-150 hover:bg-pallete-dark-orange"
+                        className="mt-4 h-10 w-32 self-center rounded-xl bg-pallete-orange font-medium text-white underline underline-offset-2 transition-colors duration-150 hover:bg-pallete-dark-orange dark:bg-[var(--color-pallete-orange-dark)] dark:hover:bg-pallete-dark-orange"
                     >
                         Entrar
                     </button>
                 </form>
 
                 {/* Separador */}
-                <p className="my-6 font-bold text-white">
+                <p className="my-6 font-bold text-white dark:text-[var(--color-text-primary-dark)]">
                     OU
                 </p>
 
@@ -188,13 +187,13 @@ export default function Login() {
 
                 {/* Cadastro */}
                 <div className="mt-9 text-center">
-                    <p className="text-lg font-medium text-white sm:text-xl">
+                    <p className="text-lg font-medium text-white sm:text-xl dark:text-[var(--color-text-primary-dark)]">
                         Ainda não criou sua conta?
                     </p>
 
                     <NavLink
                         to="/cadastro"
-                        className="text-[#e8d9a5] underline underline-offset-2 hover:text-white"
+                        className="text-[#e8d9a5] underline underline-offset-2 hover:text-white dark:text-[var(--color-pallete-light-orange-dark)] dark:hover:text-[var(--color-text-primary-dark)]"
                     >
                         Criar conta
                     </NavLink>

@@ -77,17 +77,17 @@ export default function Post() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <p className="text-gray-500">Carregando postagem...</p>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-[var(--color-pallete-surface-dark)]">
+        <p className="text-gray-500 dark:text-[var(--color-text-muted-dark)]">Carregando postagem...</p>
       </div>
     );
   }
 
   if (error || !post) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 py-12 px-4 text-center">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 dark:bg-[var(--color-pallete-surface-dark)] py-12 px-4 text-center">
         <h1 className="text-lg font-medium text-red-600">{error || "Postagem não encontrada."}</h1>
-        <p className="mt-2 text-sm text-gray-500">
+        <p className="mt-2 text-sm text-gray-500 dark:text-[var(--color-text-muted-dark)]">
           Não foi possível exibir os detalhes desta postagem.
         </p>
       </div>
@@ -110,12 +110,12 @@ export default function Post() {
   };
 
   return (
-    <div className="bg-gray-50">
+    <div className="bg-gray-50 dark:bg-[var(--color-pallete-surface-dark)]">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
         {/* 1. Imagem do post - primeiro elemento */}
         {imagens.length > 0 ? (
-          <div className="relative w-full aspect-video bg-white rounded-xl overflow-hidden mb-6 shadow-sm flex items-center justify-center">
+          <div className="relative w-full aspect-video bg-white rounded-xl overflow-hidden mb-6 shadow-sm flex items-center justify-center dark:bg-[var(--color-pallete-card-dark)]">
             <img
               src={toProxyUrl(imagens[0])}
               alt={post.titulo}
@@ -137,17 +137,17 @@ export default function Post() {
             className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm"
           />
           <div>
-            <p className="text-sm font-semibold text-gray-900 leading-tight">{nomeAutor}</p>
-            <p className="text-xs text-gray-500">@{autor} • {formatarData(post.dataPostagem)}</p>
+            <p className="text-sm font-semibold text-gray-900 dark:text-[var(--color-text-primary-dark)] leading-tight">{nomeAutor}</p>
+            <p className="text-xs text-gray-500 dark:text-[var(--color-text-muted-dark)]">@{autor} • {formatarData(post.dataPostagem)}</p>
           </div>
         </div>
 
         {/* 3. Título */}
-        <h1 className="text-2xl font-bold text-gray-900 mb-6 leading-tight">{post.titulo}</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-[var(--color-text-primary-dark)] mb-6 leading-tight">{post.titulo}</h1>
 
         {/* 4. Conteúdo principal */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-8 mb-8">
-          <div className="prose prose-lg text-gray-700 max-w-none">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-8 mb-8 dark:bg-[var(--color-pallete-card-dark)] dark:border-[var(--color-pallete-gray-dark)]">
+          <div className="prose prose-lg text-gray-700 dark:text-[var(--color-text-muted-dark)] max-w-none">
             {post.conteudo.split("\n\n").map((paragrafo, index) => (
               <p key={index} className="mb-4 leading-relaxed">
                 {paragrafo}
@@ -159,14 +159,14 @@ export default function Post() {
         {/* 5. Imagens adicionais (galeria, se houver mais de 1) */}
         {imagens.length > 1 && (
           <div className="mb-8">
-            <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-3">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-[var(--color-text-primary-dark)] uppercase tracking-wider mb-3">
               Mais imagens
             </h3>
             <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
               {imagens.slice(1).map((img, index) => (
                 <div
                   key={index}
-                  className="aspect-square rounded-lg border border-gray-200 overflow-hidden bg-gray-100"
+                  className="aspect-square rounded-lg border border-gray-200 overflow-hidden bg-gray-100 dark:border-[var(--color-pallete-gray-dark)] dark:bg-[var(--color-pallete-gray-dark)]"
                 >
                   <img
                     src={toProxyUrl(img)}
@@ -181,14 +181,14 @@ export default function Post() {
 
         {/* 6. Legendas */}
         {legendas.length > 0 && (
-          <div className="mb-8 p-4 bg-gray-50 rounded-lg border border-gray-100">
-            <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-3">
+          <div className="mb-8 p-4 bg-gray-50 rounded-lg border border-gray-100 dark:bg-[var(--color-pallete-card-dark)] dark:border-[var(--color-pallete-gray-dark)]">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-[var(--color-text-primary-dark)] uppercase tracking-wider mb-3">
               Legendas
             </h3>
-            <ul className="space-y-2 text-sm text-gray-600">
+            <ul className="space-y-2 text-sm text-gray-600 dark:text-[var(--color-text-muted-dark)]">
               {legendas.map((legenda, index) => (
                 <li key={index} className="flex gap-2">
-                  <span className="text-gray-400">{index + 1}.</span>
+                  <span className="text-gray-400 dark:text-[var(--color-text-muted-dark)]">{index + 1}.</span>
                   <span>{legenda}</span>
                 </li>
               ))}
@@ -207,7 +207,7 @@ export default function Post() {
                     new CustomEvent("select-tag", { detail: tag.tagNome })
                   );
                 }}
-                className="px-3 py-1 rounded-full text-xs border border-pallete-green text-pallete-green bg-white hover:bg-pallete-green hover:text-white transition-colors"
+                className="px-3 py-1 rounded-full text-xs border border-pallete-green text-pallete-green bg-white hover:bg-pallete-green hover:text-white transition-colors dark:border-[var(--color-pallete-green-dark)] dark:text-[var(--color-pallete-green-dark)] dark:bg-[var(--color-pallete-card-dark)] dark:hover:bg-[var(--color-pallete-green-dark)] dark:hover:text-[var(--color-text-primary-dark)]"
               >
                 #{tag.tagNome}
               </button>

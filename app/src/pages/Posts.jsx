@@ -162,7 +162,7 @@ export default function Posts() {
         {errorMsg ? (
           <p className="text-center text-red-500 text-sm py-8">{errorMsg}</p>
         ) : isEmpty ? (
-          <p className="text-center text-gray-500 text-sm py-12">
+          <p className="text-center text-gray-500 dark:text-[var(--color-text-muted-dark)] text-sm py-12">
             Nenhuma postagem encontrada.
           </p>
         ) : (
@@ -192,7 +192,7 @@ export default function Posts() {
                 );
               })}
             </div>
-            {loading && <p className="text-center text-gray-400 text-sm py-4">Carregando postagens...</p>}
+            {loading && <p className="text-center text-gray-400 dark:text-[var(--color-text-muted-dark)] text-sm py-4">Carregando postagens...</p>}
           </>
         )}
       </section>
@@ -204,9 +204,9 @@ export default function Posts() {
   const usersItems = usersData?.items || [];
 
   return (
-    <div className="bg-gray-50">
+    <div className="bg-gray-50 dark:bg-[var(--color-pallete-surface-dark)]">
       {/* Barra de pesquisa sticky no topo */} 
-      <div className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-gray-100">
+      <div className="sticky top-0 z-40 bg-white/90 dark:bg-[var(--color-pallete-card-dark)]/90 backdrop-blur-md border-b border-gray-100 dark:border-[var(--color-pallete-gray-dark)]">
         <div className="max-w-2xl mx-auto px-4 py-3">
           <div className="relative w-full">
             <form onSubmit={handleSearchSubmit} className="relative w-full">
@@ -219,12 +219,12 @@ export default function Posts() {
                 }
                 value={searchQuery}
                 onChange={handleSearchChange}
-                className="w-full pl-10 pr-20 py-3 rounded-xl border border-gray-200 text-gray-900 focus:ring-2 focus:ring-pallete-green focus:outline-none text-base"
+                className="w-full pl-10 pr-20 py-3 rounded-xl border border-gray-200 text-gray-900 dark:text-[var(--color-text-primary-dark)] dark:border-[var(--color-pallete-gray-dark)] dark:bg-[var(--color-pallete-card-dark)] focus:ring-2 focus:ring-pallete-green focus:outline-none text-base"
               />
               <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
                 <button
                   type="submit"
-                  className="bg-pallete-green text-white px-2 py-2 rounded-lg text-sm hover:bg-pallete-green transition-colors focus:ring-0 focus:outline-none active:bg-pallete-green"
+                  className="bg-pallete-green text-white px-2 py-2 rounded-lg text-sm hover:bg-pallete-green transition-colors focus:ring-0 focus:outline-none active:bg-pallete-green dark:bg-[var(--color-pallete-green-dark)] dark:hover:bg-pallete-green"
                   aria-label="Buscar"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
@@ -232,7 +232,7 @@ export default function Posts() {
                 <button
                   type="button"
                   onClick={() => setFilterOpen(true)}
-                  className="w-8 h-8 rounded-lg bg-pallete-green text-white flex items-center justify-center hover:bg-pallete-green transition-colors focus:ring-0 focus:outline-none active:bg-pallete-green"
+                  className="w-8 h-8 rounded-lg bg-pallete-green text-white flex items-center justify-center hover:bg-pallete-green transition-colors focus:ring-0 focus:outline-none active:bg-pallete-green dark:bg-[var(--color-pallete-green-dark)] dark:hover:bg-pallete-green"
                   aria-label="Abrir filtros"
                 >
                   <FiFilter size={16} />
@@ -258,7 +258,7 @@ export default function Posts() {
             {usersError ? (
               <p className="text-center text-red-500 text-sm py-8">{usersError}</p>
             ) : usersItems.length === 0 ? (
-              <p className="text-center text-gray-500 text-sm py-12">Nenhum usuário encontrado.</p>
+              <p className="text-center text-gray-500 dark:text-[var(--color-text-muted-dark)] text-sm py-12">Nenhum usuário encontrado.</p>
             ) : (
               <>
                 {usersItems.map((user) => (
@@ -276,7 +276,7 @@ export default function Posts() {
                   />
                 ))}
                 {usersData?.hasMore && !usersFetching && <div ref={usersRef} className="h-20" />}
-                {usersFetching && <p className="text-center text-gray-400 text-sm py-4">Buscando mais usuários...</p>}
+                {usersFetching && <p className="text-center text-gray-400 dark:text-[var(--color-text-muted-dark)] text-sm py-4">Buscando mais usuários...</p>}
               </>
             )}
           </div>
@@ -288,7 +288,7 @@ export default function Posts() {
             {searchPostsError ? (
               <p className="text-center text-red-500 text-sm py-8">{searchPostsError.message}</p>
             ) : searchPostsData?.items?.length === 0 ? (
-              <p className="text-center text-gray-500 text-sm py-12">
+              <p className="text-center text-gray-500 dark:text-[var(--color-text-muted-dark)] text-sm py-12">
                 Nenhuma postagem encontrada para "{searchQuery}".
               </p>
             ) : (
@@ -318,7 +318,7 @@ export default function Posts() {
                     );
                   })}
                 </div>
-                {searchPostsFetching && <p className="text-center text-gray-400 text-sm py-4">Buscando postagens...</p>}
+                {searchPostsFetching && <p className="text-center text-gray-400 dark:text-[var(--color-text-muted-dark)] text-sm py-4">Buscando postagens...</p>}
               </>
             )}
           </section>

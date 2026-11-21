@@ -14,6 +14,7 @@ export default function LanguageSwitch ({
             rounded-full
             bg-[#77775f]
             p-0.5
+            dark:bg-[var(--color-pallete-gray-dark)]
             "
         >
             {/* PT */}

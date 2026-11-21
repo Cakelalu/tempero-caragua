@@ -16,7 +16,7 @@ export default function ImageCarousel({ images = [] }) {
   };
 
   return (
-    <div className="relative h-full w-full overflow-hidden bg-gray-50">
+    <div className="relative h-full w-full overflow-hidden bg-gray-50 dark:bg-[var(--color-pallete-surface-dark)]">
       {src ? (
         <img
           src={src}
@@ -25,7 +25,7 @@ export default function ImageCarousel({ images = [] }) {
         />
       ) : (
         <div className="h-full w-full flex items-center justify-center">
-          <span className="text-gray-400 text-sm">Sem imagem</span>
+          <span className="text-gray-400 dark:text-[var(--color-text-muted-dark)] text-sm">Sem imagem</span>
         </div>
       )}
 
@@ -36,7 +36,7 @@ export default function ImageCarousel({ images = [] }) {
               e.stopPropagation();
               goToPrev();
             }}
-            className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 text-white px-2 py-1 rounded-lg hover:bg-black/50 transition"
+            className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 text-white px-2 py-1 rounded-lg hover:bg-black/50 transition dark:bg-white/10 dark:hover:bg-white/20"
             aria-label="Imagem anterior"
           >
             ‹
@@ -46,7 +46,7 @@ export default function ImageCarousel({ images = [] }) {
               e.stopPropagation();
               goToNext();
             }}
-            className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 text-white px-2 py-1 rounded-lg hover:bg-black/50 transition"
+            className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 text-white px-2 py-1 rounded-lg hover:bg-black/50 transition dark:bg-white/10 dark:hover:bg-white/20"
             aria-label="Próxima imagem"
           >
             ›
@@ -59,8 +59,8 @@ export default function ImageCarousel({ images = [] }) {
                 aria-label={`Imagem ${i + 1}`}
                 className={`w-2 h-2 rounded-full transition-colors ${
                   i === currentIndex
-                    ? "bg-white"
-                    : "bg-white/50 hover:bg-white/70"
+                    ? "bg-white dark:bg-[var(--color-text-primary-dark)]"
+                    : "bg-white/50 hover:bg-white/70 dark:bg-[var(--color-text-muted-dark)]/50 dark:hover:bg-[var(--color-text-muted-dark)]/70"
                 }`}
               />
             ))}
