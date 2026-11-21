@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { FiSend, FiUser, FiAlertCircle } from "react-icons/fi";
+import { toProxyUrl } from "../utils/imageProxy";
 
 /**
  * PostCommentsModal
@@ -245,8 +246,19 @@ export default function PostCommentsModal({ postSlug, isOpen, onClose, onComment
                 key={comentario.id}
                 className="flex gap-3"
               >
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-200 dark:bg-[var(--color-pallete-gray-dark)] flex items-center justify-center">
-                  <FiUser size={14} className="text-gray-500 dark:text-[var(--color-text-muted-dark)]" />
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-200 dark:bg-[var(--color-pallete-gray-dark)] flex items-center justify-center overflow-hidden">
+                  {comentario.autor?.imagemPerfil ? (
+                    <img
+                      src={toProxyUrl(comentario.autor.imagemPerfil)}
+                      alt="Foto de perfil"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.style.display = "none";
+                      }}
+                    />
+                  ) : (
+                    <FiUser size={14} className="text-gray-500 dark:text-[var(--color-text-muted-dark)]" />
+                  )}
                 </div>
                 <div className="flex-1">
                   <div className="flex items-baseline gap-2 mb-1">
