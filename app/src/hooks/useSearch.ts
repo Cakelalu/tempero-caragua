@@ -93,8 +93,8 @@ export function useSearchPosts(
         hasMore: total > page * limit,
       };
     },
-    // Busca mesmo com query vazia na primeira carga (page === 1)
-    enabled: debouncedQuery.length > 0 || page === 1,
+    // Busca apenas quando há termo de pesquisa real
+    enabled: debouncedQuery.length > 0,
     staleTime: 1000 * 60 * 5,
     select: (data) => {
       // O queryFn já retorna { items, total, limit, page, hasMore }
@@ -122,7 +122,7 @@ export function useSearchPosts(
   });
 }
 
-export function usePostsFeed() {
+export function usePostsFeed(enabled = true) {
   return useQuery<{
     recentes: any[];
     populares: any[];
@@ -138,6 +138,7 @@ export function usePostsFeed() {
       if (!response.ok) throw new Error("Não foi possível carregar o feed.");
       return response.json();
     },
+    enabled,
     staleTime: 1000 * 60 * 5,
   });
 }
@@ -178,6 +179,8 @@ export function useSearchUsers(query: string, page: number = 1) {
         hasMore: total > page * limit,
       };
     },
+    // Busca apenas quando há termo de pesquisa real
+    enabled: debouncedQuery.length > 0,
     staleTime: 1000 * 60 * 5,
   });
 }

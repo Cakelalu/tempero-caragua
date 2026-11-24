@@ -30,7 +30,8 @@ export default function Posts() {
   const usersRef = useRef(null);
 
   // ---------- Hook React Query: feed agregado (1 requisição para 3 seções) ---------- 
-  const postsFeed = usePostsFeed();
+  // Desabilitado enquanto há busca ativa para evitar requisição desnecessária
+  const postsFeed = usePostsFeed(!searchQuery);
 
   const {
     data: feedData,
