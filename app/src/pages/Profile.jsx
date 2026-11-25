@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { FiUser, FiTrash2 } from 'react-icons/fi';
 import { toProxyUrl } from '../utils/imageProxy';
+import { withImageKitTransform } from '../utils/imageTransform';
 import CreatePost from '../components/CreatePost';
 
 export default function Profile() {
@@ -190,7 +191,7 @@ export default function Profile() {
     if (!imagensString) return null;
     try {
       const parsed = JSON.parse(imagensString);
-      return Array.isArray(parsed) && parsed.length > 0 ? toProxyUrl(parsed[0]) : null;
+      return Array.isArray(parsed) && parsed.length > 0 ? toProxyUrl(withImageKitTransform(parsed[0], { width: 400, quality: 70, format: "webp" })) : null;
     } catch {
       return null;
     }
@@ -220,7 +221,7 @@ export default function Profile() {
       {/* Banner / Foto de Capa */}
       <div className="relative h-44 w-full bg-gray-200 dark:bg-[var(--color-pallete-gray-dark)] md:h-60">
         {profile.imagemBanner ? (
-          <img src={toProxyUrl(profile.imagemBanner)} alt="Banner" className="h-full w-full object-cover" />
+          <img src={toProxyUrl(withImageKitTransform(profile.imagemBanner, { width: 1200, quality: 80, format: "webp" }))} alt="Banner" className="h-full w-full object-cover" loading="eager" />
         ) : (
           <div className="h-full w-full bg-gradient-to-r from-orange-400 to-amber-500" />
         )}
@@ -229,9 +230,10 @@ export default function Profile() {
         <div className="absolute md:-bottom-15 -bottom-14 left-4 sm:left-15 md:left-25">
           {profile.imagemPerfil ? (
             <img
-              src={toProxyUrl(profile.imagemPerfil)}
+              src={toProxyUrl(withImageKitTransform(profile.imagemPerfil, { width: 400, quality: 80, format: "webp" }))}
               alt={profile.nome}
               className="h-28 w-28 rounded-full border-4 border-white bg-white object-cover shadow-sm md:h-32 md:w-32"
+              loading="eager"
             />
           ) : (
             <div className="h-28 w-28 rounded-full border-4 border-white bg-gray-200 dark:bg-[var(--color-pallete-gray-dark)] shadow-sm md:h-32 md:w-32 flex items-center justify-center">

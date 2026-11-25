@@ -1,4 +1,5 @@
 import { toProxyUrl } from "../utils/imageProxy";
+import { withImageKitTransform } from "../utils/imageTransform";
 
 export default function UserSearchCard({ user, onFollow, onUnfollow, isFollowing = false }) {
   return (
@@ -9,9 +10,10 @@ export default function UserSearchCard({ user, onFollow, onUnfollow, isFollowing
       }}
     >
       <img
-        src={user.imagemPerfil ? toProxyUrl(user.imagemPerfil) : "/temperos.svg"}
+        src={user.imagemPerfil ? toProxyUrl(withImageKitTransform(user.imagemPerfil, { width: 200, quality: 80, format: "webp" })) : "/temperos.svg"}
         alt={user.nomeUsuario}
         className="w-10 h-10 rounded-full object-cover border border-gray-200 dark:border-[var(--color-pallete-gray-dark)]"
+        loading="lazy"
       />
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-gray-900 dark:text-[var(--color-text-primary-dark)] truncate">{user.nomeUsuario}</p>

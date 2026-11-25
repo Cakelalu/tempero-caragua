@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { FiSend, FiUser, FiAlertCircle } from "react-icons/fi";
 import { toProxyUrl } from "../utils/imageProxy";
+import { withImageKitTransform } from "../utils/imageTransform";
 
 /**
  * PostCommentsModal
@@ -249,9 +250,10 @@ export default function PostCommentsModal({ postSlug, isOpen, onClose, onComment
                 <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-200 dark:bg-[var(--color-pallete-gray-dark)] flex items-center justify-center overflow-hidden">
                   {comentario.autor?.imagemPerfil ? (
                     <img
-                      src={toProxyUrl(comentario.autor.imagemPerfil)}
+                      src={toProxyUrl(withImageKitTransform(comentario.autor.imagemPerfil, { width: 200, quality: 80, format: "webp" }))}
                       alt="Foto de perfil"
                       className="w-full h-full object-cover"
+                      loading="lazy"
                       onError={(e) => {
                         e.target.style.display = "none";
                       }}

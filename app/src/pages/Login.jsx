@@ -1,7 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google'
-import loginImg from "../assets/loginImg.svg";
 
 export default function Login() {
     const [email, setEmail] = useState("");
@@ -98,7 +97,7 @@ export default function Login() {
 
                 {/* Logo */}
                 <img
-                    src="/logo.svg"
+                    src="/logo.webp"
                     alt="Tempero Caraguá"
                     className="mb-5 h-auto w-64 shrink-0 object-contain sm:w-72"
                 />
@@ -203,7 +202,7 @@ export default function Login() {
             {/* Imagem lateral */}
             <aside className="hidden h-full min-h-0 w-full overflow-hidden lg:block">
                 <img
-                    src={loginImg}
+                    src='/loginImg.webp'
                     alt="Profissional da gastronomia em uma cozinha"
                     className="h-full w-full object-cover object-center"
                 />

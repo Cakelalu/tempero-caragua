@@ -47,9 +47,9 @@ export default function Header() {
             <div className="w-full flex flex-row justify-between items-center lg:w-auto">
                 <NavLink to="/">
                     <img
-                        src="/logo.svg"
+                        src="/logo.webp"
                         alt="Logo"
-                        className="w-20 h-16 lg:w-28 lg:h-23"
+                        className="w-20 h-16 lg:w-28 lg:h-23 object-contain"
                     />
                 </NavLink>
 

@@ -65,7 +65,7 @@ export default function Register() {
         
         <div className="w-screen min-h-screen bg-pallete-dark-green-2 flex flex-col items-center justify-center p-6 box-border m-0 dark:bg-[var(--color-pallete-dark-green-dark)]">
             <section className="flex w-full max-w-md gap-5 flex-col items-center justify-center">
-                <img src="/logo.svg" alt="Tempero Caraguá" />
+                <img src="/logo.webp" alt="Tempero Caraguá" />
                 <h1 className='text-2xl text-white font-bold dark:text-[var(--color-text-primary-dark)]'>Crie sua conta!</h1>
 
                 <form className="flex w-full flex-col gap-4" onSubmit={handleRegister}>

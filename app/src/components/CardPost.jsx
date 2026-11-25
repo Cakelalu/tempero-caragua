@@ -1,4 +1,5 @@
 import { toProxyUrl } from "../utils/imageProxy";
+import { withImageKitTransform } from "../utils/imageTransform";
 
 /**
  * Card de postagem com estilo Instagram em mobile.
@@ -48,7 +49,7 @@ export default function CardPost({
                 {bannerImage ? (
                     <div
                         className="absolute inset-0 bg-cover bg-center"
-                        style={{ backgroundImage: `url(${toProxyUrl(bannerImage)})` }}
+                        style={{ backgroundImage: `url(${toProxyUrl(withImageKitTransform(bannerImage, { width: 1200, quality: 80, format: "webp" }))})` }}
                     />
                 ) : (
                     <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-amber-500 flex items-center justify-center">
@@ -59,9 +60,10 @@ export default function CardPost({
                 {/* Imagem estilo Instagram em mobile (quadrada, ocupa a largura total do card) */}
                 {bannerImage && (
                     <img
-                        src={toProxyUrl(bannerImage)}
+                        src={toProxyUrl(withImageKitTransform(bannerImage, { width: 800, quality: 70, format: "webp" }))}
                         alt={title}
                         className="hidden sm:block w-full h-full object-cover"
+                        loading="lazy"
                     />
                 )}
 
@@ -69,9 +71,10 @@ export default function CardPost({
                 <div className="absolute left-1/2 -translate-x-1/2 bottom-[-32px] hidden sm:flex items-center">
                     {avatarImage ? (
                         <img
-                            src={toProxyUrl(avatarImage)}
+                            src={toProxyUrl(withImageKitTransform(avatarImage, { width: 200, quality: 80, format: "webp" }))}
                             alt={`Foto de perfil de ${author}`}
                             className="w-16 h-16 rounded-full object-cover border-[4px] border-white bg-white shadow-sm"
+                            loading="lazy"
                             onError={(e) => {
                                 e.target.src = "/temperos.svg";
                             }}

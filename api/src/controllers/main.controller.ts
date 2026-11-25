@@ -36,6 +36,7 @@ export const getPost: RequestHandler = async (req, res) => {
         return res.status(404).json({ error: 'Postagem não encontrada' })
     }
 
+    res.setHeader('Cache-Control', 'public, max-age=300, stale-while-revalidate=600')
     res.status(200).json({ post })
 }
 
@@ -119,6 +120,7 @@ export const getPostsFeed: RequestHandler = async (req, res) => {
             })()
         ]);
 
+        res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=120')
         return res.status(200).json({ recentes, populares, seguindo });
     } catch (error) {
         return res.status(500).json({ error: 'Erro ao buscar feed de postagens' });
@@ -127,6 +129,7 @@ export const getPostsFeed: RequestHandler = async (req, res) => {
 
 export const getPosts: RequestHandler = async (req, res) => {
     try {
+        res.setHeader('Cache-Control', 'public, max-age=30, stale-while-revalidate=60')
         const { query } = req.query;
         const pageQuery = typeof req.query.page === 'string' ? req.query.page : undefined;
         const page = pageQuery ? parseInt(pageQuery, 10) : 1;

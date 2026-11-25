@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { toProxyUrl } from "../utils/imageProxy";
+import { withImageKitTransform } from "../utils/imageTransform";
 
 export default function ImageCarousel({ images = [] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const image = images?.[currentIndex];
-  const src = image ? toProxyUrl(image) : null;
+  const src = image ? toProxyUrl(withImageKitTransform(image, { width: 1200, quality: 80, format: "webp" })) : null;
 
   const goToPrev = () => {
     setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
@@ -22,6 +23,7 @@ export default function ImageCarousel({ images = [] }) {
           src={src}
           alt="Postagem"
           className="h-full w-full object-cover"
+          loading="lazy"
         />
       ) : (
         <div className="h-full w-full flex items-center justify-center">

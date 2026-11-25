@@ -9,6 +9,11 @@ services:
       - source: /assets/(.*)
         headers:
           Cache-Control: "public, max-age=31536000, immutable"
+      # Ícone do site – cache imutável por 1 ano (não muda)
+      - source: /mini-logo\.webp
+        headers:
+          Cache-Control: "public, max-age=31536000, immutable"
+
       # Imagens, SVGs e fontes estáticas – cache imutável por 1 ano
       - source: /(.*\.(svg|png|jpg|jpeg|webp|ico|woff|woff2|ttf|otf))
         headers:

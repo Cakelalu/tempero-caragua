@@ -1,6 +1,7 @@
 import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
+import compression from 'compression'
 import { mainRoutes } from './routes/main.routes'
 import { authRoutes } from './routes/auth.routes'
 import { adminRoutes } from './routes/admin.routes'
@@ -15,6 +16,7 @@ const port = process.env.PORT || 4500
 server.use(cors({
     origin: [
         "http://localhost:5173",
+        "http://localhost:4173",
         "http://localhost:5174",
         "https://tempero-caragua-app.onrender.com",
         "https://dev-teca-app.onrender.com"
@@ -26,6 +28,14 @@ server.use(cors({
 }))
 // server.use(bodyParser.json())
 // server.use(bodyParser.urlencoded({ extended: true }))
+server.use(compression({
+  filter: (req, res) => {
+    if (req.headers['x-no-compression']) return false
+    return compression.filter(req, res)
+  },
+  threshold: 1024,
+  level: 6
+}))
 server.use(express.json())
 
 server.use('/imagens', imageRoutes)

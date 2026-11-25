@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toProxyUrl } from "../utils/imageProxy";
+import { withImageKitTransform } from "../utils/imageTransform";
 import PostActions from "../components/PostActions";
 import PostCommentsModal from "../components/PostCommentsModal";
 
@@ -146,9 +147,10 @@ export default function Post() {
         {imagens.length > 0 ? (
           <div className="relative w-full aspect-video bg-white rounded-xl overflow-hidden mb-6 shadow-sm flex items-center justify-center dark:bg-[var(--color-pallete-card-dark)]">
             <img
-              src={toProxyUrl(imagens[0])}
+              src={toProxyUrl(withImageKitTransform(imagens[0], { width: 1200, quality: 80, format: "webp" }))}
               alt={post.titulo}
               className="max-h-full max-w-full object-contain"
+              loading="eager"
             />
             {imagens.length > 1 && (
               <div className="absolute bottom-2 left-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
@@ -162,9 +164,10 @@ export default function Post() {
         <div className="flex items-center justify-between gap-3 mb-4">
           <div className="flex items-center gap-3">
             <img
-              src={imagemPerfilAutor ? toProxyUrl(imagemPerfilAutor) : "/temperos.svg"}
+              src={imagemPerfilAutor ? toProxyUrl(withImageKitTransform(imagemPerfilAutor, { width: 200, quality: 80, format: "webp" })) : "/temperos.svg"}
               alt={autor}
               className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm"
+              loading="lazy"
             />
             <div>
               <p className="text-sm font-semibold text-gray-900 dark:text-[var(--color-text-primary-dark)] leading-tight">{nomeAutor}</p>
@@ -220,9 +223,10 @@ export default function Post() {
                   className="aspect-square rounded-lg border border-gray-200 overflow-hidden bg-gray-100 dark:border-[var(--color-pallete-gray-dark)] dark:bg-[var(--color-pallete-gray-dark)]"
                 >
                   <img
-                    src={toProxyUrl(img)}
+                    src={toProxyUrl(withImageKitTransform(img, { width: 400, quality: 70, format: "webp" }))}
                     alt={`Imagem ${index + 2}`}
                     className="h-full w-full object-contain"
+                    loading="lazy"
                   />
                 </div>
               ))}
