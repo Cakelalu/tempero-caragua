@@ -1,8 +1,9 @@
 import jwt from 'jsonwebtoken'
 
 export const createJWT = (payload: any) => {
+    const jti = crypto.randomUUID()
     return jwt.sign(
-        payload,
+        { ...payload, jti },
         process.env.JWT_SECRET_KEY as string,
         { expiresIn: '7d' }
     )

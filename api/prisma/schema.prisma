@@ -111,9 +111,35 @@ model user {
   liked                              liked[]
   comentario                         comentario[]
   post                               post[]
+  passwordReset                      passwordReset[]
 }
 
 enum user_tipo {
   USER
   MODERATOR
+}
+
+model passwordReset {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
+  @@index([expiresAt])
+  @@index([used])
+}
+
+model RevokedToken {
+  id        String   @id @default(uuid())
+  jti       String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([jti])
 }

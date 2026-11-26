@@ -1,9 +1,14 @@
 import { RequestHandler, Response } from "express"
 import { z } from "zod"
 import { OAuth2Client } from "google-auth-library"
+import bcrypt from "bcryptjs"
+import { v4 } from "uuid"
 import { createUser, findUserByEmail, verifyUser } from "../services/user.service"
 import { createToken } from "../services/auth.service"
+import { verifyJWT } from "../libs/jwt"
+import { sendPasswordResetEmail } from "../libs/brevo"
 import { ExtendedRequest } from "../types/extended-request"
+import { prisma } from "../libs/prisma"
 
 const googleOAuthClient = new OAuth2Client()
 
@@ -141,4 +146,113 @@ export const verifyToken: RequestHandler = (
             email: req.user.email
         }
     })
+}
+
+export const logout: RequestHandler = async (req, res) => {
+    const authHeader = req.headers.authorization
+    const token = authHeader?.split(' ')[1]
+
+    if (token) {
+        try {
+            const decoded = verifyJWT(token) as any
+            if (decoded?.jti) {
+                await prisma.revokedToken.create({
+                    data: {
+                        jti: decoded.jti,
+                        expiresAt: new Date(decoded.exp * 1000)
+                    }
+                })
+            }
+        } catch {
+            // Token já expirado ou inválido; ainda assim considera logout no cliente
+        }
+    }
+
+    res.status(200).json({ message: 'Logout realizado com sucesso' })
+};
+
+export const forgotPassword: RequestHandler = async (req, res) => {
+    const schema = z.object({
+        email: z.string().email(),
+    })
+    const data = schema.safeParse(req.body)
+    if (!data.success) {
+        return res.status(400).json({ error: data.error.flatten().fieldErrors })
+    }
+
+    const email = data.data.email.toLowerCase()
+
+    const user = await prisma.user.findUnique({ where: { email } })
+    if (!user) {
+        // Não revela se o e-mail existe (segurança contra enumeração)
+        return res.status(200).json({
+            message: 'Se este e-mail estiver cadastrado, você receberá instruções de redefinição.',
+        })
+    }
+
+    // Invalida tokens anteriores não usados deste usuário
+    await prisma.passwordReset.updateMany({
+        where: { userId: user.id, used: false },
+        data: { used: true },
+    })
+
+    const token = v4()
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000) // 10 minutos
+
+    await prisma.passwordReset.create({
+        data: {
+            id: v4(),
+            userId: user.id,
+            token,
+            expiresAt,
+            used: false,
+        },
+    })
+
+    const frontendUrl = process.env.FRONTEND_URL ?? 'http://localhost:5173'
+    const resetUrl = `${frontendUrl}/reset-password?token=${token}`
+
+    await sendPasswordResetEmail({
+        toEmail: user.email,
+        toName: user.nome,
+        resetUrl,
+    })
+
+    res.status(200).json({
+        message: 'Se este e-mail estiver cadastrado, você receberá instruções de redefinição.',
+    })
+}
+
+export const resetPassword: RequestHandler = async (req, res) => {
+    const schema = z.object({
+        token: z.string().min(1),
+        password: z.string().min(8).max(72),
+    })
+    const data = schema.safeParse(req.body)
+    if (!data.success) {
+        return res.status(400).json({ error: data.error.flatten().fieldErrors })
+    }
+
+    const reset = await prisma.passwordReset.findUnique({
+        where: { token: data.data.token },
+        include: { user: true },
+    })
+
+    if (!reset || reset.used || reset.expiresAt < new Date()) {
+        return res.status(400).json({ error: 'Token inválido ou expirado.' })
+    }
+
+    const hashedPassword = await bcrypt.hash(data.data.password, 10)
+
+    await prisma.$transaction([
+        prisma.user.update({
+            where: { id: reset.userId },
+            data: { senha: hashedPassword },
+        }),
+        prisma.passwordReset.delete({
+            where: { id: reset.id },
+        }),
+    ])
+
+    res.status(200).json({ message: 'Senha redefinida com sucesso. Você já pode fazer login.' })
 }

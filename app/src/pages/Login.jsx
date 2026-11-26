@@ -141,7 +141,7 @@ export default function Login() {
                         </label>
 
                         <NavLink
-                            to="/recuperar-senha"
+                            to="/esqueci-minha-senha"
                             className="text-sm text-[#e8d9a5] underline underline-offset-2 hover:text-white sm:text-base dark:text-[var(--color-pallete-light-orange-dark)] dark:hover:text-[var(--color-text-primary-dark)]"
                         >
                             Esqueci minha senha

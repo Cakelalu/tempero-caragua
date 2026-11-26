@@ -1,6 +1,7 @@
 import { RequestHandler } from 'express'
 import { verifyJWT } from '../libs/jwt'
 import { getUserById } from '../services/user.service'
+import { prisma } from '../libs/prisma'
 
 export const auth: RequestHandler = async (req, res, next) => {
     const authHeader = req.headers.authorization
@@ -20,12 +21,19 @@ export const auth: RequestHandler = async (req, res, next) => {
         return res.status(401).json({ error: 'Token inválido' })
     }
 
+    // Bloqueia tokens revogados (logout)
+    if (decoded.jti) {
+        const revoked = await prisma.revokedToken.findUnique({
+            where: { jti: decoded.jti as string }
+        })
+
+        if (revoked) {
+            return res.status(401).json({ error: 'Token revogado. Faça login novamente.' })
+        }
+    }
+
     try {
-        console.log('ID do token:', decoded.id)
-
         const user = await getUserById(decoded.id as string)
-
-        console.log('Usuário encontrado:', user)
 
         if (!user) {
             return res.status(401).json({ error: 'Usuário não encontrado' })

@@ -210,6 +210,7 @@ export default function EditProfile() {
             setAvatar(profile.imagemPerfil || "");
             setAvatarUrl(profile.imagemPerfil || "");
             setFeedback({ type: "success", message: "Perfil atualizado com sucesso." });
+            navigate("/");
         } catch (error) {
             setFeedback({
                 type: "error",
