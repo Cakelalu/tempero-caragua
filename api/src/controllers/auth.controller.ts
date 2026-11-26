@@ -26,14 +26,22 @@ export const signIn: RequestHandler = async (req, res) => {
         return res.status(400).json({ error: 'Email ou senha inválidos' })
     }
     const token = createToken(user)
+
+    res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 dias
+        path: '/',
+    })
+
     res.json({
         message: 'Login bem-sucedido',
         user: {
             id: user.id,
             name: user.nome,
             email: user.email
-        },
-        token
+        }
     })
 }
 
@@ -72,14 +80,22 @@ export const googleSignIn: RequestHandler = async (req, res) => {
     }
 
     const token = createToken(user)
+
+    res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        path: '/',
+    })
+
     return res.status(200).json({
         message: 'Login bem-sucedido',
         user: {
             id: user.id,
             name: user.nome,
             email: user.email
-        },
-        token
+        }
     })
 }
 
@@ -100,6 +116,15 @@ export const signUp: RequestHandler = async (req, res) => {
     }
 
     const token = createToken(newUser)
+
+    res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        path: '/',
+    })
+
     res.status(201).json({
         message: 'Usuário criado com sucesso',
         user: {
@@ -107,8 +132,7 @@ export const signUp: RequestHandler = async (req, res) => {
             name: newUser.nome,
             username: newUser.nomeUsuario,
             email: newUser.email
-        },
-        token
+        }
     })
 }
 
@@ -119,15 +143,13 @@ export const validate: RequestHandler = async (
     if (!req.user) {
         return res.status(401).json({ error: 'Usuário não autenticado' })
     }
-    const token = createToken(req.user)
     res.status(200).json({
         message: 'Token válido',
         user: {
             id: req.user.id,
             nome: req.user.nome,
             email: req.user.email
-        },
-        token
+        }
     })
 }
 
@@ -167,6 +189,13 @@ export const logout: RequestHandler = async (req, res) => {
             // Token já expirado ou inválido; ainda assim considera logout no cliente
         }
     }
+
+    res.clearCookie('token', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        path: '/',
+    })
 
     res.status(200).json({ message: 'Logout realizado com sucesso' })
 };

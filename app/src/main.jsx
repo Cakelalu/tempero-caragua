@@ -32,7 +32,6 @@ function AuthListener() {
 
   useEffect(() => {
     const handleAuthExpired = () => {
-      localStorage.removeItem("token_login");
       localStorage.removeItem("user");
       window.dispatchEvent(new Event("auth-change"));
       if (window.location.pathname !== "/login") {
@@ -59,7 +58,6 @@ function InactivityWatcher() {
     let timeoutId;
 
     const logoutOnInactivity = () => {
-      localStorage.removeItem("token_login");
       localStorage.removeItem("user");
       window.dispatchEvent(new Event("auth-change"));
       if (window.location.pathname !== "/login") {

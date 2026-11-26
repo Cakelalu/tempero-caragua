@@ -26,6 +26,7 @@ export default function Register() {
             const resposta = await fetch(`${API_URL}/auth/signup`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: "include",
                 body: JSON.stringify({
                     name: Nome,
                     username: Username,
@@ -46,7 +47,6 @@ export default function Register() {
                 )
             }
 
-            localStorage.setItem("token_login", dados.token);
             localStorage.setItem("user", JSON.stringify(dados.user));
             window.dispatchEvent(new Event("auth-change"));
 

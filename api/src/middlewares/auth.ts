@@ -4,15 +4,11 @@ import { getUserById } from '../services/user.service'
 import { prisma } from '../libs/prisma'
 
 export const auth: RequestHandler = async (req, res, next) => {
-    const authHeader = req.headers.authorization
+    // Suporte a token via cookie (HttpOnly) ou header Authorization
+    const token = req.cookies?.token || req.headers.authorization?.split(' ')[1]
 
-    if (!authHeader) {
-        return res.status(401).json({ error: 'Token não enviado' })
-    }
-
-    const token = authHeader.split(' ')[1]
     if (!token) {
-        return res.status(401).json({ error: 'Token inválido' })
+        return res.status(401).json({ error: 'Token não enviado' })
     }
 
     const decoded = verifyJWT(token)

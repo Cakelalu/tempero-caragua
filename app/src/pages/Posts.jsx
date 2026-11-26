@@ -118,12 +118,10 @@ export default function Posts() {
 
   const handleFollowUser = async (user) => {
     try {
-      const token = localStorage.getItem("token_login") || "";
       const response = await fetch(`${API_BASE_URL}/user/u/${user.id}/seguir`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         credentials: "include",
       });
@@ -135,12 +133,10 @@ export default function Posts() {
 
   const handleUnfollowUser = async (user) => {
     try {
-      const token = localStorage.getItem("token_login") || "";
       const response = await fetch(`${API_BASE_URL}/user/u/${user.id}/deixar-seguir`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         credentials: "include",
       });

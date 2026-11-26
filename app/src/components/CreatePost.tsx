@@ -111,12 +111,6 @@ export default function CreatePost({ authorId, onClose, onPostCreated, userName,
       return;
     }
 
-    const token = localStorage.getItem('token_login');
-    if (!token) {
-      setSubmitError('Entre na sua conta para criar uma publicação.');
-      return;
-    }
-
     setIsSubmitting(true);
     setSubmitError('');
 
@@ -141,7 +135,7 @@ export default function CreatePost({ authorId, onClose, onPostCreated, userName,
 
           // Renova o token de autenticação para cada imagem (evita token já usado)
           const authResponse = await fetch(`${API_URL}/user/imagekit/auth`, {
-            headers: { Authorization: `Bearer ${token}` },
+            credentials: "include",
           });
           const authData = await authResponse.json().catch(() => null);
 
@@ -202,8 +196,8 @@ export default function CreatePost({ authorId, onClose, onPostCreated, userName,
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
+        credentials: "include",
         body: JSON.stringify({
           autorId: authorId,
           titulo: title.trim(),

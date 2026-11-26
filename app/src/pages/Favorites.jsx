@@ -10,8 +10,6 @@ export default function Favorites() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
 
-  const token = localStorage.getItem("token_login") || "";
-
   const carregarFavoritos = async (pagina = 1, acumular = false) => {
     try {
       setLoading(true);
@@ -21,7 +19,6 @@ export default function Favorites() {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
           },
           credentials: "include",
         }
@@ -60,7 +57,6 @@ export default function Favorites() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
           },
           credentials: "include",
         }

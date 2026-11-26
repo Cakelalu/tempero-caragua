@@ -5,14 +5,9 @@ const API_BASE_URL = (
   import.meta.env.VITE_PUBLIC_API_URL || "http://localhost:4500"
 ).replace(/\/$/, "");
 
-function getAuthHeaders() {
-  const token = localStorage.getItem("token_login") || "";
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-  if (token) headers["Authorization"] = `Bearer ${token}`;
-  return headers;
-}
+const DEFAULT_HEADERS = {
+  "Content-Type": "application/json",
+};
 
 export interface SearchResponse<T> {
   items: T[];
@@ -71,7 +66,7 @@ export function useSearchPosts(
         `${API_BASE_URL}/posts?${params.toString()}`,
         {
           method: "GET",
-          headers: getAuthHeaders(),
+          headers: DEFAULT_HEADERS,
           credentials: "include",
         }
       );
@@ -132,7 +127,7 @@ export function usePostsFeed(enabled = true) {
     queryFn: async () => {
       const response = await fetch(`${API_BASE_URL}/posts/feed`, {
         method: "GET",
-        headers: getAuthHeaders(),
+        headers: DEFAULT_HEADERS,
         credentials: "include",
       });
       if (!response.ok) throw new Error("Não foi possível carregar o feed.");
@@ -157,7 +152,7 @@ export function useSearchUsers(query: string, page: number = 1) {
         `${API_BASE_URL}/user/search?${params.toString()}`,
         {
           method: "GET",
-          headers: getAuthHeaders(),
+          headers: DEFAULT_HEADERS,
           credentials: "include",
         }
       );

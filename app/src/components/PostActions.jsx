@@ -64,13 +64,10 @@ export default function PostActions({
 
         setDeleting(true);
         try {
-            const token = localStorage.getItem("token_login") || "";
-
             const response = await fetch(`${API_BASE_URL}/user/post/${postSlug}`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
                 },
                 credentials: "include",
             });
@@ -95,13 +92,10 @@ export default function PostActions({
         if (!postSlug) return;
 
         try {
-            const token = localStorage.getItem("token_login") || "";
-
             const response = await fetch(`${API_BASE_URL}/user/post/${postSlug}/curtir`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
                 },
                 credentials: "include",
             });
@@ -123,13 +117,10 @@ export default function PostActions({
         if (!postSlug) return;
 
         try {
-            const token = localStorage.getItem("token_login") || "";
-
             const response = await fetch(`${API_BASE_URL}/user/post/${postSlug}/favoritar`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
                 },
                 credentials: "include",
             });

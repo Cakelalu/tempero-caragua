@@ -31,19 +31,16 @@ export default function PostCommentsModal({ postSlug, isOpen, onClose, onComment
   const [deletingCommentId, setDeletingCommentId] = useState(null);
 
   const API_BASE_URL = (import.meta.env.VITE_PUBLIC_API_URL || "http://localhost:4500").replace(/\/$/, "");
-  const token = localStorage.getItem("token_login") || "";
 
-  // Decodifica JWT para obter dados do usuário logado
+  // Obtém dados do usuário logado a partir do perfil salvo no login/cadastro
   const getUserLogged = useCallback(() => {
     try {
-      if (!token) return null;
-      const payload = token.split(".")[1];
-      if (!payload) return null;
-      return JSON.parse(atob(payload));
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
+      return user.id ? user : null;
     } catch {
       return null;
     }
-  }, [token]);
+  }, []);
 
   const userLogged = getUserLogged();
 
@@ -58,7 +55,6 @@ export default function PostCommentsModal({ postSlug, isOpen, onClose, onComment
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
           },
           credentials: "include",
         }
@@ -111,7 +107,6 @@ export default function PostCommentsModal({ postSlug, isOpen, onClose, onComment
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
           },
           credentials: "include",
           body: JSON.stringify({ conteudo: novoComentario.trim() }),
@@ -157,7 +152,6 @@ export default function PostCommentsModal({ postSlug, isOpen, onClose, onComment
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         credentials: "include",
       });

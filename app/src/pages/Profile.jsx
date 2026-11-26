@@ -22,18 +22,13 @@ export default function Profile() {
   const [hasMore, setHasMore] = useState(false);
 
   // 2. Configurações de Integração com a sua API
-  // Ajuste o local onde você salva seu JWT (ex: localStorage, sessionStorage ou cookies)
-  const token = localStorage.getItem('token_login') || '';
   const API_URL = `${import.meta.env.VITE_PUBLIC_API_URL}/user`;
 
-  // Decodifica o JWT para obter o ID do usuário logado
+  // Obtém o ID do usuário logado a partir dos dados de perfil salvos no login/cadastro
   const getUserLoggedId = () => {
     try {
-      if (!token) return null;
-      const payload = token.split('.')[1];
-      if (!payload) return null;
-      const decoded = JSON.parse(atob(payload));
-      return decoded.id || decoded.userId || null;
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
+      return user.id || null;
     } catch {
       return null;
     }
@@ -50,8 +45,8 @@ export default function Profile() {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}` // Envia para o seu middleware de 'auth' da API
-        }
+        },
+        credentials: 'include',
       });
 
       if (!response.ok) throw new Error('Não foi possível carregar o perfil.');
@@ -81,8 +76,8 @@ export default function Profile() {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
+        },
+        credentials: 'include',
       });
 
       if (!response.ok) throw new Error('Erro ao carregar mais postagens.');
@@ -103,12 +98,10 @@ export default function Profile() {
   const handleFollowProfile = async () => {
     if (!profile) return;
     try {
-      const token = localStorage.getItem('token_login') || '';
       const response = await fetch(`${API_URL}/u/${profile.id}/seguir`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
         credentials: 'include',
       });
@@ -124,12 +117,10 @@ export default function Profile() {
   const handleUnfollowProfile = async () => {
     if (!profile) return;
     try {
-      const token = localStorage.getItem('token_login') || '';
       const response = await fetch(`${API_URL}/u/${profile.id}/deixar-seguir`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
         credentials: 'include',
       });
@@ -155,12 +146,10 @@ export default function Profile() {
     setConfirmDeleteSlug(null);
 
     try {
-      const token = localStorage.getItem('token_login') || '';
       const response = await fetch(`${API_URL}/post/${confirmDeleteSlug}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
         credentials: 'include',
       });

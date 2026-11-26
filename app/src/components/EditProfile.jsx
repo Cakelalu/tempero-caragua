@@ -49,11 +49,12 @@ export default function EditProfile() {
     const [saving, setSaving] = useState(false);
     const [changingPassword, setChangingPassword] = useState(false);
     const [deletingAccount, setDeletingAccount] = useState(false);
-    const [feedback, setFeedback] = useState(() => (
-        localStorage.getItem("token_login")
+    const [feedback, setFeedback] = useState(() => {
+        const storedUser = localStorage.getItem("user");
+        return storedUser
             ? null
-            : { type: "error", message: "Entre na sua conta para editar o perfil." }
-    ));
+            : { type: "error", message: "Entre na sua conta para editar o perfil." };
+    });
 
     useEffect(() => {
         return () => {
@@ -65,18 +66,11 @@ export default function EditProfile() {
 
     useEffect(() => {
         let isMounted = true;
-        const token = localStorage.getItem("token_login");
-
-        if (!token) {
-            return () => {
-                isMounted = false;
-            };
-        }
 
         async function loadProfile() {
             try {
                 const response = await fetch(`${API_URL}/user/u/`, {
-                    headers: { Authorization: `Bearer ${token}` },
+                    credentials: "include",
                 });
                 const data = await readResponse(response);
                 if (!isMounted) return;
@@ -160,15 +154,6 @@ export default function EditProfile() {
 
     async function handleSaveProfile(event) {
         event.preventDefault();
-        const token = localStorage.getItem("token_login");
-        if (!token) {
-            setFeedback({
-                type: "error",
-                title: "Não foi possível editar o perfil",
-                message: "Entre na sua conta para salvar as alterações.",
-            });
-            return;
-        }
 
         setSaving(true);
         setFeedback(null);
@@ -185,9 +170,9 @@ export default function EditProfile() {
             const response = await fetch(`${API_URL}/user/u/profile`, {
                 method: "PATCH",
                 headers: {
-                    Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json"
                 },
+                credentials: "include",
                 body: JSON.stringify(profileData)
             });
             const data = await readResponse(response);
@@ -235,21 +220,15 @@ export default function EditProfile() {
             return;
         }
 
-        const token = localStorage.getItem("token_login");
-        if (!token) {
-            setFeedback({ type: "error", message: "Entre na sua conta para alterar a senha." });
-            return;
-        }
-
         setChangingPassword(true);
         setFeedback(null);
         try {
             const response = await fetch(`${API_URL}/user/u/password`, {
                 method: "PATCH",
                 headers: {
-                    Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
+                credentials: "include",
                 body: JSON.stringify({ currentPassword, newPassword }),
             });
             const data = await readResponse(response);
@@ -271,25 +250,18 @@ export default function EditProfile() {
     }
 
     async function handleDeleteAccount() {
-        const token = localStorage.getItem("token_login");
-        if (!token) {
-            setFeedback({ type: "error", message: "Entre na sua conta para excluí-la." });
-            return;
-        }
-
         setDeletingAccount(true);
         setFeedback(null);
         try {
             const response = await fetch(`${API_URL}/user/u`, {
                 method: "DELETE",
                 headers: {
-                    Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
+                credentials: "include",
                 body: JSON.stringify({ currentPassword: deletePassword }),
             });
             await readResponse(response);
-            localStorage.removeItem("token_login");
             localStorage.removeItem("user");
             window.dispatchEvent(new Event("auth-change"));
             navigate("/login");
@@ -330,17 +302,6 @@ export default function EditProfile() {
             return;
         }
 
-        const token = localStorage.getItem("token_login");
-
-        if (!token) {
-            setFeedback({
-                type: "error",
-                message: "Entre na sua conta para enviar uma imagem."
-            });
-            event.target.value = "";
-            return;
-        }
-
         // Pré-visualização temporária
         const previewUrl = URL.createObjectURL(file);
 
@@ -354,9 +315,7 @@ export default function EditProfile() {
             const authResponse = await fetch(
                 `${API_URL}/user/imagekit/auth`,
                 {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
+                    credentials: "include",
                 }
             );
 

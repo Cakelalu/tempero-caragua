@@ -21,6 +21,7 @@ export default function Login() {
                 headers: {
                     "Content-Type": "application/json",
                 },
+                credentials: "include",
                 body: JSON.stringify({
                     email,
                     password: senha,
@@ -37,7 +38,6 @@ export default function Login() {
                 );
             }
 
-            localStorage.setItem("token_login", dados.token);
             localStorage.setItem("user", JSON.stringify(dados.user));
 
             window.dispatchEvent(new Event("auth-change"));
@@ -65,6 +65,7 @@ export default function Login() {
                 headers: {
                     "Content-Type": "application/json",
                 },
+                credentials: "include",
                 body: JSON.stringify({
                     credential: credentialResponse.credential,
                 }),
@@ -79,7 +80,6 @@ export default function Login() {
                 );
             }
 
-            localStorage.setItem("token_login", dados.token);
             localStorage.setItem("user", JSON.stringify(dados.user));
             window.dispatchEvent(new Event("auth-change"));
             navigate("/");

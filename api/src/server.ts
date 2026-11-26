@@ -2,6 +2,7 @@ import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
 import compression from 'compression'
+import cookieParser from 'cookie-parser'
 import { mainRoutes } from './routes/main.routes'
 import { authRoutes } from './routes/auth.routes'
 import { adminRoutes } from './routes/admin.routes'
@@ -38,6 +39,7 @@ server.use(compression({
   level: 6
 }))
 server.use(express.json())
+server.use(cookieParser())
 
 server.use('/imagens', imageRoutes)
 

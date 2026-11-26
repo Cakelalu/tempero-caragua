@@ -35,22 +35,19 @@ export default function Menu() {
         setConfirmLogout(false);
 
         try {
-            const token = localStorage.getItem("token_login") || "";
-
-            // 1. Notifica o backend para revogar o token (blacklist)
+            // 1. Notifica o backend para revogar o token (blacklist) e limpar o cookie
             await fetch(`${API_BASE_URL}/auth/logout`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
                 },
+                credentials: "include",
             });
         } catch (error) {
             console.error("Erro ao invalidar token no servidor:", error);
             // Mesmo se o backend falhar, prossegue com a limpeza local
         } finally {
-            // 2. Remove APENAS os dados de auth (não faz localStorage.clear())
-            localStorage.removeItem("token_login");
+            // 2. Remove APENAS os dados de perfil (não faz localStorage.clear())
             localStorage.removeItem("user");
 
             // 3. Notifica os componentes (Header, etc.) para atualizar o estado

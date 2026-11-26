@@ -113,15 +113,11 @@ export default function Post() {
   const imagemPerfilAutor = post.user?.imagemPerfil;
   const nomeAutor = post.user?.nome || autor;
 
-  // Decodifica o JWT para obter o ID do usuário logado
+  // Obtém o ID do usuário logado a partir dos dados de perfil salvos no login/cadastro
   const getUserLoggedId = () => {
     try {
-      const token = localStorage.getItem("token_login") || "";
-      if (!token) return null;
-      const payload = token.split(".")[1];
-      if (!payload) return null;
-      const decoded = JSON.parse(atob(payload));
-      return decoded.id || decoded.userId || null;
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
+      return user.id || null;
     } catch {
       return null;
     }
