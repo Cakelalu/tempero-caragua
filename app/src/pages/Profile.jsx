@@ -62,7 +62,7 @@ export default function Profile() {
     } finally {
       setLoading(false);
     }
-  }, [urlUserId, userLoggedId, API_URL, token]);
+  }, [urlUserId, userLoggedId, API_URL]);
 
   // 4. Função otimizada para carregar apenas as próximas páginas de posts (Limite de 5)
   const carregarMaisPosts = async () => {
