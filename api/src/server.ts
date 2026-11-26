@@ -9,6 +9,7 @@ import { userRoutes } from './routes/user.routes'
 import { guestRoutes } from './routes/guest.routes'
 import { imageRoutes } from './routes/image.routes'
 import { prisma } from './libs/prisma'
+import { startPasswordResetCleanupJob } from './jobs/cleanup-password-reset'
 
 const server = express()
 const port = process.env.PORT || 4500
@@ -59,3 +60,6 @@ setInterval(async () => {
         console.error('[Keep-Alive] Erro ao manter conexão com o banco:', err);
     }
 }, 8 * 60 * 1000);
+
+// Job de limpeza: remove tokens de reset de senha expirados ou já usados
+startPasswordResetCleanupJob();

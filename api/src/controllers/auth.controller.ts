@@ -242,6 +242,12 @@ export const resetPassword: RequestHandler = async (req, res) => {
         return res.status(400).json({ error: 'Token inválido ou expirado.' })
     }
 
+    // Impede que a nova senha seja igual à senha atual
+    const senhaIgual = await bcrypt.compare(data.data.password, reset.user.senha)
+    if (senhaIgual) {
+        return res.status(400).json({ error: 'A nova senha deve ser diferente da senha atual.' })
+    }
+
     const hashedPassword = await bcrypt.hash(data.data.password, 10)
 
     await prisma.$transaction([
