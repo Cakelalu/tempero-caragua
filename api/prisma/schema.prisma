@@ -133,6 +133,7 @@ model passwordReset {
   @@index([userId])
   @@index([expiresAt])
   @@index([used])
+  @@map("PasswordReset")
 }
 
 model RevokedToken {
