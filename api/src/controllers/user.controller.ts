@@ -9,6 +9,7 @@ import { createPostSlug } from "../services/post.service"
 import { prisma } from '../libs/prisma';
 import { imagekit } from '../libs/imagekit';
 import { v4 } from 'uuid';
+import { invalidateUserCache } from '../libs/userCache';
 
 export const getImageKitAuth: RequestHandler = async (
     req: ExtendedRequest,
@@ -153,6 +154,10 @@ export const updateAccountProfile: RequestHandler = async (
                 imagemPerfil: true
             }
         });
+
+        if (email) {
+            invalidateUserCache(email);
+        }
 
         res.status(200).json({ profile });
 

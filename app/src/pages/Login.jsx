@@ -1,10 +1,11 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google'
+import { useState, useCallback } from "react";
+import { GoogleLoginButton } from "../components/GoogleLoginButton"
 
 export default function Login() {
     const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("");
+    const [googleLoading, setGoogleLoading] = useState(false);
 
     const navigate = useNavigate();
 
@@ -54,7 +55,9 @@ export default function Login() {
     };
 
     const KEY_GOOGLE = import.meta.env.VITE_PUBLIC_KEY_GOOGLE;
-    const handleGoogleLogin = async (credentialResponse) => {
+
+    const handleGoogleLogin = useCallback(async (credentialResponse) => {
+        setGoogleLoading(true);
         try {
             const API_URL =
                 import.meta.env.VITE_PUBLIC_API_URL ||
@@ -86,8 +89,10 @@ export default function Login() {
         } catch (erro) {
             console.error("Erro no login com Google:", erro);
             alert(erro.message || "Não foi possível conectar ao servidor.");
+        } finally {
+            setGoogleLoading(false);
         }
-    };
+    }, [navigate]);
 
     return (
         <main className="grid min-h-screen w-full grid-cols-1 overflow-hidden bg-pallete-dark-green-2 lg:h-screen lg:grid-cols-[61.3%_38.7%] dark:bg-[var(--color-pallete-dark-green-dark)]">
@@ -174,15 +179,14 @@ export default function Login() {
                 </p>
 
                 {/* Login com o google */}
-                <GoogleOAuthProvider clientId={KEY_GOOGLE}>
-                    <GoogleLogin
-                        buttonText='Continuar com o Google'
-                        onSuccess={handleGoogleLogin}
-                        onError={() => {
-                            console.log('Erro no Login');
-                        }}
-                    />
-                </GoogleOAuthProvider>
+                <GoogleLoginButton
+                    clientId={KEY_GOOGLE}
+                    onSuccess={handleGoogleLogin}
+                    onError={() => {
+                        alert('Erro ao fazer login com o Google. Tente novamente.');
+                    }}
+                    disabled={googleLoading}
+                />
 
                 {/* Cadastro */}
                 <div className="mt-9 text-center">

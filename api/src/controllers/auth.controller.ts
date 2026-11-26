@@ -1,6 +1,5 @@
 import { RequestHandler, Response } from "express"
 import { z } from "zod"
-import { OAuth2Client } from "google-auth-library"
 import bcrypt from "bcryptjs"
 import { v4 } from "uuid"
 import { createUser, findUserByEmail, verifyUser } from "../services/user.service"
@@ -9,8 +8,8 @@ import { verifyJWT } from "../libs/jwt"
 import { sendPasswordResetEmail } from "../libs/brevo"
 import { ExtendedRequest } from "../types/extended-request"
 import { prisma } from "../libs/prisma"
-
-const googleOAuthClient = new OAuth2Client()
+import { googleOAuthClient } from "../libs/googleClient"
+import { getCachedUserByEmail, invalidateUserCache } from "../libs/userCache"
 
 export const signIn: RequestHandler = async (req, res) => {
     const schema = z.object({
@@ -74,7 +73,7 @@ export const googleSignIn: RequestHandler = async (req, res) => {
         return res.status(401).json({ error: 'Não foi possível verificar o e-mail do Google' })
     }
 
-    const user = await findUserByEmail(payload.email)
+    const user = await getCachedUserByEmail(payload.email, () => findUserByEmail(payload.email))
     if (!user) {
         return res.status(403).json({ error: 'Este e-mail não possui cadastro. Crie uma conta antes de entrar com o Google.' })
     }
@@ -114,6 +113,8 @@ export const signUp: RequestHandler = async (req, res) => {
     if (!newUser) {
         return res.status(400).json({ error: 'Email já cadastrado' })
     }
+
+    invalidateUserCache(data.data.email.toLowerCase())
 
     const token = createToken(newUser)
 
