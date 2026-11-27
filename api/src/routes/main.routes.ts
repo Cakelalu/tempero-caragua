@@ -10,4 +10,4 @@ mainRoutes.get('/health', (req, res) => {
 })
 mainRoutes.get('/posts', authOptional, mainController.getPosts)
 mainRoutes.get('/posts/feed', authOptional, mainController.getPostsFeed)
-mainRoutes.get('/post/:slug', mainController.getPost)
+mainRoutes.get('/post/:slug', authOptional, mainController.getPost)

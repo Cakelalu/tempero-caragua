@@ -3,14 +3,9 @@ import { verifyJWT } from '../libs/jwt'
 import { getUserById } from '../services/user.service'
 
 export const authOptional: RequestHandler = async (req, res, next) => {
-    const authHeader = req.headers.authorization
+    // Suporte a token via cookie (HttpOnly) ou header Authorization
+    const token = req.cookies?.token || req.headers.authorization?.split(' ')[1]
 
-    if (!authHeader) {
-        ; (req as any).user = undefined
-        return next()
-    }
-
-    const token = authHeader.split(' ')[1]
     if (!token) {
         ; (req as any).user = undefined
         return next()
