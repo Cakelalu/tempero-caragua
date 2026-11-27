@@ -239,7 +239,7 @@ export const forgotPassword: RequestHandler = async (req, res) => {
         },
     })
 
-    const frontendUrl = process.env.FRONTEND_URL ?? 'http://localhost:5173'
+    const frontendUrl = (process.env.FRONTEND_URL ?? 'http://localhost:5173').replace(/\/$/, '')
     const resetUrl = `${frontendUrl}/reset-password?token=${token}`
 
     await sendPasswordResetEmail({
