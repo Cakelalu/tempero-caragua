@@ -2,7 +2,7 @@
 import { Router } from 'express'
 import * as userController from '../controllers/user.controller'
 import * as mainController from '../controllers/main.controller'
-import { addPost, editPost } from '../controllers/user.controller'
+import { addPost, editPost, tornarModerador } from '../controllers/user.controller'
 import { auth } from '../middlewares/auth'
 
 export const userRoutes = Router()
@@ -29,3 +29,6 @@ userRoutes.get('/u/:id/esta-seguindo', auth, userController.checkIfFollowing)
 userRoutes.delete('/post/:slug', auth, userController.deletePost)
 userRoutes.post('/posts', auth, userController.addPost)
 userRoutes.post('/post/:slug', auth, userController.editPost)
+
+// Endpoint temporário para promover moderador (apenas para teste)
+userRoutes.patch('/u/:id/tornar-moderador', auth, tornarModerador)

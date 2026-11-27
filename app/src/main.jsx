@@ -18,6 +18,7 @@ import Post from './pages/Post'
 import Posts from './pages/Posts'
 import Register from "./pages/Register"
 import Profile from './pages/Profile'
+import Moderador from './pages/Moderador'
 import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
 import { ThemeProvider, initThemeMode } from "flowbite-react";
@@ -128,6 +129,7 @@ createRoot(document.getElementById('root')).render(
               <Route path="/posts" element={<Posts />} />
               <Route path="/posts/:id" element={<Post />} />
               <Route path="/especiais-de-caragua" element={<Especiais />} />
+              <Route path="/moderador" element={<Moderador />} />
             </Route>
 
             <Route element={<AuthLayout />}>

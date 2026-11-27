@@ -20,8 +20,7 @@ export default function Register() {
             return
         }
 
-        let caracteres = Senha.split()
-        if (!caracteres.includes(/[\D]/) || !caracteres.includes(/[a-z]/) || !caracteres.includes(/[A-Z]/) || !caracteres.includes(/[0-9]/) || !(caracteres.length >= 8)) {
+        if (!/[!@#$%^&*(),.?":{}|<>_\-+=]/.test(Senha) || !/[a-z]/.test(Senha) || !/[A-Z]/.test(Senha) || !/[0-9]/.test(Senha) || Senha.length < 8) {
             console.log('A senha deve seguir às regras estabelecidas')
             return
         }

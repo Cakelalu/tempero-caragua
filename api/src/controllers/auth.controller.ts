@@ -39,7 +39,8 @@ export const signIn: RequestHandler = async (req, res) => {
         user: {
             id: user.id,
             name: user.nome,
-            email: user.email
+            email: user.email,
+            tipo: user.tipo
         }
     })
 }
@@ -88,12 +89,13 @@ export const googleSignIn: RequestHandler = async (req, res) => {
         path: '/',
     })
 
-    return res.status(200).json({
+        return res.status(200).json({
         message: 'Login bem-sucedido',
         user: {
             id: user.id,
             name: user.nome,
-            email: user.email
+            email: user.email,
+            tipo: user.tipo
         }
     })
 }
@@ -132,7 +134,8 @@ export const signUp: RequestHandler = async (req, res) => {
             id: newUser.id,
             name: newUser.nome,
             username: newUser.nomeUsuario,
-            email: newUser.email
+            email: newUser.email,
+            tipo: newUser.tipo
         }
     })
 }
@@ -149,7 +152,8 @@ export const validate: RequestHandler = async (
         user: {
             id: req.user.id,
             nome: req.user.nome,
-            email: req.user.email
+            email: req.user.email,
+            tipo: req.user.tipo
         }
     })
 }

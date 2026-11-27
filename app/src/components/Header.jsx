@@ -83,7 +83,7 @@ export default function Header() {
 
             <div className={`${menuOpen ? "flex" : "hidden"} lg:flex h-max font-bold text-xl mt-4 lg:mt-0`}>
                 {user ? (
-                    <Menu />
+                    <Menu user={user} />
                 ) : (
                     <div className="flex flex-col lg:flex-row items-center gap-4 lg:gap-6 text-pallete-light-yellow">
                         <NavLink to="/login">Entrar</NavLink>

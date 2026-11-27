@@ -1184,3 +1184,46 @@ export const deleteComentario: RequestHandler = async (req, res) => {
         return res.status(500).json({ error: 'Erro interno ao excluir comentário' });
     }
 };
+
+// Endpoint temporário para promover um usuário a moderador (apenas para teste)
+export const tornarModerador: RequestHandler = async (req, res) => {
+    if (!req.user) {
+        return res.status(401).json({ error: 'Não autorizado' });
+    }
+
+    const { id } = req.params;
+
+    if (!id) {
+        return res.status(400).json({ error: 'O ID do usuário é obrigatório' });
+    }
+
+    try {
+        const usuario = await prisma.user.findUnique({
+            where: { id }
+        });
+
+        if (!usuario) {
+            return res.status(404).json({ error: 'Usuário não encontrado' });
+        }
+
+        const atualizado = await prisma.user.update({
+            where: { id },
+            data: { tipo: 'MODERATOR' },
+            select: {
+                id: true,
+                nome: true,
+                nomeUsuario: true,
+                email: true,
+                tipo: true,
+            }
+        });
+
+        return res.status(200).json({
+            message: 'Usuário promovido a moderador com sucesso',
+            usuario: atualizado,
+        });
+    } catch (error) {
+        console.error('Erro ao promover usuário a moderador:', error);
+        return res.status(500).json({ error: 'Erro interno ao promover usuário' });
+    }
+};
