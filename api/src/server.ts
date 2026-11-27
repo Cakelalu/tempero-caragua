@@ -3,6 +3,7 @@ import express from 'express'
 import cors from 'cors'
 import compression from 'compression'
 import cookieParser from 'cookie-parser'
+import { execSync } from 'child_process'
 import { mainRoutes } from './routes/main.routes'
 import { authRoutes } from './routes/auth.routes'
 import { adminRoutes } from './routes/admin.routes'
@@ -48,6 +49,29 @@ server.use('/admin', adminRoutes)
 server.use('/user', userRoutes)
 server.use('/guest', guestRoutes)
 server.use('/', mainRoutes)
+
+// === ROTA TEMPORÁRIA: remover migration falhada do banco (P3009) ===
+// REMOVA ESTA ROTA APÓS USAR
+server.post('/_remove-migration', (req, res) => {
+    const secret = req.header('x-remove-secret')
+    if (secret !== process.env.REMOVE_SECRET) {
+        return res.status(401).json({ error: 'Não autorizado' })
+    }
+
+    try {
+        // Marca a migration como revertida (remove o registro de falha do banco)
+        execSync(
+            'npx prisma migrate resolve --rolled-back 20261127120059_dev',
+            { cwd: process.cwd(), encoding: 'utf-8', stdio: 'pipe' }
+        )
+
+        return res.json({ ok: true, message: 'Migration 20261127120059_dev removida com sucesso' })
+    } catch (err: any) {
+        return res.status(500).json({
+            error: err.stdout || err.stderr || err.message
+        })
+    }
+})
 
 server.listen(port, () => {
     console.log('API Online...')
