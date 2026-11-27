@@ -1,5 +1,6 @@
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google'
 import { useMemo } from 'react'
+import { useTranslation } from "react-i18next";
 
 interface GoogleLoginButtonProps {
   clientId: string
@@ -14,6 +15,7 @@ export function GoogleLoginButton({
   onError,
   disabled = false,
 }: GoogleLoginButtonProps) {
+  const { t } = useTranslation();
   const providerProps = useMemo(() => ({ clientId }), [clientId])
 
   const memoizedOnSuccess = useMemo(() => onSuccess, [onSuccess])
@@ -22,7 +24,7 @@ export function GoogleLoginButton({
   return (
     <GoogleOAuthProvider clientId={clientId}>
       <GoogleLogin
-        buttonText="Continuar com o Google"
+        buttonText={t("googleLoginButton.continueWithGoogle", "Continuar com o Google")}
         onSuccess={memoizedOnSuccess}
         onError={memoizedOnError}
         disabled={disabled}

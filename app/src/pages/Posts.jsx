@@ -4,6 +4,7 @@ import CardPost from "../components/CardPost";
 import UserSearchCard from "../components/UserSearchCard";
 import FilterPanel from "../components/FilterPanel";
 import { usePostsFeed, useSearchPosts, useSearchUsers } from "../hooks/useSearch";
+import { useTranslation } from "react-i18next";
 
 const API_BASE_URL = (import.meta.env.VITE_PUBLIC_API_URL || "http://localhost:4500").replace(/\/$/, "");
 
@@ -14,6 +15,8 @@ const SECTIONS = [
 ];
 
 export default function Posts() {
+  const { t } = useTranslation();
+
   // ---------- Estados de UI ---------- 
   const [filterOpen, setFilterOpen] = useState(false);
   const [activeFilterTab, setActiveFilterTab] = useState("posts"); // "posts" | "users"
@@ -183,13 +186,13 @@ export default function Posts() {
                     avatarImage={post.user?.imagemPerfil || null}
                     date={post.dataPostagem}
                     title={post.titulo}
-                    author={post.user?.nomeUsuario || "Autor desconhecido"}
+                    author={post.user?.nomeUsuario || t("common.unknownAuthor", "Autor desconhecido")}
                     href={`/posts/${post.slug || post.id}`}
                   />
                 );
               })}
             </div>
-            {loading && <p className="text-center text-gray-400 dark:text-[var(--color-text-muted-dark)] text-sm py-4">Carregando postagens...</p>}
+            {loading && <p className="text-center text-gray-400 dark:text-[var(--color-text-muted-dark)] text-sm py-4">{t("common.loading", "Carregando postagens...")}</p>}
           </>
         )}
       </section>
@@ -309,7 +312,7 @@ export default function Posts() {
                         avatarImage={post.user?.imagemPerfil || null}
                         date={post.dataPostagem}
                         title={post.titulo}
-                        author={post.user?.nomeUsuario || "Autor desconhecido"}
+                        author={post.user?.nomeUsuario || t("common.unknownAuthor", "Autor desconhecido")}
                         href={`/posts/${post.slug || post.id}`}
                       />
                     );

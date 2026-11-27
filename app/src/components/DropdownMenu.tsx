@@ -1,12 +1,14 @@
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import { CgProfile } from "react-icons/cg";
+import { useTranslation } from "react-i18next";
 
 const API_BASE_URL = (
     import.meta.env.VITE_PUBLIC_API_URL || "http://localhost:4500"
 ).replace(/\/$/, "");
 
 export default function Menu() {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [confirmLogout, setConfirmLogout] = useState<boolean>(false);
@@ -66,13 +68,13 @@ export default function Menu() {
 
             {isOpen && (
                 <div className="absolute right-0 top-full z-50 mt-2 min-w-44 rounded-sm bg-pallete-background p-2 text-pallete-dark-green shadow-md dark:bg-[var(--color-pallete-card-dark)] dark:text-[var(--color-text-primary-dark)] dark:border dark:border-[var(--color-pallete-gray-dark)]">
-                    <NavLink className="block px-3 py-2 hover:bg-pallete-light-green dark:hover:bg-[var(--color-pallete-light-green-dark)] dark:hover:text-[var(--color-text-primary-dark)]" to='/perfil'>Minha conta</NavLink>
-                    <NavLink className="block px-3 py-2 hover:bg-pallete-light-green dark:hover:bg-[var(--color-pallete-light-green-dark)] dark:hover:text-[var(--color-text-primary-dark)]" to='/editar-perfil'>Editar perfil</NavLink>
+                    <NavLink className="block px-3 py-2 hover:bg-pallete-light-green dark:hover:bg-[var(--color-pallete-light-green-dark)] dark:hover:text-[var(--color-text-primary-dark)]" to='/perfil'>{t("dropdownMenu.myAccount", "Minha conta")}</NavLink>
+                    <NavLink className="block px-3 py-2 hover:bg-pallete-light-green dark:hover:bg-[var(--color-pallete-light-green-dark)] dark:hover:text-[var(--color-text-primary-dark)]" to='/editar-perfil'>{t("dropdownMenu.editProfile", "Editar perfil")}</NavLink>
 
                     {confirmLogout ? (
                         <div className="p-2 border-t border-gray-100 dark:border-[var(--color-pallete-gray-dark)]">
                             <p className="text-sm text-center mb-2 dark:text-[var(--color-text-primary-dark)]">
-                                Tem certeza que deseja sair?
+                                {t("dropdownMenu.confirmLogout", "Tem certeza que deseja sair?")}
                             </p>
                             <div className="flex gap-2">
                                 <button
@@ -80,14 +82,14 @@ export default function Menu() {
                                     onClick={() => setConfirmLogout(false)}
                                     className="flex-1 px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 dark:text-[var(--color-text-muted-dark)] dark:hover:bg-[var(--color-pallete-gray-dark)] rounded-lg transition-colors"
                                 >
-                                    Não
+                                    {t("common.cancel", "Não")}
                                 </button>
                                 <button
                                     type="button"
                                     onClick={handleLogout}
                                     className="flex-1 px-3 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 dark:text-red-400 dark:bg-red-900/20 dark:hover:bg-red-900/40 rounded-lg transition-colors"
                                 >
-                                    Sim, sair
+                                    {t("dropdownMenu.yesLogout", "Sim, sair")}
                                 </button>
                             </div>
                         </div>
@@ -97,7 +99,7 @@ export default function Menu() {
                             onClick={() => setConfirmLogout(true)}
                             className="block w-full px-3 py-2 text-left hover:bg-pallete-light-green dark:hover:bg-[var(--color-pallete-light-green-dark)] dark:hover:text-[var(--color-text-primary-dark)]"
                         >
-                            Sair
+                            {t("dropdownMenu.logout", "Sair")}
                         </button>
                     )}
                 </div>

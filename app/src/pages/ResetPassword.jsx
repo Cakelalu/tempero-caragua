@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams, NavLink, useNavigate } from 'react-router-dom'
+import { useTranslation } from "react-i18next";
 
 export default function ResetPassword() {
+    const { t } = useTranslation();
     const [searchParams] = useSearchParams()
     const token = searchParams.get('token')
     const [password, setPassword] = useState('')
@@ -15,7 +17,7 @@ export default function ResetPassword() {
 
     useEffect(() => {
         if (!token) {
-            setError('Token de redefinição não informado.')
+            setError(t('resetPassword.tokenMissing', 'Token de redefinição não informado.'))
         }
     }, [token])
 
@@ -26,7 +28,7 @@ export default function ResetPassword() {
         setMessage('')
 
         if (password !== confirmPassword) {
-            setError('As senhas não coincidem.')
+            setError(t('resetPassword.passwordsDontMatch', 'As senhas não coincidem.'))
             setLoading(false)
             return
         }
@@ -44,13 +46,13 @@ export default function ResetPassword() {
             const dados = await resposta.json()
 
             if (!resposta.ok) {
-                throw new Error(dados.error || 'Erro ao redefinir senha.')
+                throw new Error(dados.error || t('resetPassword.errorReset', 'Erro ao redefinir senha.'))
             }
 
-            setMessage('Senha redefinida com sucesso! Redirecionando para o login...')
+            setMessage(t('resetPassword.success', 'Senha redefinida com sucesso! Redirecionando para o login...'))
             setTimeout(() => navigate('/login'), 2000)
         } catch (err) {
-            setError(err.message || 'Não foi possível conectar ao servidor.')
+            setError(err.message || t('resetPassword.couldNotConnect', 'Não foi possível conectar ao servidor.'))
         } finally {
             setLoading(false)
         }
@@ -60,14 +62,14 @@ export default function ResetPassword() {
         <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-[var(--color-pallete-surface-dark)] px-4">
             <div className="max-w-md w-full bg-white dark:bg-[var(--color-pallete-card-dark)] p-8 rounded-xl shadow-sm">
                 <NavLink to="/login" className="mb-6 inline-block text-pallete-green font-semibold">
-                    ← Voltar ao login
+                    ← {t("resetPassword.backToLogin", "Voltar ao login")}
                 </NavLink>
 
                 <h1 className="mb-2 text-2xl font-bold text-gray-900 dark:text-[var(--color-text-primary-dark)]">
-                    Redefinir Senha
+                    {t("resetPassword.title", "Redefinir Senha")}
                 </h1>
                 <p className="mb-6 text-gray-600 dark:text-[var(--color-text-muted-dark)]">
-                    Crie uma nova senha para acessar sua conta.
+                    {t("resetPassword.description", "Crie uma nova senha para acessar sua conta.")}
                 </p>
 
                 {message && (
@@ -83,7 +85,7 @@ export default function ResetPassword() {
 
                 {!token && (
                     <div className="mb-6 p-3 rounded bg-yellow-50 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-300 text-sm">
-                        Link inválido ou expirado. Solicite uma nova redefinição.
+                        {t("resetPassword.invalidLink", "Link inválido ou expirado. Solicite uma nova redefinição.")}
                     </div>
                 )}
 
@@ -93,7 +95,7 @@ export default function ResetPassword() {
                             htmlFor="password"
                             className="block text-sm font-medium text-gray-700 dark:text-[var(--color-text-primary-dark)]"
                         >
-                            Nova senha
+                            {t("resetPassword.newPassword", "Nova senha")}
                         </label>
                         <input
                             id="password"
@@ -111,7 +113,7 @@ export default function ResetPassword() {
                             htmlFor="confirmPassword"
                             className="block text-sm font-medium text-gray-700 dark:text-[var(--color-text-primary-dark)]"
                         >
-                            Confirmar nova senha
+                            {t("resetPassword.confirmNewPassword", "Confirmar nova senha")}
                         </label>
                         <input
                             id="confirmPassword"
@@ -129,7 +131,7 @@ export default function ResetPassword() {
                         disabled={loading || !token}
                         className="w-full py-3 rounded-xl bg-pallete-orange text-white font-semibold hover:bg-pallete-dark-orange disabled:opacity-60 transition-colors"
                     >
-                        {loading ? 'Redefinindo...' : 'Redefinir senha'}
+                        {loading ? t("resetPassword.resetting", "Redefinindo...") : t("resetPassword.resetPassword", "Redefinir senha")}
                     </button>
                 </form>
             </div>

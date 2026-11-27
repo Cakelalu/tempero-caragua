@@ -1,7 +1,10 @@
+import { useTranslation } from "react-i18next";
+
 export default function CreatePost() {
-    return(
-        <div>
-            <p>Criar postagem</p>
-        </div>
-    )
+  const { t } = useTranslation();
+  return (
+    <div>
+      <p>{t("createPost.title", "Criar postagem")}</p>
+    </div>
+  )
 }

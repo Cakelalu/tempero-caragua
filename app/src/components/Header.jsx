@@ -2,8 +2,10 @@ import { NavLink, useLocation } from "react-router-dom";
 import Menu from "./DropdownMenu";
 import Preferences from "./preferences/Preferences";
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function Header() {
+    const { t } = useTranslation();
 
     function navLinkClass({ isActive }) {
         return isActive ? "text-pallete-orange text-center" : "text-pallete-light-yellow text-center hover:scale-[1.15] transition-all"
@@ -48,7 +50,7 @@ export default function Header() {
                 <NavLink to="/">
                     <img
                         src="/logo.webp"
-                        alt="Logo"
+                        alt={t("common.logo", "Logo")}
                         className="w-20 h-16 lg:w-28 lg:h-23 object-contain"
                     />
                 </NavLink>
@@ -56,7 +58,7 @@ export default function Header() {
                 <button
                     className="lg:hidden text-pallete-light-yellow text-2xl"
                     onClick={() => setMenuOpen(!menuOpen)}
-                    aria-label="Abrir menu"
+                    aria-label={t("header.menu", "Abrir menu")}
                 >
                     ☰
                 </button>
@@ -64,16 +66,16 @@ export default function Header() {
 
             <nav className={`${menuOpen ? "flex" : "hidden"} flex-col lg:flex lg:flex-row justify-evenly items-center gap-4 lg:gap-18 w-full lg:w-auto mt-4 lg:mt-0`}>
                 <NavLink to="/especiais-de-caragua" className={navLinkClass}>
-                    Especiais de<br />Caraguá
+                    {t("header.specials", "Especiais de")}<br />Caraguá
                 </NavLink>
                 <NavLink to="/festivais" className={navLinkClass}>
-                    Festivais
+                    {t("header.festivals", "Festivais")}
                 </NavLink>
                 <NavLink to="/posts" className={navLinkClass}>
-                    Postagens
+                    {t("header.posts", "Postagens")}
                 </NavLink>
                 <NavLink to="/favoritos" className={navLinkClass}>
-                    Favoritos
+                    {t("header.favorites", "Favoritos")}
                 </NavLink>
             </nav>
 
@@ -86,13 +88,13 @@ export default function Header() {
                     <Menu />
                 ) : (
                     <div className="flex flex-col lg:flex-row items-center gap-4 lg:gap-6 text-pallete-light-yellow">
-                        <NavLink to="/login">Entrar</NavLink>
+                        <NavLink to="/login">{t("header.login", "Entrar")}</NavLink>
 
                         <NavLink
                             to="/cadastro"
                             className="bg-pallete-light-yellow text-pallete-green px-4 py-2 rounded-lg"
                         >
-                            Cadastrar
+                            {t("header.register", "Cadastrar")}
                         </NavLink>
                     </div>
                 )}

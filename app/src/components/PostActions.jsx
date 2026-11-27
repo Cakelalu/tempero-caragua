@@ -1,5 +1,6 @@
 import { FiThumbsUp, FiStar, FiMessageCircle, FiMoreHorizontal, FiTrash2, FiFlag } from "react-icons/fi";
 import { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 /**
  * PostActions
@@ -35,6 +36,7 @@ export default function PostActions({
     onCommentsToggle,
     className = "",
 }) {
+    const { t } = useTranslation();
     const [menuOpen, setMenuOpen] = useState(false);
     const [confirmDelete, setConfirmDelete] = useState(false);
     const [deleting, setDeleting] = useState(false);
@@ -74,7 +76,7 @@ export default function PostActions({
 
             if (!response.ok) {
                 const data = await response.json().catch(() => null);
-                throw new Error(data?.error || "Não foi possível excluir a postagem.");
+                throw new Error(data?.error || t("post.cannotDeletePost", "Não foi possível excluir a postagem."));
             }
 
             setConfirmDelete(false);
@@ -82,7 +84,7 @@ export default function PostActions({
             onPostDeleted?.();
         } catch (error) {
             console.error("Erro ao excluir postagem:", error);
-            alert(error.message || "Erro ao excluir a postagem.");
+            alert(error.message || t("post.cannotDeletePost", "Erro ao excluir a postagem."));
         } finally {
             setDeleting(false);
         }
@@ -102,14 +104,14 @@ export default function PostActions({
 
             if (!response.ok) {
                 const data = await response.json().catch(() => null);
-                throw new Error(data?.error || "Não foi possível curtir a postagem.");
+                throw new Error(data?.error || t("post.cannotLike", "Não foi possível curtir a postagem."));
             }
 
             const result = await response.json();
             onLikeToggle?.(result.liked ?? !isLiked, result.likesCount ?? likesCount);
         } catch (error) {
             console.error("Erro ao curtir postagem:", error);
-            alert(error.message || "Erro ao curtir a postagem.");
+            alert(error.message || t("post.cannotLike", "Erro ao curtir a postagem."));
         }
     };
 
@@ -127,14 +129,14 @@ export default function PostActions({
 
             if (!response.ok) {
                 const data = await response.json().catch(() => null);
-                throw new Error(data?.error || "Não foi possível atualizar os favoritos.");
+                throw new Error(data?.error || t("post.cannotFavorite", "Não foi possível atualizar os favoritos."));
             }
 
             const result = await response.json();
             onFavoriteToggle?.(result.favorited ?? !isFavorited);
         } catch (error) {
             console.error("Erro ao favoritar postagem:", error);
-            alert(error.message || "Erro ao atualizar os favoritos.");
+            alert(error.message || t("post.cannotFavorite", "Erro ao atualizar os favoritos."));
         }
     };
 
@@ -146,7 +148,7 @@ export default function PostActions({
             <button
                 type="button"
                 onClick={handleLike}
-                aria-label={isLiked ? "Descurtir" : "Curtir"}
+                aria-label={isLiked ? t("postActions.unlike", "Descurtir") : t("postActions.like", "Curtir")}
                 className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
                     isLiked
                         ? "text-black bg-black/10 hover:bg-black/20 dark:text-white dark:bg-white/10"
@@ -161,7 +163,7 @@ export default function PostActions({
             <button
                 type="button"
                 onClick={handleFavorite}
-                aria-label={isFavorited ? "Desfavoritar" : "Favoritar"}
+                aria-label={isFavorited ? t("postActions.unfavorite", "Desfavoritar") : t("postActions.favorite", "Favoritar")}
                 className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
                     isFavorited
                         ? "text-black bg-black/10 hover:bg-black/20 dark:text-white dark:bg-white/10"
@@ -176,7 +178,7 @@ export default function PostActions({
             <button
                 type="button"
                 onClick={onCommentsToggle}
-                aria-label="Comentários"
+                aria-label={t("postActions.comments", "Comentários")}
                 className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
                     "text-black hover:text-black hover:bg-gray-50 dark:text-white dark:hover:text-pallete-green dark:hover:bg-[var(--color-pallete-gray-dark)]"
                 }`}
@@ -193,7 +195,7 @@ export default function PostActions({
                 <button
                     type="button"
                     onClick={toggleMenu}
-                    aria-label="Mais opções"
+                    aria-label={t("postActions.moreOptions", "Mais opções")}
                     aria-expanded={menuOpen}
                     className="rounded-lg p-1.5 text-black hover:text-black hover:bg-gray-100 dark:text-white dark:hover:text-white dark:hover:bg-[var(--color-pallete-gray-dark)] transition-colors"
                 >
@@ -207,14 +209,14 @@ export default function PostActions({
                             <>
                                 {confirmDelete ? (
                                     <div className="p-4 bg-white dark:bg-[var(--color-pallete-card-dark)] border-b border-gray-100 dark:border-[var(--color-pallete-gray-dark)]">
-                                        <p className="text-sm text-red-600 dark:text-red-400 mb-3">Tem certeza que deseja excluir esta postagem?</p>
+                                        <p className="text-sm text-red-600 dark:text-red-400 mb-3">{t("post.deletePostConfirm", "Tem certeza que deseja excluir esta postagem?")}</p>
                                         <div className="flex gap-2">
                                             <button
                                                 type="button"
                                                 onClick={() => setConfirmDelete(false)}
                                                 className="flex-1 px-4 py-2 text-sm font-medium text-black hover:bg-gray-50 dark:text-[var(--color-text-muted-dark)] dark:hover:bg-[var(--color-pallete-gray-dark)] rounded-lg transition-colors"
                                             >
-                                                Cancelar
+                                                {t("common.cancel", "Cancelar")}
                                             </button>
                                             <button
                                                 type="button"
@@ -222,7 +224,7 @@ export default function PostActions({
                                                 disabled={deleting}
                                                 className="flex-1 px-4 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 dark:text-red-400 dark:bg-red-900/20 dark:hover:bg-red-900/40 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                             >
-                                                {deleting ? "Excluindo..." : "Excluir"}
+                                                {deleting ? t("post.deleting", "Excluindo...") : t("postActions.deletePost", "Excluir")}
                                             </button>
                                         </div>
                                     </div>
@@ -235,7 +237,7 @@ export default function PostActions({
                                         className="w-full text-left px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-2"
                                     >
                                         <FiTrash2 size={16} className="text-red-500" />
-                                        Excluir post
+                                        {t("postActions.deletePost", "Excluir post")}
                                     </button>
                                 )}
                             </>
@@ -247,7 +249,7 @@ export default function PostActions({
                                 disabled
                             >
                                 <FiFlag size={16} className="text-black dark:text-white" />
-                                Denunciar post
+                                {t("post.denunciar", "Denunciar post")}
                             </button>
                         )}
                     </div>

@@ -1,8 +1,10 @@
 import { NavLink, useNavigate } from "react-router-dom"
 import { useState } from 'react'
 import { Button, Checkbox, Label, TextInput } from "flowbite-react";
+import { useTranslation } from "react-i18next";
 
 export default function Register() {
+  const { t } = useTranslation();
 
     const [Nome, setNome] = useState("")
     const [Username, setUsername] = useState("")
@@ -71,14 +73,14 @@ export default function Register() {
         
         <div className="w-screen min-h-screen bg-pallete-dark-green-2 flex flex-col items-center justify-center p-6 box-border m-0 dark:bg-[var(--color-pallete-dark-green-dark)]">
             <section className="flex w-full max-w-md gap-5 flex-col items-center justify-center">
-                <img src="/logo.webp" alt="Tempero Caraguá" />
-                <h1 className='text-2xl text-white font-bold dark:text-[var(--color-text-primary-dark)]'>Crie sua conta!</h1>
+                <img src="/logo.webp" alt={t("common.logo", "Tempero Caraguá")} />
+                <h1 className='text-2xl text-white font-bold dark:text-[var(--color-text-primary-dark)]'>{t("register.title", "Crie sua conta!")}</h1>
 
                 <form className="flex w-full flex-col gap-4" onSubmit={handleRegister}>
                     <div>
                         <div className="mb-2 block">
                             <Label htmlFor="nome" className='text-white dark:text-[var(--color-text-primary-dark)]'>
-                                Seu nome completo
+                                {t("register.fullName", "Seu nome completo")}
                             </Label>
                         </div>
                         <TextInput id="nome" type="text" placeholder="" required value={Nome} onChange={(e) => setNome(e.target.value)} shadow />
@@ -86,7 +88,7 @@ export default function Register() {
                     <div>
                         <div className="mb-2 block">
                             <Label htmlFor="username" className='text-white dark:text-[var(--color-text-primary-dark)]'>
-                                Seu nome de usuário
+                                {t("register.username", "Seu nome de usuário")}
                             </Label>
                         </div>
                         <TextInput id="username" type="text" placeholder="" required value={Username} onChange={(e) => setUsername(e.target.value)} shadow />
@@ -94,7 +96,7 @@ export default function Register() {
                     <div>
                         <div className="mb-2 block">
                             <Label htmlFor="email" className='text-white dark:text-[var(--color-text-primary-dark)]'>
-                                Seu e-mail
+                                {t("register.email", "Seu e-mail")}
                             </Label>
                         </div>
                         <TextInput id="email" type="email" placeholder="" value={Email} onChange={(e) => { setEmail(e.target.value); setEmailError("") }} required shadow />
@@ -103,7 +105,7 @@ export default function Register() {
                     <div>
                         <div className="mb-2 block">
                             <Label htmlFor="password" className='text-white dark:text-[var(--color-text-primary-dark)]'>
-                                Sua senha
+                                {t("register.password", "Sua senha")}
                             </Label>
                         </div>
                         <TextInput id="password" type="password" required value={Senha} onChange={(e) => { setSenha(e.target.value) }} shadow />
@@ -111,7 +113,7 @@ export default function Register() {
                     <div>
                         <div className="mb-2 block">
                             <Label htmlFor="repeat-password" className='text-white dark:text-[var(--color-text-primary-dark)]'>
-                                Repita sua senha
+                                {t("register.confirmPassword", "Repita sua senha")}
                             </Label>
                         </div>
                         <TextInput id="repeat-password" type="password" required value={confirmarSenha} onChange={(e) => setConfirmarSenha(e.target.value)} shadow />
@@ -119,18 +121,18 @@ export default function Register() {
                     <div className="flex items-center gap-2">
                         <Checkbox id="agree" required />
                         <Label htmlFor="agree" className="flex text-white dark:text-[var(--color-text-primary-dark)]">
-                            Eu concordo com os&nbsp;
+                            {t("register.terms", "Eu concordo com os")}&nbsp;
                             <NavLink to="/termos" className="text-white hover:underline dark:text-cyan-500">
-                                termos e condições
+                                {t("register.termsLink", "termos e condições")}
                             </NavLink>
                         </Label>
                     </div>
-                    <Button type="submit" className='bg-pallete-orange hover:bg-pallete-dark-orange transition-colors duration-150 text-white dark:bg-[var(--color-pallete-orange-dark)] dark:hover:bg-pallete-dark-orange'>Registrar nova conta</Button>
+                    <Button type="submit" className='bg-pallete-orange hover:bg-pallete-dark-orange transition-colors duration-150 text-white dark:bg-[var(--color-pallete-orange-dark)] dark:hover:bg-pallete-dark-orange'>{t("register.register", "Registrar nova conta")}</Button>
                 </form>
 
                 <p className="text-center text-white dark:text-[var(--color-text-primary-dark)]">
-                    Já possui uma conta?<br />
-                    <NavLink to="/login" className='text-pallete-light-orange hover:underline dark:text-[var(--color-pallete-light-orange-dark)]'>Faça o login</NavLink>
+                    {t("register.alreadyHaveAccount", "Já possui uma conta?")}<br />
+                    <NavLink to="/login" className='text-pallete-light-orange hover:underline dark:text-[var(--color-pallete-light-orange-dark)]'>{t("register.login", "Faça o login")}</NavLink>
                 </p>
             </section>
         </div>

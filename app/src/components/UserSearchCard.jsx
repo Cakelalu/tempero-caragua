@@ -1,7 +1,9 @@
 import { toProxyUrl } from "../utils/imageProxy";
 import { withImageKitTransform } from "../utils/imageTransform";
+import { useTranslation } from "react-i18next";
 
 export default function UserSearchCard({ user, onFollow, onUnfollow, isFollowing = false }) {
+  const { t } = useTranslation();
   return (
     <div
       className="flex items-center gap-3 px-4 py-2 border-b border-gray-50 dark:border-[var(--color-pallete-gray-dark)] hover:bg-gray-50 dark:hover:bg-[var(--color-pallete-card-dark)] cursor-pointer"
@@ -36,7 +38,7 @@ export default function UserSearchCard({ user, onFollow, onUnfollow, isFollowing
             : "bg-black text-white border-white hover:bg-gray-800 dark:bg-[var(--color-text-primary-dark)] dark:text-[var(--color-text-secondary-dark)] dark:border-[var(--color-text-secondary-dark)] dark:hover:bg-[var(--color-text-muted-dark)]"
         }`}
       >
-        {isFollowing ? "Seguindo" : "Seguir"}
+        {isFollowing ? t("userSearchCard.following", "Seguindo") : t("userSearchCard.follow", "Seguir")}
       </button>
     </div>
   );

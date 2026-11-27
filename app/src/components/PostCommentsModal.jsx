@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { FiSend, FiUser, FiAlertCircle } from "react-icons/fi";
 import { toProxyUrl } from "../utils/imageProxy";
 import { withImageKitTransform } from "../utils/imageTransform";
+import { useTranslation } from "react-i18next";
 
 /**
  * PostCommentsModal
@@ -20,6 +21,7 @@ import { withImageKitTransform } from "../utils/imageTransform";
  * - Excluir próprio comentário (soft delete)
  */
 export default function PostCommentsModal({ postSlug, isOpen, onClose, onCommentAdded, onCommentRemoved }) {
+  const { t, i18n } = useTranslation();
   const [comentarios, setComentarios] = useState([]);
   const [novoComentario, setNovoComentario] = useState("");
   const [loading, setLoading] = useState(false);
@@ -65,7 +67,7 @@ export default function PostCommentsModal({ postSlug, isOpen, onClose, onComment
           window.dispatchEvent(new Event("auth-expired"));
           return;
         }
-        throw new Error("Não foi possível carregar os comentários.");
+        throw new Error(t("post.cannotLoadComments", "Não foi possível carregar os comentários."));
       }
 
       const data = await response.json();
@@ -79,11 +81,11 @@ export default function PostCommentsModal({ postSlug, isOpen, onClose, onComment
       setHasMore(data.pagination.hasMore);
       setPage(pagina);
     } catch (err) {
-      setError(err.message || "Erro ao carregar comentários.");
+      setError(err.message || t("post.cannotLoadComments", "Erro ao carregar comentários."));
     } finally {
       setLoading(false);
     }
-  }, [postSlug, token]);
+  }, [postSlug, token, t]);
 
   useEffect(() => {
     if (isOpen) {
@@ -119,7 +121,7 @@ export default function PostCommentsModal({ postSlug, isOpen, onClose, onComment
           return;
         }
         const data = await response.json().catch(() => null);
-        throw new Error(data?.error || "Não foi possível enviar o comentário.");
+        throw new Error(data?.error || t("post.cannotSendComment", "Não foi possível enviar o comentário."));
       }
 
       const result = await response.json();
@@ -129,7 +131,7 @@ export default function PostCommentsModal({ postSlug, isOpen, onClose, onComment
       setNovoComentario("");
       onCommentAdded?.();
     } catch (err) {
-      setError(err.message || "Erro ao enviar comentário.");
+      setError(err.message || t("post.cannotSendComment", "Erro ao enviar comentário."));
     } finally {
       setSending(false);
     }
@@ -158,14 +160,14 @@ export default function PostCommentsModal({ postSlug, isOpen, onClose, onComment
 
       if (!response.ok) {
         const data = await response.json().catch(() => null);
-        throw new Error(data?.error || "Não foi possível excluir o comentário.");
+        throw new Error(data?.error || t("post.cannotDeleteComment", "Não foi possível excluir o comentário."));
       }
 
       setComentarios((prev) => prev.filter((c) => c.id !== confirmDeleteId));
       setConfirmDeleteId(null);
       onCommentRemoved?.();
     } catch (err) {
-      setError(err.message || "Erro ao excluir comentário.");
+      setError(err.message || t("post.cannotDeleteComment", "Erro ao excluir comentário."));
       setConfirmDeleteId(null);
     } finally {
       setDeletingCommentId(null);
@@ -179,7 +181,8 @@ export default function PostCommentsModal({ postSlug, isOpen, onClose, onComment
 
   const formatarData = (dateString) => {
     if (!dateString) return "";
-    return new Date(dateString).toLocaleString("pt-BR", {
+    const locale = i18n.language === "en" ? "en-US" : "pt-BR";
+    return new Date(dateString).toLocaleString(locale, {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
@@ -203,7 +206,7 @@ export default function PostCommentsModal({ postSlug, isOpen, onClose, onComment
           {/* Cabeçalho */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-[var(--color-pallete-gray-dark)]">
             <h2 className="text-lg font-bold text-gray-900 dark:text-[var(--color-text-primary-dark)]">
-              Comentários
+              {t("post.comments", "Comentários")}
             </h2>
             <button
               type="button"
@@ -224,15 +227,15 @@ export default function PostCommentsModal({ postSlug, isOpen, onClose, onComment
 
             {loading && comentarios.length === 0 && (
               <div className="flex flex-col items-center justify-center py-10 text-gray-500 dark:text-[var(--color-text-muted-dark)]">
-                <p>Carregando comentários...</p>
+                <p>{t("post.loadingComments", "Carregando comentários...")}</p>
               </div>
             )}
 
             {comentarios.length === 0 && !loading && !error && (
               <div className="flex flex-col items-center justify-center py-10 text-gray-500 dark:text-[var(--color-text-muted-dark)]">
                 <FiUser size={32} className="mb-2 opacity-50" />
-                <p>Nenhum comentário ainda</p>
-                <p className="text-xs mt-1 opacity-70">Seja o primeiro a comentar esta receita.</p>
+                <p>{t("post.noCommentsYet", "Nenhum comentário ainda")}</p>
+                <p className="text-xs mt-1 opacity-70">{t("post.beFirstToComment", "Seja o primeiro a comentar esta receita.")}</p>
               </div>
             )}
 
@@ -259,7 +262,7 @@ export default function PostCommentsModal({ postSlug, isOpen, onClose, onComment
                 <div className="flex-1">
                   <div className="flex items-baseline gap-2 mb-1">
                     <span className="text-sm font-semibold text-gray-900 dark:text-[var(--color-text-primary-dark)]">
-                      {comentario.autor?.nomeUsuario || "Usuário"}
+                      {comentario.autor?.nomeUsuario || t("common.unknownAuthor", "Usuário")}
                     </span>
                     <span className="text-xs text-gray-500 dark:text-[var(--color-text-muted-dark)]">
                       {formatarData(comentario.createdAt)}
@@ -274,7 +277,7 @@ export default function PostCommentsModal({ postSlug, isOpen, onClose, onComment
                       onClick={() => abrirConfirmarExclusao(comentario.id)}
                       className="text-xs text-red-600 dark:text-red-400 hover:underline mt-1"
                     >
-                      Excluir
+                      {t("post.deleteComment", "Excluir")}
                     </button>
                   )}
                 </div>
@@ -287,7 +290,7 @@ export default function PostCommentsModal({ postSlug, isOpen, onClose, onComment
                 onClick={() => carregarComentarios(page + 1, true)}
                 className="w-full py-2 text-sm font-medium text-pallete-green hover:bg-pallete-green/10 dark:text-[var(--color-pallete-green-dark)] dark:hover:bg-[var(--color-pallete-green-dark)]/20 rounded-lg transition-colors"
               >
-                Carregar mais comentários
+                {t("post.loadMoreComments", "Carregar mais comentários")}
               </button>
             )}
           </div>
@@ -298,7 +301,7 @@ export default function PostCommentsModal({ postSlug, isOpen, onClose, onComment
               <textarea
                 value={novoComentario}
                 onChange={(e) => setNovoComentario(e.target.value)}
-                placeholder="Escreva seu comentário..."
+                placeholder={t("post.writeComment", "Escreva seu comentário...")}
                 rows={2}
                 className="flex-1 resize-none rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-900 dark:border-[var(--color-pallete-gray-dark)] dark:bg-[var(--color-pallete-card-dark)] dark:text-[var(--color-text-primary-dark)] focus:ring-2 focus:ring-pallete-green focus:outline-none dark:focus:ring-[var(--color-pallete-green-dark)]"
                 disabled={sending}
@@ -329,10 +332,10 @@ export default function PostCommentsModal({ postSlug, isOpen, onClose, onComment
               <FiAlertCircle size={24} className="text-red-500 dark:text-red-400 mt-0.5" />
               <div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-[var(--color-text-primary-dark)] mb-1">
-                  Excluir comentário
+                  {t("post.deleteComment", "Excluir comentário")}
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-[var(--color-text-muted-dark)]">
-                  Tem certeza que deseja excluir este comentário? Esta ação não poderá ser desfeita.
+                  {t("post.deleteCommentConfirm", "Tem certeza que deseja excluir este comentário? Esta ação não poderá ser desfeita.")}
                 </p>
               </div>
             </div>
@@ -342,7 +345,7 @@ export default function PostCommentsModal({ postSlug, isOpen, onClose, onComment
                 onClick={cancelarExclusao}
                 className="flex-1 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 dark:text-[var(--color-text-muted-dark)] dark:hover:bg-[var(--color-pallete-gray-dark)] rounded-lg transition-colors"
               >
-                Cancelar
+                {t("common.cancel", "Cancelar")}
               </button>
               <button
                 type="button"
@@ -350,7 +353,7 @@ export default function PostCommentsModal({ postSlug, isOpen, onClose, onComment
                 disabled={deletingCommentId === confirmDeleteId}
                 className="flex-1 px-4 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 dark:text-red-400 dark:bg-red-900/20 dark:hover:bg-red-900/40 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {deletingCommentId === confirmDeleteId ? "Excluindo..." : "Excluir"}
+                {deletingCommentId === confirmDeleteId ? t("post.deleting", "Excluindo...") : t("postActions.deletePost", "Excluir")}
               </button>
             </div>
           </div>

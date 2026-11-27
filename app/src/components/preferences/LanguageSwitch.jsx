@@ -1,63 +1,82 @@
-export default function LanguageSwitch ({
-    language,
-    onLanguageChange,
-})
+import { useTranslation } from "react-i18next";
 
-{
-    return (
-        <div
-            className="
-            flex
-            h-6
-            w-18
-            items-center
-            rounded-full
-            bg-[#77775f]
-            p-0.5
-            dark:bg-[var(--color-pallete-gray-dark)]
-            "
-        >
-            {/* PT */}
-            <button
-                type="button"
-                onClick={() => onLanguageChange("pt")}
-                className={`
-                    h-5
-                    w-1/2
-                    rounded-full
-                    text-[10px]
-                    font-semibold
-                    transition-all
-                    duration-200
-                    ${language === "pt"
-                            ? "bg-[#eeece0] text-[#77775f]"
-                            : "text-[#eeece0]"
-                    }
-                `}
-            >
-                PT
-            </button>
+export default function LanguageSwitch() {
+  const { i18n } = useTranslation();
 
-            {/* EN */}
-            <button
-                type="button"
-                onClick={() => onLanguageChange("en")}
-                className={`
-                    h-5
-                    w-1/2
-                    rounded-full
-                    text-[10px]
-                    font-semibold
-                    transition-all
-                    duration-200
-                    ${language === "en"
-                            ? "bg-[#eeece0] text-[#77775f]"
-                            : "text-[#eeece0]"
-                    }
-                `}
-            >
-                EN
-            </button>
-        </div>
-    );
+  const isEnglish = i18n.language === "en";
+
+  const toggleLanguage = () => {
+    const newLanguage = isEnglish ? "pt" : "en";
+    i18n.changeLanguage(newLanguage);
+    localStorage.setItem("language", newLanguage);
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={toggleLanguage}
+      aria-label="Alternar idioma"
+      className="
+        relative
+        h-6 w-12
+        rounded-2xl
+        bg-[#77775f]
+        transition-colors
+        focus:outline-none
+        dark:bg-[var(--color-pallete-gray-dark)]
+      "
+    >
+      {/* PT (esquerda) */}
+      <span
+        className={`
+          absolute
+          left-1.5
+          top-1/2
+          -translate-y-1/2
+          z-10
+          text-[10px]
+          font-semibold
+          transition-colors
+          duration-200
+          ${isEnglish ? "text-[#eeece0] opacity-50" : "text-[#77775f] opacity-100"}
+        `}
+      >
+        PT
+      </span>
+
+      {/* EN (direita) */}
+      <span
+        className={`
+          absolute
+          right-1.5
+          top-1/2
+          -translate-y-1/2
+          z-10
+          text-[10px]
+          font-semibold
+          transition-colors
+          duration-200
+          ${isEnglish ? "text-[#77775f] opacity-100" : "text-[#eeece0] opacity-50"}
+        `}
+      >
+        EN
+      </span>
+
+      {/* Bolinha deslizante */}
+      <span
+        className={`
+          absolute
+          ${isEnglish ? "right-0.5" : "left-0.5"}
+          top-0.5
+          h-5 w-5
+          rounded-full
+          bg-[#eeece0]
+          shadow-sm
+          transition-transform
+          duration-300
+          ease-in-out
+        `}
+      />
+    </button>
+  );
 }

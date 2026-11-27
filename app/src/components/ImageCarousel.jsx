@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { toProxyUrl } from "../utils/imageProxy";
 import { withImageKitTransform } from "../utils/imageTransform";
+import { useTranslation } from "react-i18next";
 
 export default function ImageCarousel({ images = [] }) {
+  const { t } = useTranslation();
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const image = images?.[currentIndex];
@@ -21,13 +23,13 @@ export default function ImageCarousel({ images = [] }) {
       {src ? (
         <img
           src={src}
-          alt="Postagem"
+          alt={t("cardPost.titlePlaceholder", "Postagem")}
           className="h-full w-full object-cover"
           loading="lazy"
         />
       ) : (
         <div className="h-full w-full flex items-center justify-center">
-          <span className="text-gray-400 dark:text-[var(--color-text-muted-dark)] text-sm">Sem imagem</span>
+          <span className="text-gray-400 dark:text-[var(--color-text-muted-dark)] text-sm">{t("cardPost.noImage", "Sem imagem")}</span>
         </div>
       )}
 
@@ -39,7 +41,7 @@ export default function ImageCarousel({ images = [] }) {
               goToPrev();
             }}
             className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 text-white px-2 py-1 rounded-lg hover:bg-black/50 transition dark:bg-white/10 dark:hover:bg-white/20"
-            aria-label="Imagem anterior"
+            aria-label={t("common.previousImage", "Imagem anterior")}
           >
             ‹
           </button>
@@ -49,7 +51,7 @@ export default function ImageCarousel({ images = [] }) {
               goToNext();
             }}
             className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 text-white px-2 py-1 rounded-lg hover:bg-black/50 transition dark:bg-white/10 dark:hover:bg-white/20"
-            aria-label="Próxima imagem"
+            aria-label={t("common.nextImage", "Próxima imagem")}
           >
             ›
           </button>
@@ -58,7 +60,7 @@ export default function ImageCarousel({ images = [] }) {
               <button
                 key={i}
                 onClick={() => setCurrentIndex(i)}
-                aria-label={`Imagem ${i + 1}`}
+                aria-label={t("common.image", "Imagem {{n}}").replace("{{n}}", String(i + 1))}
                 className={`w-2 h-2 rounded-full transition-colors ${
                   i === currentIndex
                     ? "bg-white dark:bg-[var(--color-text-primary-dark)]"

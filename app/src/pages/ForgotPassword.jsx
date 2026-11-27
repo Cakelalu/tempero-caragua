@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
+import { useTranslation } from "react-i18next";
 
 export default function ForgotPassword() {
+    const { t } = useTranslation();
     const [email, setEmail] = useState('')
     const [loading, setLoading] = useState(false)
     const [message, setMessage] = useState('')
@@ -29,12 +31,12 @@ export default function ForgotPassword() {
             const dados = await resposta.json()
 
             if (!resposta.ok) {
-                throw new Error(dados.error || 'Erro ao solicitar redefinição de senha.')
+                throw new Error(dados.error || t('forgotPassword.errorRequestingReset', 'Erro ao solicitar redefinição de senha.'))
             }
 
-            setMessage('Se este e-mail estiver cadastrado, você receberá instruções de redefinição.')
+            setMessage(t('forgotPassword.emailSent', 'Se este e-mail estiver cadastrado, você receberá instruções de redefinição.'))
         } catch (err) {
-            setError(err.message || 'Não foi possível conectar ao servidor.')
+            setError(err.message || t('forgotPassword.couldNotConnect', 'Não foi possível conectar ao servidor.'))
         } finally {
             setLoading(false)
         }
@@ -44,14 +46,14 @@ export default function ForgotPassword() {
         <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-[var(--color-pallete-surface-dark)] px-4">
             <div className="max-w-md w-full bg-white dark:bg-[var(--color-pallete-card-dark)] p-8 rounded-xl shadow-sm">
                 <NavLink to="/login" className="mb-6 inline-block text-pallete-green font-semibold">
-                    ← Voltar ao login
+                    ← {t("forgotPassword.backToLogin", "Voltar ao login")}
                 </NavLink>
 
                 <h1 className="mb-2 text-2xl font-bold text-gray-900 dark:text-[var(--color-text-primary-dark)]">
-                    Esqueci minha senha
+                    {t("forgotPassword.title", "Esqueci minha senha")}
                 </h1>
                 <p className="mb-6 text-gray-600 dark:text-[var(--color-text-muted-dark)]">
-                    Informe seu e-mail cadastrado para receber instruções de redefinição.
+                    {t("forgotPassword.description", "Informe seu e-mail cadastrado para receber instruções de redefinição.")}
                 </p>
 
                 {message && (
@@ -71,7 +73,7 @@ export default function ForgotPassword() {
                             htmlFor="email"
                             className="block text-sm font-medium text-gray-700 dark:text-[var(--color-text-primary-dark)]"
                         >
-                            E-mail
+                            {t("login.email", "E-mail")}
                         </label>
                         <input
                             id="email"
@@ -89,14 +91,14 @@ export default function ForgotPassword() {
                         disabled={loading}
                         className="w-full py-3 rounded-xl bg-pallete-orange text-white font-semibold hover:bg-pallete-dark-orange disabled:opacity-60 transition-colors"
                     >
-                        {loading ? 'Enviando...' : 'Enviar instruções'}
+                        {loading ? t("forgotPassword.sending", "Enviando...") : t("forgotPassword.sendInstructions", "Enviar instruções")}
                     </button>
                 </form>
 
                 <p className="mt-6 text-center text-sm text-gray-500 dark:text-[var(--color-text-muted-dark)]">
-                    Lembrou da senha?{' '}
+                    {t("forgotPassword.rememberPassword", "Lembrou da senha?")}{' '}
                     <NavLink to="/login" className="text-pallete-green font-medium hover:underline">
-                        Faça login
+                        {t("forgotPassword.login", "Faça login")}
                     </NavLink>
                 </p>
             </div>

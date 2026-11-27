@@ -4,8 +4,10 @@ import { FiUser, FiTrash2 } from 'react-icons/fi';
 import { toProxyUrl } from '../utils/imageProxy';
 import { withImageKitTransform } from '../utils/imageTransform';
 import CreatePost from '../components/CreatePost';
+import { useTranslation } from "react-i18next";
 
 export default function Profile() {
+  const { t, i18n } = useTranslation();
   const { id: urlUserId } = useParams();
 
   const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
@@ -190,7 +192,7 @@ export default function Profile() {
   if (loading) {
     return (
       <div className="flex h-screen items-center justify-center bg-gray-50 dark:bg-[var(--color-pallete-surface-dark)] text-base font-medium text-gray-600 dark:text-[var(--color-text-muted-dark)]">
-        Carregando dados do perfil...
+        {t("profile.loadingProfile", "Carregando dados do perfil...")}
       </div>
     );
   }
@@ -198,8 +200,8 @@ export default function Profile() {
   if (!profile) {
     return (
       <div className="flex h-screen flex-col items-center justify-center bg-gray-50 dark:bg-[var(--color-pallete-surface-dark)] gap-2 px-4 text-center">
-        <p className="text-base font-semibold text-red-500">Perfil não encontrado.</p>
-        <p className="text-sm text-gray-500 dark:text-[var(--color-text-muted-dark)]">Verifique sua conexão ou se seu login ainda está ativo.</p>
+        <p className="text-base font-semibold text-red-500">{t("profile.profileNotFound", "Perfil não encontrado.")}</p>
+        <p className="text-sm text-gray-500 dark:text-[var(--color-text-muted-dark)]">{t("profile.checkConnection", "Verifique sua conexão ou se seu login ainda está ativo.")}</p>
       </div>
     );
   }
@@ -235,22 +237,22 @@ export default function Profile() {
         <div className="absolute -bottom-14 right-4 sm:-bottom-1/6 sm:right-15 md:-bottom-1/4 md:right-25 flex items-center gap-0 sm:gap-6 rounded-md border border-gray-100 dark:border-[var(--color-pallete-gray-dark)] bg-white p-0.5 sm:p-4 shadow-sm dark:bg-[var(--color-pallete-card-dark)] whitespace-nowrap">
           <div className="text-center">
             <span className="block text-sm font-bold text-gray-800 dark:text-[var(--color-text-primary-dark)] sm:text-lg">{profile.stats.postsCount}</span>
-            <span className="text-[8px] text-gray-400 dark:text-[var(--color-text-muted-dark)] uppercase font-bold tracking-wider sm:text-[10px]">Posts</span>
+            <span className="text-[8px] text-gray-400 dark:text-[var(--color-text-muted-dark)] uppercase font-bold tracking-wider sm:text-[10px]">{t("profile.posts", "Posts")}</span>
           </div>
           <div className="text-center border-x border-gray-100 dark:border-[var(--color-pallete-gray-dark)] px-1 sm:px-6">
             <span className="block text-sm font-bold text-gray-800 dark:text-[var(--color-text-primary-dark)] sm:text-lg">{profile.stats.followersCount}</span>
-            <span className="text-[8px] text-gray-400 dark:text-[var(--color-text-muted-dark)] uppercase font-bold tracking-wider sm:text-[10px]">Seguidores</span>
+            <span className="text-[8px] text-gray-400 dark:text-[var(--color-text-muted-dark)] uppercase font-bold tracking-wider sm:text-[10px]">{t("profile.followers", "Seguidores")}</span>
           </div>
           <div className="text-center">
             <span className="block text-sm font-bold text-gray-800 dark:text-[var(--color-text-primary-dark)] sm:text-lg">{profile.stats.followingCount}</span>
-            <span className="text-[8px] text-gray-400 dark:text-[var(--color-text-muted-dark)] uppercase font-bold tracking-wider sm:text-[10px]">Seguindo</span>
+            <span className="text-[8px] text-gray-400 dark:text-[var(--color-text-muted-dark)] uppercase font-bold tracking-wider sm:text-[10px]">{t("profile.following", "Seguindo")}</span>
           </div>
           {isFollowing !== null && profile.id !== userLoggedId && (
             <button
               onClick={isFollowing ? handleUnfollowProfile : handleFollowProfile}
               className="ml-2 px-3 py-1 rounded-lg text-xs font-medium transition-colors border bg-black text-white border-white hover:bg-gray-800 dark:bg-[var(--color-text-primary-dark)] dark:text-[var(--color-text-secondary-dark)] dark:border-[var(--color-text-secondary-dark)] dark:hover:bg-[var(--color-text-muted-dark)]"
             >
-              {isFollowing ? "Seguindo" : "Seguir"}
+              {isFollowing ? t("profile.followingLabel", "Seguindo") : t("profile.follow", "Seguir")}
             </button>
           )}
         </div>
@@ -275,7 +277,7 @@ export default function Profile() {
 
         {/* Bloco Inferior com as Imagens/Postagens */}
         <div className="mt-8">
-          <h2 className="text-base font-bold text-gray-900 dark:text-[var(--color-text-primary-dark)] mb-4">Minhas Publicações</h2>
+          <h2 className="text-base font-bold text-gray-900 dark:text-[var(--color-text-primary-dark)] mb-4">{t("profile.myPublications", "Minhas Publicações")}</h2>
 
           {posts.length === 0 ? (
             <div className="grid grid-cols-3 gap-4 sm:grid-cols-1 md:grid-cols-2">
@@ -290,7 +292,7 @@ export default function Profile() {
                 </button>
               )}
               <div className="text-center cols-2 row-1 text-sm text-gray-400 dark:text-[var(--color-text-muted-dark)] py-16 bg-white rounded-xl border border-gray-100 dark:border-[var(--color-pallete-gray-dark)] shadow-sm cols-1 sm:cols-1 md:cols-2 dark:bg-[var(--color-pallete-card-dark)]">
-                Nenhuma publicação encontrada neste perfil.
+                {t("profile.noPublications", "Nenhuma publicação encontrada neste perfil.")}
               </div>
             </div>
           ) : (
@@ -318,7 +320,7 @@ export default function Profile() {
                           loading="lazy"
                         />
                       ) : (
-                        <div className="text-gray-400 dark:text-[var(--color-text-muted-dark)] text-xs translate-y-1/6">Sem imagem</div>
+                        <div className="text-gray-400 dark:text-[var(--color-text-muted-dark)] text-xs translate-y-1/6">{t("cardPost.noImage", "Sem imagem")}</div>
                       )}
                     </div>
                     <div className="p-3">
@@ -338,7 +340,7 @@ export default function Profile() {
                         )}
                       </div>
                       <span className="text-[10px] text-gray-400 dark:text-[var(--color-text-muted-dark)] mt-1 block">
-                        {new Date(post.dataPostagem).toLocaleDateString('pt-BR')}
+                        {new Date(post.dataPostagem).toLocaleDateString(i18n.language === "en" ? "en-US" : "pt-BR")}
                       </span>
                     </div>
                   </div>
@@ -353,7 +355,7 @@ export default function Profile() {
                     disabled={loadingPosts}
                     className="rounded-full bg-orange-500 px-6 py-2 text-xs font-semibold text-white shadow-sm hover:bg-orange-600 transition-colors disabled:bg-orange-300"
                   >
-                    {loadingPosts ? 'Buscando...' : 'Carregar mais publicações'}
+                    {loadingPosts ? t("profile.buscando", "Buscando...") : t("profile.loadMorePublications", "Carregar mais publicações")}
                   </button>
                 </div>
               )}
@@ -378,23 +380,23 @@ export default function Profile() {
             className="bg-white rounded-2xl p-6 shadow-2xl w-full max-w-sm dark:bg-[var(--color-pallete-card-dark)]"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-lg font-bold text-gray-900 dark:text-[var(--color-text-primary-dark)] mb-2">Excluir publicação</h3>
+            <h3 className="text-lg font-bold text-gray-900 dark:text-[var(--color-text-primary-dark)] mb-2">{t("profile.deletePublicationConfirm", "Excluir publicação")}</h3>
             <p className="text-gray-600 dark:text-[var(--color-text-muted-dark)] mb-6">
-              Tem certeza que deseja excluir esta publicação? Esta ação não poderá ser desfeita.
+              {t("profile.deletePublicationConfirm", "Tem certeza que deseja excluir esta publicação? Esta ação não poderá ser desfeita.")}
             </p>
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setConfirmDeleteSlug(null)}
                 className="px-4 py-2 rounded-lg text-gray-600 dark:text-[var(--color-text-muted-dark)] hover:bg-gray-100 dark:hover:bg-[var(--color-pallete-gray-dark)] transition-colors"
               >
-                Cancelar
+                {t("common.cancel", "Cancelar")}
               </button>
               <button
                 onClick={executarDeletePost}
                 disabled={deletingPostId === confirmDeleteSlug}
                 className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {deletingPostId === confirmDeleteSlug ? 'Excluindo...' : 'Excluir'}
+                {deletingPostId === confirmDeleteSlug ? t("post.deleting", "Excluindo...") : t("postActions.deletePost", "Excluir")}
               </button>
             </div>
           </div>

@@ -4,10 +4,12 @@ import { toProxyUrl } from "../utils/imageProxy";
 import { withImageKitTransform } from "../utils/imageTransform";
 import PostActions from "../components/PostActions";
 import PostCommentsModal from "../components/PostCommentsModal";
+import { useTranslation } from "react-i18next";
 
 const API_BASE_URL = (import.meta.env.VITE_PUBLIC_API_URL || "http://localhost:4500").replace(/\/$/, "");
 
 export default function Post() {
+  const { t, i18n } = useTranslation();
   const { id } = useParams();
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -25,7 +27,7 @@ export default function Post() {
 
     async function loadPost() {
       if (!id) {
-        setError("Post não informado.");
+        setError(t("post.postNotInformed", "Post não informado."));
         setLoading(false);
         return;
       }
@@ -43,9 +45,9 @@ export default function Post() {
 
         if (!response.ok) {
           if (response.status === 404) {
-            throw new Error("Postagem não encontrada.");
+            throw new Error(t("post.postNotFound", "Postagem não encontrada."));
           }
-          throw new Error("Não foi possível carregar a postagem.");
+          throw new Error(t("post.couldNotLoadPost", "Não foi possível carregar a postagem."));
         }
 
         const data = await response.json();
@@ -55,7 +57,7 @@ export default function Post() {
         setCommentsCount(postData._count?.comentario || 0);
       } catch (loadError) {
         if (loadError.name !== "AbortError") {
-          setError(loadError.message || "Erro ao carregar a postagem.");
+          setError(loadError.message || t("post.couldNotLoadPost", "Erro ao carregar a postagem."));
         }
       } finally {
         if (!controller.signal.aborted) {
@@ -66,7 +68,7 @@ export default function Post() {
 
     loadPost();
     return () => controller.abort();
-  }, [id]);
+  }, [id, t]);
 
   const obterImagens = () => {
     if (!post?.imagens) return [];
@@ -91,7 +93,7 @@ export default function Post() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-[var(--color-pallete-surface-dark)]">
-        <p className="text-gray-500 dark:text-[var(--color-text-muted-dark)]">Carregando postagem...</p>
+        <p className="text-gray-500 dark:text-[var(--color-text-muted-dark)]">{t("common.loading", "Carregando postagem...")}</p>
       </div>
     );
   }
@@ -99,9 +101,9 @@ export default function Post() {
   if (error || !post) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 dark:bg-[var(--color-pallete-surface-dark)] py-12 px-4 text-center">
-        <h1 className="text-lg font-medium text-red-600">{error || "Postagem não encontrada."}</h1>
+        <h1 className="text-lg font-medium text-red-600">{error || t("post.postNotFound", "Postagem não encontrada.")}</h1>
         <p className="mt-2 text-sm text-gray-500 dark:text-[var(--color-text-muted-dark)]">
-          Não foi possível exibir os detalhes desta postagem.
+          {t("post.couldNotDisplayDetails", "Não foi possível exibir os detalhes desta postagem.")}
         </p>
       </div>
     );
@@ -109,7 +111,7 @@ export default function Post() {
 
   const imagens = obterImagens();
   const legendas = obterLegendas();
-  const autor = post.user?.nomeUsuario || "Autor desconhecido";
+  const autor = post.user?.nomeUsuario || t("common.unknownAuthor", "Autor desconhecido");
   const imagemPerfilAutor = post.user?.imagemPerfil;
   const nomeAutor = post.user?.nome || autor;
 
@@ -128,7 +130,8 @@ export default function Post() {
 
   const formatarData = (dateString) => {
     if (!dateString) return "";
-    return new Date(dateString).toLocaleDateString("pt-BR", {
+    const locale = i18n.language === "en" ? "en-US" : "pt-BR";
+    return new Date(dateString).toLocaleDateString(locale, {
       day: "2-digit",
       month: "long",
       year: "numeric",
@@ -150,7 +153,7 @@ export default function Post() {
             />
             {imagens.length > 1 && (
               <div className="absolute bottom-2 left-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
-                {imagens.length} fotos
+                {imagens.length} {t("common.photos", "fotos")}
               </div>
             )}
           </div>
@@ -210,7 +213,7 @@ export default function Post() {
         {imagens.length > 1 && (
           <div className="mb-8">
             <h3 className="text-sm font-semibold text-gray-900 dark:text-[var(--color-text-primary-dark)] uppercase tracking-wider mb-3">
-              Mais imagens
+              {t("post.moreImages", "Mais imagens")}
             </h3>
             <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
               {imagens.slice(1).map((img, index) => (
@@ -234,7 +237,7 @@ export default function Post() {
         {legendas.length > 0 && (
           <div className="mb-8 p-4 bg-gray-50 rounded-lg border border-gray-100 dark:bg-[var(--color-pallete-card-dark)] dark:border-[var(--color-pallete-gray-dark)]">
             <h3 className="text-sm font-semibold text-gray-900 dark:text-[var(--color-text-primary-dark)] uppercase tracking-wider mb-3">
-              Legendas
+              {t("post.captions", "Legendas")}
             </h3>
             <ul className="space-y-2 text-sm text-gray-600 dark:text-[var(--color-text-muted-dark)]">
               {legendas.map((legenda, index) => (

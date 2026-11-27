@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import CardPost from "../components/CardPost";
+import { useTranslation } from "react-i18next";
 
 const API_BASE_URL = (import.meta.env.VITE_PUBLIC_API_URL || "http://localhost:4500").replace(/\/$/, "");
 
@@ -25,6 +26,7 @@ async function fetchHomePosts() {
 }
 
 export default function Home() {
+  const { t } = useTranslation();
   const { data: posts = [], isLoading, isError, error } = useQuery({
     queryKey: ["home", "posts"],
     queryFn: fetchHomePosts,
@@ -35,8 +37,8 @@ export default function Home() {
     return (
       <main className="">
         <div className="h-screen w-screen flex flex-col items-center justify-center">
-          <h1>Bem-vindo ao Tempero Caraguá!</h1>
-          <p className="text-red-500">{error.message || "Erro ao carregar as postagens."}</p>
+          <h1>{t("home.welcome", "Bem-vindo ao Tempero Caraguá!")}</h1>
+          <p className="text-red-500">{error.message || t("posts.noPostsFound", "Erro ao carregar as postagens.")}</p>
         </div>
       </main>
     );
@@ -46,8 +48,8 @@ export default function Home() {
     return (
       <main className="">
         <div className="h-screen w-screen flex flex-col items-center justify-center">
-          <h1>Bem-vindo ao Tempero Caraguá!</h1>
-          <p>Carregando postagens...</p>
+          <h1>{t("home.welcome", "Bem-vindo ao Tempero Caraguá!")}</h1>
+          <p>{t("common.loading", "Carregando postagens...")}</p>
         </div>
       </main>
     );
@@ -59,7 +61,7 @@ export default function Home() {
         <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full max-w-7xl mx-auto px-4 max-w-full">
           {posts.length === 0 ? (
             <p className="col-span-full text-center text-gray-500 dark:text-[var(--color-text-muted-dark)]">
-              Nenhuma postagem disponível.
+              {t("home.noPosts", "Nenhuma postagem disponível.")}
             </p>
           ) : (
             posts.map((post) => {
@@ -80,7 +82,7 @@ export default function Home() {
                   avatarImage={post.user?.imagemPerfil || null}
                   date={post.dataPostagem}
                   title={post.titulo}
-                  author={post.user?.nomeUsuario || "Autor desconhecido"}
+                  author={post.user?.nomeUsuario || t("common.unknownAuthor", "Autor desconhecido")}
                   href={`/posts/${post.slug || post.id}`}
                 />
               );

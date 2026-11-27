@@ -1,4 +1,8 @@
+import { useTranslation } from "react-i18next";
+
 export default function FilterPanel({ open, onClose, onTabChange, activeTab }) {
+  const { t } = useTranslation();
+
   if (!open) return null;
 
   return (
@@ -12,11 +16,11 @@ export default function FilterPanel({ open, onClose, onTabChange, activeTab }) {
       {/* Painel */}
       <div className="relative w-full lg:w-1/3 bg-white shadow-2xl flex flex-col max-h-full dark:bg-[var(--color-pallete-card-dark)]">
         <div className="p-4 border-b border-gray-100 dark:border-[var(--color-pallete-gray-dark)] flex items-center justify-between">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-[var(--color-text-primary-dark)]">Filtros</h2>
+          <h2 className="text-lg font-bold text-gray-900 dark:text-[var(--color-text-primary-dark)]">{t("filterPanel.title", "Filtros")}</h2>
           <button
             onClick={onClose}
             className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-100 dark:hover:bg-[var(--color-pallete-gray-dark)] transition"
-            aria-label="Fechar filtros"
+            aria-label={t("filterPanel.close", "Fechar filtros")}
           >
             ✕
           </button>
@@ -32,7 +36,7 @@ export default function FilterPanel({ open, onClose, onTabChange, activeTab }) {
                   : "bg-gray-100 text-gray-700 dark:bg-[var(--color-pallete-gray-dark)] dark:text-[var(--color-text-muted-dark)] hover:bg-gray-200 dark:hover:bg-[var(--color-pallete-gray-dark)]/50"
               }`}
             >
-              Posts
+              {t("filterPanel.postsTab", "Posts")}
             </button>
             <button
               onClick={() => onTabChange("users")}
@@ -42,7 +46,7 @@ export default function FilterPanel({ open, onClose, onTabChange, activeTab }) {
                   : "bg-gray-100 text-gray-700 dark:bg-[var(--color-pallete-gray-dark)] dark:text-[var(--color-text-muted-dark)] hover:bg-gray-200 dark:hover:bg-[var(--color-pallete-gray-dark)]/50"
               }`}
             >
-              Usuários
+              {t("filterPanel.usersTab", "Usuários")}
             </button>
           </div>
         </div>
@@ -50,7 +54,7 @@ export default function FilterPanel({ open, onClose, onTabChange, activeTab }) {
         <div className="p-4 overflow-y-auto max-h-[60vh]">
           {activeTab === "posts" && (
             <div className="space-y-3">
-              <h3 className="text-xs font-bold text-gray-400 dark:text-[var(--color-text-muted-dark)] uppercase tracking-wider mb-3">Buscar por tags</h3>
+              <h3 className="text-xs font-bold text-gray-400 dark:text-[var(--color-text-muted-dark)] uppercase tracking-wider mb-3">{t("filterPanel.searchByTags", "Buscar por tags")}</h3>
               <div className="flex flex-wrap gap-2">
                 {["Camarão", "Peixe", "Mexilhão", "Lula", "Polvo", "Carne", "Frango", "Massas", "Sopas", "Ensopados", "Bolos", "Tortas", "Sucos", "Doces", "Assados", "Salgados"].map((tag) => (
                   <button
@@ -68,10 +72,10 @@ export default function FilterPanel({ open, onClose, onTabChange, activeTab }) {
           {activeTab === "users" && (
             <div className="space-y-3">
               <h3 className="text-xs font-bold text-gray-400 dark:text-[var(--color-text-muted-dark)] uppercase tracking-wider mb-3">
-                Buscar usuários
+                {t("filterPanel.searchUsers", "Buscar usuários")}
               </h3>
               <p className="text-xs text-gray-400 dark:text-[var(--color-text-muted-dark)]">
-                Use a barra de pesquisa no topo para buscar por nome de usuário.
+                {t("filterPanel.searchUsersHint", "Use a barra de pesquisa no topo para buscar por nome de usuário.")}
               </p>
             </div>
           )}
@@ -82,7 +86,7 @@ export default function FilterPanel({ open, onClose, onTabChange, activeTab }) {
             onClick={onClose}
             className="w-full py-2.5 rounded-lg bg-pallete-green text-white text-sm font-semibold hover:bg-pallete-muted-yellow transition-colors dark:bg-[var(--color-pallete-green-dark)] dark:hover:bg-pallete-orange"
           >
-            Aplicar filtros
+            {t("filterPanel.applyFilters", "Aplicar filtros")}
           </button>
         </div>
       </div>

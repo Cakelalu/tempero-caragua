@@ -1,8 +1,10 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useState, useCallback } from "react";
 import { GoogleLoginButton } from "../components/GoogleLoginButton"
+import { useTranslation } from "react-i18next";
 
 export default function Login() {
+    const { t } = useTranslation();
     const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("");
     const [googleLoading, setGoogleLoading] = useState(false);
@@ -35,7 +37,7 @@ export default function Login() {
                 throw new Error(
                     dados.message ||
                     dados.error ||
-                    "E-mail ou senha incorretos."
+                    t("login.invalidCredentials", "E-mail ou senha incorretos.")
                 );
             }
 
@@ -49,7 +51,7 @@ export default function Login() {
 
             alert(
                 erro.message ||
-                "Não foi possível conectar ao servidor."
+                t("login.couldNotConnect", "Não foi possível conectar ao servidor.")
             );
         }
     };
@@ -79,7 +81,7 @@ export default function Login() {
                 throw new Error(
                     dados.error ||
                     dados.message ||
-                    "Não foi possível entrar com o Google."
+                    t("login.googleError", "Não foi possível entrar com o Google.")
                 );
             }
 
@@ -88,7 +90,7 @@ export default function Login() {
             navigate("/");
         } catch (erro) {
             console.error("Erro no login com Google:", erro);
-            alert(erro.message || "Não foi possível conectar ao servidor.");
+            alert(erro.message || t("login.couldNotConnect", "Não foi possível conectar ao servidor."));
         } finally {
             setGoogleLoading(false);
         }
@@ -103,13 +105,13 @@ export default function Login() {
                 {/* Logo */}
                 <img
                     src="/logo.webp"
-                    alt="Tempero Caraguá"
+                    alt={t("common.logo", "Tempero Caraguá")}
                     className="mb-5 h-auto w-64 shrink-0 object-contain sm:w-72"
                 />
 
                 {/* Título */}
                 <h1 className="mb-4 text-center text-xl font-medium text-[#e8d9a5] sm:text-2xl dark:text-[var(--color-text-primary-dark)]">
-                    Acesse sua conta
+                    {t("login.title", "Acesse sua conta")}
                 </h1>
 
                 {/* Formulário */}
@@ -122,7 +124,7 @@ export default function Login() {
                         htmlFor="email"
                         className="mb-1.5 text-sm font-bold text-white sm:text-base dark:text-[var(--color-text-primary-dark)]"
                     >
-                        E-mail
+                        {t("login.email", "E-mail")}
                     </label>
 
                     <input
@@ -142,14 +144,14 @@ export default function Login() {
                             htmlFor="password"
                             className="text-sm font-bold text-white sm:text-base dark:text-[var(--color-text-primary-dark)]"
                         >
-                            Senha
+                            {t("login.password", "Senha")}
                         </label>
 
                         <NavLink
                             to="/esqueci-minha-senha"
                             className="text-sm text-[#e8d9a5] underline underline-offset-2 hover:text-white sm:text-base dark:text-[var(--color-pallete-light-orange-dark)] dark:hover:text-[var(--color-text-primary-dark)]"
                         >
-                            Esqueci minha senha
+                            {t("login.forgotPassword", "Esqueci minha senha")}
                         </NavLink>
                     </div>
 
@@ -169,13 +171,13 @@ export default function Login() {
                         type="submit"
                         className="mt-4 h-10 w-32 self-center rounded-xl bg-pallete-orange font-medium text-white underline underline-offset-2 transition-colors duration-150 hover:bg-pallete-dark-orange dark:bg-[var(--color-pallete-orange-dark)] dark:hover:bg-pallete-dark-orange"
                     >
-                        Entrar
+                        {t("login.signIn", "Entrar")}
                     </button>
                 </form>
 
                 {/* Separador */}
                 <p className="my-6 font-bold text-white dark:text-[var(--color-text-primary-dark)]">
-                    OU
+                    {t("common.or", "OU")}
                 </p>
 
                 {/* Login com o google */}
@@ -183,7 +185,7 @@ export default function Login() {
                     clientId={KEY_GOOGLE}
                     onSuccess={handleGoogleLogin}
                     onError={() => {
-                        alert('Erro ao fazer login com o Google. Tente novamente.');
+                        alert(t("login.googleError", "Erro ao fazer login com o Google. Tente novamente."));
                     }}
                     disabled={googleLoading}
                 />
@@ -191,14 +193,14 @@ export default function Login() {
                 {/* Cadastro */}
                 <div className="mt-9 text-center">
                     <p className="text-lg font-medium text-white sm:text-xl dark:text-[var(--color-text-primary-dark)]">
-                        Ainda não criou sua conta?
+                        {t("login.noAccount", "Ainda não criou sua conta?")}
                     </p>
 
                     <NavLink
                         to="/cadastro"
                         className="text-[#e8d9a5] underline underline-offset-2 hover:text-white dark:text-[var(--color-pallete-light-orange-dark)] dark:hover:text-[var(--color-text-primary-dark)]"
                     >
-                        Criar conta
+                        {t("login.createAccount", "Criar conta")}
                     </NavLink>
                 </div>
             </section>

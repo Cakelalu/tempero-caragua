@@ -1,5 +1,6 @@
 import { toProxyUrl } from "../utils/imageProxy";
 import { withImageKitTransform } from "../utils/imageTransform";
+import { useTranslation } from "react-i18next";
 
 /**
  * Card de postagem com estilo Instagram em mobile.
@@ -22,13 +23,16 @@ export default function CardPost({
     author = "Autor desconhecido",
     href = "#",
 }) {
-    // Formata a data para exibição em português (pt-BR)
+    const { t, i18n } = useTranslation();
+
+    // Formata a data conforme o idioma selecionado
     let formattedDate = date;
     if (date) {
         try {
             const d = new Date(date);
             if (!Number.isNaN(d.getTime())) {
-                formattedDate = new Intl.DateTimeFormat("pt-BR", {
+                const locale = i18n.language === "en" ? "en-US" : "pt-BR";
+                formattedDate = new Intl.DateTimeFormat(locale, {
                     dateStyle: "short",
                     timeStyle: "short",
                 }).format(d).replace(",", " às");
@@ -53,7 +57,7 @@ export default function CardPost({
                     />
                 ) : (
                     <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-amber-500 flex items-center justify-center">
-                        <span className="text-white font-bold text-lg sm:text-xl">banner</span>
+                        <span className="text-white font-bold text-lg sm:text-xl">{t("cardPost.banner", "banner")}</span>
                     </div>
                 )}
 
@@ -95,7 +99,7 @@ export default function CardPost({
                 >
                     {title}
                 </h3>
-                <p className="text-gray-500 dark:text-[var(--color-text-muted-dark)] text-xs sm:text-sm">por {author}</p>
+                <p className="text-gray-500 dark:text-[var(--color-text-muted-dark)] text-xs sm:text-sm">{t("cardPost.by", "por")} {author}</p>
                 <p className="text-gray-400 dark:text-[var(--color-text-muted-dark)] text-xs sm:text-sm mt-1">{formattedDate}</p>
             </div>
         </a>

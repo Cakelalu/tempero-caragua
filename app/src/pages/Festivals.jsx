@@ -1,7 +1,10 @@
+import { useTranslation } from "react-i18next";
+
 export default function Festivals() {
-    return(
-        <div>
-            <p>Festivais</p>
-        </div>
-    )
+  const { t } = useTranslation();
+  return (
+    <div>
+      <p>{t("festivals.title", "Festivais")}</p>
+    </div>
+  )
 }
