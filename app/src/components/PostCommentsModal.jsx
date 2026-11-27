@@ -85,7 +85,7 @@ export default function PostCommentsModal({ postSlug, isOpen, onClose, onComment
     } finally {
       setLoading(false);
     }
-  }, [postSlug, token, t]);
+  }, [postSlug, t]);
 
   useEffect(() => {
     if (isOpen) {
