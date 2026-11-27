@@ -215,6 +215,11 @@ export default function EditProfile() {
             setFeedback({ type: "error", message: "A nova senha e a confirmação devem ser iguais." });
             return;
         }
+        let caracteres = newPassword.split()
+        if (!caracteres.includes(/[\D]/) || !caracteres.includes(/[a-z]/) || !caracteres.includes(/[A-Z]/) || !caracteres.includes(/[0-9]/) || !(caracteres.length >= 8)) {
+            setFeedback({ type: "error", message: "A senha deve conter:\n-> 8 caracteres totais\n-> letras maiúsculas e minúsculas\n-> números\n-> caracteres especiais" });
+            return;
+        }
         if (newPassword.length < 8) {
             setFeedback({ type: "error", message: "A nova senha deve ter pelo menos 8 caracteres." });
             return;

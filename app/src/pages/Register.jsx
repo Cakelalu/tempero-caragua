@@ -20,6 +20,12 @@ export default function Register() {
             return
         }
 
+        let caracteres = Senha.split()
+        if (!caracteres.includes(/[\D]/) || !caracteres.includes(/[a-z]/) || !caracteres.includes(/[A-Z]/) || !caracteres.includes(/[0-9]/) || !(caracteres.length >= 8)) {
+            console.log('A senha deve seguir às regras estabelecidas')
+            return
+        }
+
         const API_URL = import.meta.env.VITE_PUBLIC_API_URL || "http://localhost:4500"
 
         try {
