@@ -51,7 +51,7 @@ export default function Profile() {
         credentials: 'include',
       });
 
-      if (!response.ok) throw new Error('Não foi possível carregar o perfil.');
+      if (!response.ok) throw new Error(t("profile.couldNotLoadProfile", "Não foi possível carregar o perfil."));
 
       const data = await response.json();
 
@@ -82,7 +82,7 @@ export default function Profile() {
         credentials: 'include',
       });
 
-      if (!response.ok) throw new Error('Erro ao carregar mais postagens.');
+      if (!response.ok) throw new Error(t("profile.couldNotLoadPosts", "Erro ao carregar mais postagens."));
 
       const data = await response.json();
 
@@ -107,7 +107,7 @@ export default function Profile() {
         },
         credentials: 'include',
       });
-      if (!response.ok) throw new Error('Não foi possível seguir o usuário.');
+      if (!response.ok) throw new Error(t("profile.couldNotFollow", "Não foi possível seguir o usuário."));
       setIsFollowing(true);
       // Atualiza o contador de seguidores
       setProfile((prev) => prev ? { ...prev, stats: { ...prev.stats, followersCount: prev.stats.followersCount + 1 } } : prev);
@@ -126,7 +126,7 @@ export default function Profile() {
         },
         credentials: 'include',
       });
-      if (!response.ok) throw new Error('Não foi possível deixar de seguir o usuário.');
+      if (!response.ok) throw new Error(t("profile.couldNotUnfollow", "Não foi possível deixar de seguir o usuário."));
       setIsFollowing(false);
       // Atualiza o contador de seguidores
       setProfile((prev) => prev ? { ...prev, stats: { ...prev.stats, followersCount: Math.max(0, prev.stats.followersCount - 1) } } : prev);
@@ -158,7 +158,7 @@ export default function Profile() {
 
       if (!response.ok) {
         const data = await response.json().catch(() => null);
-        throw new Error(data?.error || 'Não foi possível excluir a publicação.');
+        throw new Error(data?.error || t("profile.couldNotDeletePost", "Não foi possível excluir a publicação."));
       }
 
       // Remove o post da lista local sem recarregar a página
@@ -167,7 +167,7 @@ export default function Profile() {
       setProfile((prev) => prev ? { ...prev, stats: { ...prev.stats, postsCount: Math.max(0, prev.stats.postsCount - 1) } } : prev);
     } catch (error) {
       console.error('Erro ao excluir postagem:', error);
-      alert(error.message || 'Erro ao excluir a publicação.');
+      alert(error.message || t("profile.couldNotDeletePostMsg", "Erro ao excluir a publicação."));
     } finally {
       setDeletingPostId(null);
     }

@@ -145,6 +145,11 @@
     "uploadProgress": "Enviando: {{progress}}%",
     "profileUpdated": "Perfil atualizado com sucesso.",
     "couldNotLoadProfile": "Não foi possível carregar seu perfil. Tente novamente.",
+    "couldNotLoadPosts": "Erro ao carregar mais postagens.",
+    "couldNotFollow": "Não foi possível seguir o usuário.",
+    "couldNotUnfollow": "Não foi possível deixar de seguir o usuário.",
+    "couldNotDeletePost": "Não foi possível excluir a publicação.",
+    "couldNotDeletePostMsg": "Erro ao excluir a publicação.",
     "couldNotSaveProfile": "Não foi possível salvar seu perfil. Tente novamente.",
     "sessionExpired": "Sua sessão expirou. Entre novamente para continuar.",
     "imageTooLarge": "A imagem excede o limite permitido de 5 MB.",
@@ -244,7 +249,31 @@
     "title": "Esta página não existe..."
   },
   "createPost": {
-    "title": "Criar postagem"
+    "title": "Criar postagem",
+    "share": "Compartilhar",
+    "uploading": "Enviando {{progress}}%",
+    "saving": "Salvando...",
+    "selectPhoto": "Selecione pelo menos uma foto",
+    "requiredImages": "obrigatória — até {{max}} imagens",
+    "addMoreImages": "Adicionar mais imagens",
+    "selectFromComputer": "Selecionar do computador",
+    "limitReached": "Limite de {{max}} imagens atingido",
+    "imagesSelected": "{{selected}} de {{max}} selecionada(s). Use o 'X' em cada foto para remover.",
+    "imagesLabel": "Imagens",
+    "imagesRequired": "obrigatório",
+    "imagesUpTo": "até {{max}}",
+    "imagesCount": "{{count}} imagem(ns) selecionada(s).",
+    "selectAtLeastOne": "Selecione pelo menos uma imagem para continuar.",
+    "titleLabel": "Título",
+    "titlePlaceholder": "Dê um título à publicação",
+    "contentLabel": "Conteúdo",
+    "contentPlaceholder": "Conte mais sobre esta publicação...",
+    "captionLabel": "Legenda da imagem",
+    "captionPlaceholder": "Descreva a imagem",
+    "captionInfo": "Enviada como legenda da imagem (legendas).",
+    "tagsLabel": "Tags",
+    "tagsPlaceholder": "Ex.: receita, caraguá, comida",
+    "tagsInfo": "Separe cada tag com uma vírgula."
   },
   "favorites": {
     "title": "Meus Favoritos",
@@ -267,8 +296,18 @@
   "googleLoginButton": {
     "continueWithGoogle": "Continuar com o Google"
   },
+  "featuredPosts": {
+    "title": "Postagens em destaque",
+    "noPosts": "Nenhuma postagem disponível."
+  },
   "userSearchCard": {
     "follow": "Seguir",
     "following": "Seguindo"
+  },
+  "profile": {
+    "couldNotLoadProfileMsg": "Não foi possível carregar seu perfil. Tente novamente.",
+    "imageUploadError": "Ocorreu um erro durante o envio da imagem.",
+    "operationNotConcluded": "A operação não foi concluída",
+    "avatarAlt": "Foto do perfil"
   }
 }

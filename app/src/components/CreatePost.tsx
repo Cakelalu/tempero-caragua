@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { upload } from '@imagekit/react';
 import { FiHash, FiImage, FiX } from 'react-icons/fi';
+import { useTranslation } from "react-i18next";
 
 const API_URL = (import.meta.env.VITE_PUBLIC_API_URL).replace(/\/$/, '');
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
@@ -18,6 +19,7 @@ interface CreatePostProps {
 }
 
 export default function CreatePost({ authorId, onClose, onPostCreated, userName, profileImage }: CreatePostProps) {
+  const { t } = useTranslation();
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);      // URLs (object ou ImageKit)
   const [selectedImages, setSelectedImages] = useState<File[]>([]);      // arquivos ainda não enviados
   const [uploadedImageUrls, setUploadedImageUrls] = useState<string[]>([]); // URLs já enviadas ao ImageKit
@@ -254,7 +256,7 @@ export default function CreatePost({ authorId, onClose, onPostCreated, userName,
             <FiX size={20} />
           </button>
           <h2 className="text-base -translate-x-1/3 sm:translate-x-0 font-semibold text-gray-900" id="create-post-title">
-            Nova publicação
+            {t("createPost.title", "Nova publicação")}
           </h2>
           <button
             className="absolute right-4 inline-flex items-center gap-2 rounded-lg bg-pallete-dark-green-2 px-4 py-2 text-sm font-semibold text-white transition hover:bg-pallete-green disabled:cursor-not-allowed disabled:bg-gray-300"
@@ -264,9 +266,9 @@ export default function CreatePost({ authorId, onClose, onPostCreated, userName,
           >
             {isSubmitting
               ? uploadProgress < 100
-                ? `Enviando ${uploadProgress}%`
-                : 'Salvando...'
-              : 'Compartilhar'}
+                ? t("createPost.uploading", "Enviando {{progress}}%").replace("{{progress}}", String(uploadProgress))
+                : t("createPost.saving", "Salvando...")
+              : t("createPost.share", "Compartilhar")}
           </button>
         </header>
 
@@ -310,13 +312,13 @@ export default function CreatePost({ authorId, onClose, onPostCreated, userName,
               <div className="mb-0 sm:mb-3 md:mb-5 flex h-9 w-9 sm:h-15 sm:w-15 md:h-24 md:w-24 items-center justify-center rounded-full bg-pallete-light-orange/30 text-pallete-dark-green-2">
                 <FiImage className='size-6 sm:size-10 md:size-16' strokeWidth={1.5} />
               </div>
-              <text className="text-lg font-medium text-gray-800">Selecione pelo menos uma foto</text>
-              <text className="mt-0 sm:mt-1 md:mt-2 text-sm text-gray-500">obrigatória — até {MAX_IMAGES} imagens</text>
+              <text className="text-lg font-medium text-gray-800">{t("createPost.selectPhoto", "Selecione pelo menos uma foto")}</text>
+              <text className="mt-0 sm:mt-1 md:mt-2 text-sm text-gray-500">{t("createPost.requiredImages", "obrigatória — até {{max}} imagens").replace("{{max}}", String(MAX_IMAGES))}</text>
             </div>
           )}
 
           <label className="mt-0 sm:mt-2 md:mt-5 cursor-pointer rounded-lg bg-pallete-dark-green-2 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-pallete-green">
-            {imagePreviews.length > 0 ? 'Adicionar mais imagens' : 'Selecionar do computador'}
+            {imagePreviews.length > 0 ? t("createPost.addMoreImages", "Adicionar mais imagens") : t("createPost.selectFromComputer", "Selecionar do computador")}
             <input
               accept="image/*"
               multiple
@@ -326,13 +328,13 @@ export default function CreatePost({ authorId, onClose, onPostCreated, userName,
               type="file"
             />
             {imagePreviews.length >= MAX_IMAGES && (
-              <span className="text-xs text-gray-400 ml-2">Limite de {MAX_IMAGES} imagens atingido</span>
+              <span className="text-xs text-gray-400 ml-2">{t("createPost.limitReached", "Limite de {{max}} imagens atingido").replace("{{max}}", String(MAX_IMAGES))}</span>
             )}
           </label>
 
           {imagePreviews.length > 0 && (
             <text className="mt-2 text-xs text-gray-500">
-              {selectedImages.length} de {MAX_IMAGES} selecionada(s). Use o "X" em cada foto para remover.
+              {t("createPost.imagesSelected", "{{selected}} de {{max}} selecionada(s). Use o 'X' em cada foto para remover.").replace("{{selected}}", String(selectedImages.length)).replace("{{max}}", String(MAX_IMAGES))}
             </text>
           )}
         </div>
@@ -353,56 +355,56 @@ export default function CreatePost({ authorId, onClose, onPostCreated, userName,
               </p>
             )}
             <label className="flex flex-col gap-1.5 text-xs font-semibold text-gray-700">
-              Imagens <span className="text-red-600">(obrigatório, até 5)</span>
+              {t("createPost.imagesLabel", "Imagens")} <span className="text-red-600">({t("createPost.imagesRequired", "obrigatório")}, {t("createPost.imagesUpTo", "até {{max}}")} {MAX_IMAGES})</span>
               {imagePreviews.length > 0 ? (
-                <p className="text-xs text-gray-500">{imagePreviews.length} imagem(ns) selecionada(s).</p>
+                <p className="text-xs text-gray-500">{t("createPost.imagesCount", "{{count}} imagem(ns) selecionada(s).").replace("{{count}}", String(imagePreviews.length))}</p>
               ) : (
-                <p className="text-xs text-red-600">Selecione pelo menos uma imagem para continuar.</p>
+                <p className="text-xs text-red-600">{t("createPost.selectAtLeastOne", "Selecione pelo menos uma imagem para continuar.")}</p>
               )}
             </label>
             <label className="flex flex-col gap-1.5 text-xs font-semibold text-gray-700">
-              Título <span className="text-red-600">(obrigatório)</span>
+              {t("createPost.titleLabel", "Título")} <span className="text-red-600">(obrigatório)</span>
               <input
                 className={`rounded-lg border px-3 py-2.5 text-sm font-normal text-gray-800 outline-none transition placeholder:text-gray-400 focus:border-pallete-green focus:ring-2 focus:ring-pallete-green/15 ${!title.trim() && !isSubmitting ? 'border-red-500/50' : 'border-gray-200'}`}
                 onChange={(event) => setTitle(event.target.value)}
-                placeholder="Dê um título à publicação"
+                placeholder={t("createPost.titlePlaceholder", "Dê um título à publicação")}
                 type="text"
                 value={title}
               />
             </label>
             <label className="flex flex-col gap-1.5 text-xs font-semibold text-gray-700">
-              Conteúdo <span className="text-red-600">(obrigatório)</span>
+              {t("createPost.contentLabel", "Conteúdo")} <span className="text-red-600">(obrigatório)</span>
               <textarea
                 className={`min-h-24 resize-y rounded-lg border px-3 py-2.5 text-sm font-normal text-gray-800 outline-none transition placeholder:text-gray-400 focus:border-pallete-green focus:ring-2 focus:ring-pallete-green/15 ${!content.trim() && !isSubmitting ? 'border-red-500/50' : 'border-gray-200'}`}
                 onChange={(event) => setContent(event.target.value)}
-                placeholder="Conte mais sobre esta publicação..."
+                placeholder={t("createPost.contentPlaceholder", "Conte mais sobre esta publicação...")}
                 value={content}
               />
             </label>
             <label className="flex flex-col gap-1.5 text-xs font-semibold text-gray-700">
-              Legenda da imagem <span className="font-normal text-gray-400">(opcional)</span>
+              {t("createPost.captionLabel", "Legenda da imagem")} <span className="font-normal text-gray-400">(opcional)</span>
               <input
                 className="rounded-lg border border-gray-200 px-3 py-2.5 text-sm font-normal text-gray-800 outline-none transition placeholder:text-gray-400 focus:border-pallete-green focus:ring-2 focus:ring-pallete-green/15"
                 onChange={(event) => setImageCaption(event.target.value)}
-                placeholder="Descreva a imagem"
+                placeholder={t("createPost.captionPlaceholder", "Descreva a imagem")}
                 type="text"
                 value={imageCaption}
               />
-              <span className="font-normal text-gray-400">Enviada como legenda da imagem (legendas).</span>
+              <span className="font-normal text-gray-400">{t("createPost.captionInfo", "Enviada como legenda da imagem (legendas).")}</span>
             </label>
             <label className="flex flex-col gap-1.5 text-xs font-semibold text-gray-700">
-              Tags <span className="font-normal text-gray-400">(opcional)</span>
+              {t("createPost.tagsLabel", "Tags")} <span className="font-normal text-gray-400">(opcional)</span>
               <span className="flex items-center gap-2 rounded-lg border border-gray-200 px-3 focus-within:border-pallete-green focus-within:ring-2 focus-within:ring-pallete-green/15">
                 <FiHash className="shrink-0 text-gray-400" size={16} />
                 <input
                   className="w-full border-0 py-2.5 text-sm font-normal text-gray-800 outline-none placeholder:text-gray-400 focus:ring-0"
                   onChange={(event) => setTags(event.target.value)}
-                  placeholder="Ex.: receita, caraguá, comida"
+                  placeholder={t("createPost.tagsPlaceholder", "Ex.: receita, caraguá, comida")}
                   type="text"
                   value={tags}
                 />
               </span>
-              <span className="font-normal text-gray-400">Separe cada tag com uma vírgula.</span>
+              <span className="font-normal text-gray-400">{t("createPost.tagsInfo", "Separe cada tag com uma vírgula.")}</span>
             </label>
           </div>
         </div>

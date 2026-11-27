@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { useTranslation } from "react-i18next";
 
 export default function ForgotPassword() {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [email, setEmail] = useState('')
     const [loading, setLoading] = useState(false)
     const [message, setMessage] = useState('')
@@ -25,7 +25,7 @@ export default function ForgotPassword() {
                     'Content-Type': 'application/json',
                 },
                 credentials: "include",
-                body: JSON.stringify({ email }),
+                body: JSON.stringify({ email, lang: i18n.language }),
             })
 
             const dados = await resposta.json()

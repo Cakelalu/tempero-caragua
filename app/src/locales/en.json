@@ -145,6 +145,11 @@
     "uploadProgress": "Uploading: {{progress}}%",
     "profileUpdated": "Profile updated successfully.",
     "couldNotLoadProfile": "Could not load your profile. Try again.",
+    "couldNotLoadPosts": "Error loading more posts.",
+    "couldNotFollow": "Could not follow the user.",
+    "couldNotUnfollow": "Could not unfollow the user.",
+    "couldNotDeletePost": "Could not delete the publication.",
+    "couldNotDeletePostMsg": "Error deleting the publication.",
     "couldNotSaveProfile": "Could not save your profile. Try again.",
     "sessionExpired": "Your session has expired. Log in again to continue.",
     "imageTooLarge": "The image exceeds the allowed limit of 5 MB.",
@@ -244,7 +249,31 @@
     "title": "This page does not exist..."
   },
   "createPost": {
-    "title": "Create post"
+    "title": "Create post",
+    "share": "Share",
+    "uploading": "Uploading {{progress}}%",
+    "saving": "Saving...",
+    "selectPhoto": "Select at least one photo",
+    "requiredImages": "mandatory — up to {{max}} images",
+    "addMoreImages": "Add more images",
+    "selectFromComputer": "Select from computer",
+    "limitReached": "Limit of {{max}} images reached",
+    "imagesSelected": "{{selected}} of {{max}} selected. Use the 'X' on each photo to remove.",
+    "imagesLabel": "Images",
+    "imagesRequired": "mandatory",
+    "imagesUpTo": "up to {{max}}",
+    "imagesCount": "{{count}} image(s) selected.",
+    "selectAtLeastOne": "Select at least one image to continue.",
+    "titleLabel": "Title",
+    "titlePlaceholder": "Give a title to the publication",
+    "contentLabel": "Content",
+    "contentPlaceholder": "Tell us more about this publication...",
+    "captionLabel": "Image caption",
+    "captionPlaceholder": "Describe the image",
+    "captionInfo": "Sent as image caption (captions).",
+    "tagsLabel": "Tags",
+    "tagsPlaceholder": "Ex.: recipe, caraguá, food",
+    "tagsInfo": "Separate each tag with a comma."
   },
   "favorites": {
     "title": "My Favorites",
@@ -267,8 +296,18 @@
   "googleLoginButton": {
     "continueWithGoogle": "Continue with Google"
   },
+  "featuredPosts": {
+    "title": "Featured posts",
+    "noPosts": "No posts available."
+  },
   "userSearchCard": {
     "follow": "Follow",
     "following": "Following"
+  },
+  "profile": {
+    "couldNotLoadProfileMsg": "Could not load your profile. Try again.",
+    "imageUploadError": "An error occurred during image upload.",
+    "operationNotConcluded": "The operation was not completed",
+    "avatarAlt": "Profile picture"
   }
 }

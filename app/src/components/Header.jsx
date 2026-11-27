@@ -66,7 +66,7 @@ export default function Header() {
 
             <nav className={`${menuOpen ? "flex" : "hidden"} flex-col lg:flex lg:flex-row justify-evenly items-center gap-4 lg:gap-18 w-full lg:w-auto mt-4 lg:mt-0`}>
                 <NavLink to="/especiais-de-caragua" className={navLinkClass}>
-                    {t("header.specials", "Especiais de")}<br />Caraguá
+                    {t("header.specials", "Especiais de Caraguá")}
                 </NavLink>
                 <NavLink to="/festivais" className={navLinkClass}>
                     {t("header.festivals", "Festivais")}

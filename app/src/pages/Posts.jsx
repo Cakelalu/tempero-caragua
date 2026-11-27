@@ -8,14 +8,14 @@ import { useTranslation } from "react-i18next";
 
 const API_BASE_URL = (import.meta.env.VITE_PUBLIC_API_URL || "http://localhost:4500").replace(/\/$/, "");
 
-const SECTIONS = [
-  { key: "recentes", label: "Recentes" },
-  { key: "destaques", label: "Destaques" },
-  { key: "seguindo", label: "Seguindo" },
-];
-
 export default function Posts() {
   const { t } = useTranslation();
+
+  const SECTIONS = [
+    { key: "recentes", label: t("posts.recent", "Recentes") },
+    { key: "destaques", label: t("posts.highlights", "Destaques") },
+    { key: "seguindo", label: t("posts.following", "Seguindo") },
+  ];
 
   // ---------- Estados de UI ---------- 
   const [filterOpen, setFilterOpen] = useState(false);
@@ -163,7 +163,7 @@ export default function Posts() {
           <p className="text-center text-red-500 text-sm py-8">{errorMsg}</p>
         ) : isEmpty ? (
           <p className="text-center text-gray-500 dark:text-[var(--color-text-muted-dark)] text-sm py-12">
-            Nenhuma postagem encontrada.
+            {t("posts.noPostsFound", "Nenhuma postagem encontrada.")}
           </p>
         ) : (
           <>
@@ -214,8 +214,8 @@ export default function Posts() {
                 type="text"
                 placeholder={
                   activeFilterTab === "users"
-                    ? "Procurar usuários..."
-                    : "Qual receita você está procurando hoje?"
+                    ? t("posts.searchUsersPlaceholder", "Procurar usuários...")
+                    : t("posts.searchPlaceholder", "Qual receita você está procurando hoje?")
                 }
                 value={searchQuery}
                 onChange={handleSearchChange}
@@ -258,7 +258,7 @@ export default function Posts() {
             {usersError ? (
               <p className="text-center text-red-500 text-sm py-8">{usersError}</p>
             ) : usersItems.length === 0 ? (
-              <p className="text-center text-gray-500 dark:text-[var(--color-text-muted-dark)] text-sm py-12">Nenhum usuário encontrado.</p>
+              <p className="text-center text-gray-500 dark:text-[var(--color-text-muted-dark)] text-sm py-12">{t("posts.noUsersFound", "Nenhum usuário encontrado.")}</p>
             ) : (
               <>
                 {usersItems.map((user) => (
@@ -276,21 +276,21 @@ export default function Posts() {
                   />
                 ))}
                 {usersData?.hasMore && !usersFetching && <div ref={usersRef} className="h-20" />}
-                {usersFetching && <p className="text-center text-gray-400 dark:text-[var(--color-text-muted-dark)] text-sm py-4">Buscando mais usuários...</p>}
+                {usersFetching && <p className="text-center text-gray-400 dark:text-[var(--color-text-muted-dark)] text-sm py-4">{t("posts.loadingMoreUsers", "Buscando mais usuários...")}</p>}
               </>
             )}
           </div>
         ) : searchQuery ? (
           <section key="search-results" className="mb-12">
             <h2 className="mb-6 text-center text-3xl font-bold tracking-tight">
-              Resultados para "{searchQuery}"
+              {t("posts.resultsFor", "Resultados para \"{{query}}\"").replace("{{query}}", searchQuery)}
             </h2>
             {searchPostsError ? (
               <p className="text-center text-red-500 text-sm py-8">{searchPostsError.message}</p>
             ) : searchPostsData?.items?.length === 0 ? (
               <p className="text-center text-gray-500 dark:text-[var(--color-text-muted-dark)] text-sm py-12">
-                Nenhuma postagem encontrada para "{searchQuery}".
-              </p>
+              {t("posts.noPostsFound", "Nenhuma postagem encontrada para \"{{query}}\".").replace("{{query}}", searchQuery)}
+            </p>
             ) : (
               <>
                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 max-w-full">
@@ -318,7 +318,7 @@ export default function Posts() {
                     );
                   })}
                 </div>
-                {searchPostsFetching && <p className="text-center text-gray-400 dark:text-[var(--color-text-muted-dark)] text-sm py-4">Buscando postagens...</p>}
+                {searchPostsFetching && <p className="text-center text-gray-400 dark:text-[var(--color-text-muted-dark)] text-sm py-4">{t("posts.loadingMorePosts", "Buscando postagens...")}</p>}
               </>
             )}
           </section>

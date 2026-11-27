@@ -1,5 +1,6 @@
 const API_BASE_URL = (import.meta.env.VITE_API_URL || "http://localhost:4000").replace(/\/$/, "");
 import CardPost from "./CardPost";
+import { useTranslation } from "react-i18next";
 
 // function getCoverUrl(cover) {
 //     if (!cover) return undefined;
@@ -10,6 +11,7 @@ import CardPost from "./CardPost";
 // }
 
 export default function FeaturedPosts({ posts = [] }) {
+    const { t } = useTranslation();
     const featuredPosts = posts.slice(0, 6);
 
     return (
@@ -18,12 +20,12 @@ export default function FeaturedPosts({ posts = [] }) {
                 id="featured-posts-title"
                 className="theme-heading mb-6 text-center text-3xl font-bold"
             >
-                Postagens em destaque
+                {t("featuredPosts.title", "Postagens em destaque")}
             </h1>
 
             {featuredPosts.length === 0 ? (
                 <p className="theme-text text-center dark:text-[var(--color-text-muted-dark)]">
-                    Nenhuma postagem disponível.
+                    {t("featuredPosts.noPosts", "Nenhuma postagem disponível.")}
                 </p>
             ) : (
                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3 items-stretch max-w-full">
@@ -45,7 +47,7 @@ export default function FeaturedPosts({ posts = [] }) {
                                 avatarImage={post.user?.imagemPerfil || null}
                                 date={post.dataPostagem}
                                 title={post.titulo}
-                                author={post.user?.nomeUsuario || 'Autor desconhecido'}
+                                author={post.user?.nomeUsuario || t("common.unknownAuthor", "Autor desconhecido")}
                                 href={`/posts/${post.slug || post.id}`}
                             />
                         );

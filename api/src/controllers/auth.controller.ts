@@ -204,6 +204,7 @@ export const logout: RequestHandler = async (req, res) => {
 export const forgotPassword: RequestHandler = async (req, res) => {
     const schema = z.object({
         email: z.string().email(),
+        lang: z.enum(['pt', 'en']).optional(),
     })
     const data = schema.safeParse(req.body)
     if (!data.success) {
@@ -211,12 +212,17 @@ export const forgotPassword: RequestHandler = async (req, res) => {
     }
 
     const email = data.data.email.toLowerCase()
+    const acceptLanguage = req.headers['accept-language']
+    const langFromHeader = typeof acceptLanguage === 'string' ? acceptLanguage : Array.isArray(acceptLanguage) ? acceptLanguage[0] : undefined
+    const lang = data.data.lang ?? (langFromHeader?.startsWith('en') ? 'en' : 'pt')
 
     const user = await prisma.user.findUnique({ where: { email } })
     if (!user) {
         // Não revela se o e-mail existe (segurança contra enumeração)
         return res.status(200).json({
-            message: 'Se este e-mail estiver cadastrado, você receberá instruções de redefinição.',
+            message: lang === 'en'
+                ? 'If this email is registered, you will receive reset instructions.'
+                : 'Se este e-mail estiver cadastrado, você receberá instruções de redefinição.',
         })
     }
 
@@ -246,10 +252,13 @@ export const forgotPassword: RequestHandler = async (req, res) => {
         toEmail: user.email,
         toName: user.nome,
         resetUrl,
+        lang,
     })
 
     res.status(200).json({
-        message: 'Se este e-mail estiver cadastrado, você receberá instruções de redefinição.',
+        message: lang === 'en'
+            ? 'If this email is registered, you will receive reset instructions.'
+            : 'Se este e-mail estiver cadastrado, você receberá instruções de redefinição.',
     })
 }
 
