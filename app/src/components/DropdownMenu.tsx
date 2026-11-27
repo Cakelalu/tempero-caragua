@@ -6,12 +6,14 @@ const API_BASE_URL = (
     import.meta.env.VITE_PUBLIC_API_URL || "http://localhost:4500"
 ).replace(/\/$/, "");
 
-export default function Menu() {
+export default function Menu({ user }: { user: any }) {
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [confirmLogout, setConfirmLogout] = useState<boolean>(false);
     const menuRef = useRef<HTMLDivElement>(null);
     const location = useLocation();
+
+    const isModerator = user?.tipo === 'MODERATOR';
 
     useEffect(() => {
         setIsOpen(false);
@@ -68,6 +70,10 @@ export default function Menu() {
                 <div className="absolute right-0 top-full z-50 mt-2 min-w-44 rounded-sm bg-pallete-background p-2 text-pallete-dark-green shadow-md dark:bg-[var(--color-pallete-card-dark)] dark:text-[var(--color-text-primary-dark)] dark:border dark:border-[var(--color-pallete-gray-dark)]">
                     <NavLink className="block px-3 py-2 hover:bg-pallete-light-green dark:hover:bg-[var(--color-pallete-light-green-dark)] dark:hover:text-[var(--color-text-primary-dark)]" to='/perfil'>Minha conta</NavLink>
                     <NavLink className="block px-3 py-2 hover:bg-pallete-light-green dark:hover:bg-[var(--color-pallete-light-green-dark)] dark:hover:text-[var(--color-text-primary-dark)]" to='/editar-perfil'>Editar perfil</NavLink>
+
+                    {isModerator && (
+                        <NavLink className="block px-3 py-2 hover:bg-pallete-light-green dark:hover:bg-[var(--color-pallete-light-green-dark)] dark:hover:text-[var(--color-text-primary-dark)]" to='/moderador'>Área de Moderador</NavLink>
+                    )}
 
                     {confirmLogout ? (
                         <div className="p-2 border-t border-gray-100 dark:border-[var(--color-pallete-gray-dark)]">
